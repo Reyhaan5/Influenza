@@ -1,0 +1,29 @@
+:root {
+    /* Brand */
+    --color-primary: #8B5FBF;
+    --color-secondary: #61398F;
+  
+    /* Neutrals */
+    --color-background: #F5F3F7;
+    --color-surface: #FFFFFF;
+  
+    /* Text */
+    --color-text: #4A4A4A;
+    --color-text-light: #6B7280;
+  
+    /* Accent */
+    --color-accent: #D6C6E1;
+  
+    /* Status */
+    --color-success: #22C55E;
+    --color-warning: #F59E0B;
+    --color-danger: #EF4444;
+  
+    /* Radius */
+    --radius-card: 24px;
+    --radius-button: 14px;
+  
+    /* Shadows */
+    --shadow-card: 0 10px 40px rgba(97, 57, 143, 0.08);
+    --shadow-navbar: 0 8px 30px rgba(97, 57, 143, 0.08);
+  }
