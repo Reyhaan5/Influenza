@@ -1,44 +1,46 @@
+import React from 'react';
+
 const variants = {
-    primary:
-      "bg-[#8B5FBF] text-white hover:bg-[#61398F] shadow-md hover:shadow-lg",
-  
-    secondary:
-      "bg-white text-[#4A4A4A] border border-[#D6C6E1] hover:bg-[#F5F3F7]",
-  
-    outline:
-      "border border-[#8B5FBF] text-[#8B5FBF] hover:bg-[#8B5FBF] hover:text-white",
-  
-    ghost:
-      "text-[#4A4A4A] hover:text-[#8B5FBF]",
-  };
-  
-  function Button({
-    children,
-    variant = "primary",
-    className = "",
-    ...props
-  }) {
-    return (
-      <button
-        className={`
-          inline-flex
-          items-center
-          justify-center
-          rounded-xl
-          px-6
-          py-3
-          font-semibold
-          transition-all
-          duration-300
-          hover:scale-[1.02]
-          ${variants[variant]}
-          ${className}
-        `}
-        {...props}
-      >
-        {children}
-      </button>
-    );
-  }
-  
-  export default Button;
+  primary:
+    "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] shadow-[var(--shadow-card)] hover:shadow-lg",
+
+  secondary:
+    "bg-[var(--color-surface)] text-[var(--color-text)] border border-[var(--color-border)] hover:bg-[var(--color-background)]",
+
+  outline:
+    "border border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white",
+
+  ghost:
+    "text-[var(--color-text)] hover:text-[var(--color-primary)]",
+};
+
+function Button({
+  children,
+  variant = "primary",
+  className = "",
+  ...props
+}) {
+  return (
+    <button
+      className={`
+        inline-flex
+        items-center
+        justify-center
+        rounded-xl
+        px-6
+        py-3
+        font-semibold
+        transition-all
+        duration-300
+        hover:scale-[1.02]
+        ${variants[variant]}
+        ${className}
+      `}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+export default Button;

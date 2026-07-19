@@ -1,29 +1,61 @@
 :root {
-    /* Brand */
-    --color-primary: #8B5FBF;
-    --color-secondary: #61398F;
-  
-    /* Neutrals */
-    --color-background: #F5F3F7;
-    --color-surface: #FFFFFF;
-  
-    /* Text */
-    --color-text: #4A4A4A;
-    --color-text-light: #6B7280;
-  
-    /* Accent */
-    --color-accent: #D6C6E1;
-  
-    /* Status */
-    --color-success: #22C55E;
-    --color-warning: #F59E0B;
-    --color-danger: #EF4444;
-  
-    /* Radius */
-    --radius-card: 24px;
-    --radius-button: 14px;
-  
-    /* Shadows */
-    --shadow-card: 0 10px 40px rgba(97, 57, 143, 0.08);
-    --shadow-navbar: 0 8px 30px rgba(97, 57, 143, 0.08);
-  }
+
+  /* ==========================
+     BRAND COLORS
+  ========================== */
+
+  --color-primary: #8B5FBF;
+  --color-primary-hover: #61398F;
+  --color-primary-light: #D6C6E1;
+
+  /* ==========================
+     BACKGROUND & SURFACES
+  ========================== */
+
+  --color-background: #F5F3F7;
+  --color-surface: #FFFFFF;
+
+  /* ==========================
+     TEXT
+  ========================== */
+
+  --color-text: #4A4A4A;
+  --color-text-light: #6B7280;
+
+  /* ==========================
+     BORDERS
+  ========================== */
+
+  --color-border: #D6C6E1;
+
+  /* ==========================
+     STATUS COLORS
+  ========================== */
+
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+
+  /* ==========================
+     BORDER RADIUS
+  ========================== */
+
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  /* ==========================
+     SHADOWS
+  ========================== */
+
+  --shadow-card: 0 10px 40px rgba(97,57,143,.08);
+  --shadow-navbar: 0 8px 30px rgba(97,57,143,.08);
+
+  /* ==========================
+     TRANSITIONS
+  ========================== */
+
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+
+}

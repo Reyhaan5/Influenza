@@ -1,14 +1,15 @@
+import React from "react";
 import { CheckCircle, Users, Target, Wallet } from "lucide-react";
 
 function HeroDashboard() {
   return (
-    <div className="rounded-[24px] bg-[var(--color-surface)] p-6 shadow-xl border border-[var(--color-accent)]">
+    <div className="rounded-[var(--radius-lg)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)] border border-[var(--color-border)]">
 
       {/* Window Header */}
-      <div className="flex items-center gap-2 pb-4 border-b border-[var(--color-accent)]">
-        <div className="h-3 w-3 rounded-full bg-red-400"></div>
-        <div className="h-3 w-3 rounded-full bg-yellow-400"></div>
-        <div className="h-3 w-3 rounded-full bg-green-400"></div>
+      <div className="flex items-center gap-2 pb-4 border-b border-[var(--color-border)]">
+        <div className="h-3 w-3 rounded-full bg-[var(--color-danger)] opacity-80"></div>
+        <div className="h-3 w-3 rounded-full bg-[var(--color-warning)] opacity-80"></div>
+        <div className="h-3 w-3 rounded-full bg-[var(--color-success)] opacity-80"></div>
 
         <p className="ml-4 font-semibold text-[var(--color-text)]">
           Campaign Workspace
@@ -32,7 +33,7 @@ function HeroDashboard() {
         <div className="rounded-xl bg-[var(--color-background)] p-4">
           <Wallet className="text-[var(--color-primary)] mb-2" />
           <p className="text-sm text-[var(--color-text-light)]">Budget</p>
-          <h4 className="font-bold text-lg">₹2,50,000</h4>
+          <h4 className="font-bold text-lg text-[var(--color-text)]">₹2,50,000</h4>
         </div>
 
         <div className="rounded-xl bg-[var(--color-background)] p-4">
@@ -40,7 +41,7 @@ function HeroDashboard() {
           <p className="text-sm text-[var(--color-text-light)]">
             Match Score
           </p>
-          <h4 className="font-bold text-lg">96%</h4>
+          <h4 className="font-bold text-lg text-[var(--color-text)]">96%</h4>
         </div>
 
       </div>
@@ -54,31 +55,31 @@ function HeroDashboard() {
 
         <div className="space-y-3">
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between text-[var(--color-text)]">
             <div className="flex items-center gap-3">
               <Users className="text-[var(--color-primary)]" size={18} />
               Sarah Johnson
             </div>
 
-            <CheckCircle className="text-green-500" size={18} />
+            <CheckCircle className="text-[var(--color-success)]" size={18} />
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between text-[var(--color-text)]">
             <div className="flex items-center gap-3">
               <Users className="text-[var(--color-primary)]" size={18} />
               Tech Vision
             </div>
 
-            <CheckCircle className="text-green-500" size={18} />
+            <CheckCircle className="text-[var(--color-success)]" size={18} />
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between text-[var(--color-text)]">
             <div className="flex items-center gap-3">
               <Users className="text-[var(--color-primary)]" size={18} />
               FitLife
             </div>
 
-            <CheckCircle className="text-green-500" size={18} />
+            <CheckCircle className="text-[var(--color-success)]" size={18} />
           </div>
 
         </div>

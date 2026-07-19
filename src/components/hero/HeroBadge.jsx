@@ -1,3 +1,4 @@
+import React from "react";
 import { Sparkles } from "lucide-react";
 
 function HeroBadge() {
@@ -9,7 +10,7 @@ function HeroBadge() {
         gap-2
         rounded-full
         border
-        border-[var(--color-accent)]
+        border-[var(--color-border)]
         bg-[var(--color-surface)]
         px-4
         py-2
@@ -21,7 +22,7 @@ function HeroBadge() {
         className="text-[var(--color-primary)]"
       />
 
-      <span className="text-sm font-semibold text-[var(--color-secondary)]">
+      <span className="text-sm font-semibold text-[var(--color-primary-hover)]">
         Campaign Intelligence Platform
       </span>
     </div>

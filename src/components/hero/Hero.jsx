@@ -1,3 +1,4 @@
+import React from "react";
 import HeroContent from "./HeroContent";
 import HeroButtons from "./HeroButtons";
 import HeroDashboard from "./HeroDashboard";
@@ -8,9 +9,9 @@ function Hero() {
   return (
     <Section className="relative overflow-hidden pt-40">
 
-    <BackgroundGlow />
-  
-    <div className="grid lg:grid-cols-2 gap-20 items-center">
+      <BackgroundGlow />
+    
+      <div className="grid lg:grid-cols-2 gap-20 items-center">
         {/* Left Content */}
 
         <div>

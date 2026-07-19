@@ -1,3 +1,6 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import FormField from "../components/auth/FormField";
 import PasswordField from "../components/auth/PasswordField";
 import SegmentedToggle from "../components/auth/SegmentedToggle";
@@ -26,14 +29,16 @@ const FacebookIcon = () => (
 );
 
 export default function InfluenzeAuth() {
+  const navigate = useNavigate();
+    
   const [mode, setMode] = useState("signup");
   const [agreed, setAgreed] = useState(false);
 
   const isSignup = mode === "signup";
 
   return (
-    <main className="min-h-screen w-screen flex items-stretch justify-center bg-brandBg overflow-x-hidden">
-      <div className="w-full min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[#FFFFFF]">
+    <main className="min-h-screen w-screen flex items-stretch justify-center bg-[var(--color-background)] overflow-x-hidden">
+      <div className="w-full min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[var(--color-surface)]">
         
         {/* Left Side: Brand Panel */}
         <AuthSidebar />
@@ -46,7 +51,8 @@ export default function InfluenzeAuth() {
             <button
               type="button"
               aria-label="Go back"
-              className="self-start w-10 h-10 flex items-center justify-center rounded-full border border-brandAccent text-brandText transition-all duration-200 hover:bg-brandPrimary hover:text-[#FFFFFF] hover:border-brandPrimary hover:-translate-x-1 focus:outline-none focus:ring-2 focus:ring-brandPrimary/30"
+              onClick={() => navigate("/")}
+              className="self-start w-10 h-10 flex items-center justify-center rounded-full border border-[var(--color-border)] text-[var(--color-text)] transition-all duration-200 hover:bg-[var(--color-primary)] hover:text-white hover:border-[var(--color-primary)] hover:-translate-x-1 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30"
             >
               <svg width="20" height="20" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
@@ -55,23 +61,23 @@ export default function InfluenzeAuth() {
 
             {/* Mobile Header Logo */}
             <div className="lg:hidden flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-brandPrimary" />
-              <span className="text-brandSecondary font-bold text-lg tracking-tight">
+              <span className="w-3 h-3 rounded-full bg-[var(--color-primary)]" />
+              <span className="text-[var(--color-primary-hover)] font-bold text-lg tracking-tight">
                 Influenze
               </span>
             </div>
 
             {/* Content Headers */}
             <div className="flex flex-col gap-1.5">
-              <h1 className="text-[clamp(1.75rem,3vw,2.25rem)] font-extrabold text-brandText tracking-tight leading-tight">
+              <h1 className="text-[clamp(1.75rem,3vw,2.25rem)] font-extrabold text-[var(--color-text)] tracking-tight leading-tight">
                 {isSignup ? "Create an account" : "Welcome back"}
               </h1>
-              <p className="text-sm text-brandText/70 font-medium">
+              <p className="text-sm text-[color:rgba(74,74,74,.7)] font-medium">
                 {isSignup ? "Already have an account? " : "Don't have an account? "}
                 <button
                   type="button"
                   onClick={() => setMode(isSignup ? "login" : "signup")}
-                  className="text-brandSecondary font-bold underline decoration-brandSecondary/30 hover:decoration-brandSecondary focus:outline-none"
+                  className="text-[var(--color-primary-hover)] font-bold underline decoration-[var(--color-primary-hover)]/30 hover:decoration-[var(--color-primary-hover)] focus:outline-none"
                 >
                   {isSignup ? "Log in" : "Sign up"}
                 </button>
@@ -105,10 +111,10 @@ export default function InfluenzeAuth() {
                     type="button"
                     onClick={() => setAgreed((a) => !a)}
                     aria-pressed={agreed}
-                    className={`mt-0.5 w-5 h-5 flex-shrink-0 rounded-lg border flex items-center justify-center transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-brandPrimary/30 ${
+                    className={`mt-0.5 w-5 h-5 flex-shrink-0 rounded-lg border flex items-center justify-center transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30 ${
                       agreed
-                        ? "bg-brandPrimary border-brandPrimary text-[#FFFFFF]"
-                        : "bg-[#FFFFFF] border-brandAccent hover:border-brandPrimary"
+                        ? "bg-[var(--color-primary)] border-[var(--color-primary)] text-white"
+                        : "bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-primary)]"
                     }`}
                   >
                     {agreed && (
@@ -117,9 +123,9 @@ export default function InfluenzeAuth() {
                       </svg>
                     )}
                   </button>
-                  <span className="text-sm text-brandText/70 leading-relaxed font-medium">
+                  <span className="text-sm text-[color:rgba(74,74,74,.7)] leading-relaxed font-medium">
                     I agree to the{" "}
-                    <span className="text-brandSecondary font-bold underline decoration-brandSecondary/30 cursor-pointer">
+                    <span className="text-[var(--color-primary-hover)] font-bold underline decoration-[var(--color-primary-hover)]/30 cursor-pointer">
                       Terms &amp; Conditions
                     </span>
                   </span>
@@ -129,16 +135,16 @@ export default function InfluenzeAuth() {
               {/* Action Submit Button */}
               <button
                 type="submit"
-                className="w-full py-4 px-6 text-sm font-bold text-[#FFFFFF] bg-brandPrimary rounded-xl mt-2 transition-all duration-200 shadow-md hover:bg-brandSecondary hover:shadow-lg active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-brandPrimary/30 min-h-[3.25rem] flex items-center justify-center"
+                className="w-full py-4 px-6 text-sm font-bold text-white bg-[var(--color-primary)] rounded-xl mt-2 transition-all duration-200 shadow-[var(--shadow-card)] hover:bg-[var(--color-primary-hover)] hover:shadow-lg active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-[var(--color-primary)]/30 min-h-[3.25rem] flex items-center justify-center"
               >
                 {isSignup ? "Create Account" : "Log In"}
               </button>
 
               {/* Decorative Divider */}
               <div className="flex items-center gap-4 py-2">
-                <div className="h-px flex-1 bg-brandAccent" />
-                <span className="text-xs text-brandText/50 font-bold uppercase tracking-wider">or</span>
-                <div className="h-px flex-1 bg-brandAccent" />
+                <div className="h-px flex-1 bg-[var(--color-border)]" />
+                <span className="text-xs text-[var(--color-text)]/50 font-bold uppercase tracking-wider">or</span>
+                <div className="h-px flex-1 bg-[var(--color-border)]" />
               </div>
 
               {/* Social Login Buttons Row */}

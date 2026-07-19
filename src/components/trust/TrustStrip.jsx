@@ -1,3 +1,4 @@
+import React from "react";
 import Section from "../common/Section";
 import IndustryCard from "./IndustryCard";
 import { industries } from "../../constants/industries";
