@@ -1,51 +1,34 @@
 import mongoose from "mongoose";
 
-// This maps directly to what InfluencerDashboard.jsx renders:
-// ProfileCard, StatCard x3, ChallengeCard list, TrophyList.
-const challengeSchema = new mongoose.Schema(
+const socialAccountSchema = new mongoose.Schema(
   {
-    title: String,
-    description: String,
-    note: String,
-    progress: { type: Number, default: 0 },
-    total: { type: Number, default: 1 },
-    bonus: { type: Number, default: 0 },
-    status: { type: String, default: "Active" },
+    platform: { type: String, required: true }, // "Instagram", "YouTube", etc.
+    handle: { type: String, required: true },
+    followers: { type: Number, default: 0 }, // manual entry for now, OAuth later
+    verified: { type: Boolean, default: false }, // flips true once "Verify with Instagram" succeeds
   },
-  { _id: false } // these are simple sub-items, they don't need their own IDs
+  { _id: false }
 );
 
 const influencerProfileSchema = new mongoose.Schema(
   {
-    // Links this profile back to the User who owns it (the login account).
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true, // one profile per user
+      unique: true,
     },
     handle: { type: String, required: true },
-    posts: { type: Number, default: 0 },
-    followers: { type: Number, default: 0 },
-    following: { type: Number, default: 0 },
     approved: { type: Boolean, default: false },
 
-    stats: {
-      collaborationsCompleted: { type: Number, default: 0 },
-      rating: { type: Number, default: 0 },
-      reviewsCount: { type: Number, default: 0 },
-      trophiesCount: { type: Number, default: 0 },
-      trophiesTotal: { type: Number, default: 5 },
-    },
+    socialAccounts: [socialAccountSchema],
+    savedOpportunities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Opportunity" }],
 
-    challenges: [challengeSchema],
-    trophies: [String], // e.g. ["Top content", "Most liked"]
+    // NOTE: collaborationsCompleted, rating, challenges, and milestones are
+    // NOT stored here — they're computed live from CollaborationRequest,
+    // Collaboration, and Review documents. See dashboardController.js.
   },
   { timestamps: true }
 );
 
-const InfluencerProfile = mongoose.model(
-  "InfluencerProfile",
-  influencerProfileSchema
-);
-export default InfluencerProfile;
+export default mongoose.model("InfluencerProfile", influencerProfileSchema);
