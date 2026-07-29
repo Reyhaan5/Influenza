@@ -16,7 +16,7 @@ import "./models/Collaboration.js";
 import "./models/ContentPost.js";
 import "./models/Review.js";
 
-dotenv.config();
+dotenv.config(); // loads variables from .env into process.env
 connectDB();
 
 const app = express();

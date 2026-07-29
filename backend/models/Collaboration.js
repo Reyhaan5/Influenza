@@ -8,8 +8,8 @@ const collaborationSchema = new mongoose.Schema(
     influencer: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     format: { type: String, enum: ["money", "barter", "product"], required: true },
     deliverablesTotal: { type: Number, default: 1 },
-    deliverablesCompleted: { type: Number, default: 0 },
-    paymentStatus: { type: String, enum: ["pending", "paid"], default: "pending" },
+    deliverablesCompleted: { type: Number, default: 0 }, // incremented when a ContentPost is added
+    paymentStatus: { type: String, enum: ["pending", "paid"], default: "pending" }, // manually toggled by brand for now
     stage: { type: String, enum: ["in_progress", "completed"], default: "in_progress" },
   },
   { timestamps: true }

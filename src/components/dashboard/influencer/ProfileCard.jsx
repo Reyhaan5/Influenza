@@ -1,40 +1,107 @@
 import React from "react";
 import Avatar from "./Avatar";
-import { BadgeCheck } from "lucide-react";
 
-export default function ProfileCard({ handle, posts, followers, following, approved }) {
+// Map platforms to image paths located in your /public folder
+const platformLogos = {
+  Instagram: "/Instagram.svg",
+  YouTube: "/YouTube.svg",
+  Twitter: "/Twitter.svg",
+};
+
+export default function ProfileCard({
+  handle,
+  socialAccounts = [],
+  approved,
+  onAddAccount,
+  onRemoveAccount,
+}) {
   return (
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 shadow-[var(--shadow-card)] flex flex-col gap-5 h-full">
+      {/* Header */}
       <div className="flex items-center gap-4">
         <div className="relative">
           <Avatar name={handle.replace("@", "")} />
-          <span className="absolute -bottom-1 -right-1 bg-[var(--color-primary)] rounded-full p-0.5 border-2 border-[var(--color-surface)]">
-            <BadgeCheck size={14} className="text-white" />
-          </span>
+          {approved && (
+            <span className="absolute -bottom-1 -right-1 bg-[var(--color-primary)] rounded-full p-1 border-2 border-[var(--color-surface)] flex items-center justify-center">
+              <img
+                src="/badge-check.svg"
+                alt="Approved Badge"
+                className="w-3.5 h-3.5"
+              />
+            </span>
+          )}
         </div>
-        <span className="font-bold text-[var(--color-text)] text-lg">{handle}</span>
+        <span className="font-bold text-[var(--color-text)] text-lg">
+          {handle}
+        </span>
       </div>
 
-      <div className="flex items-center justify-around text-center">
-        <div>
-          <div className="font-bold text-[var(--color-text)]">{posts}</div>
-          <div className="text-xs text-[var(--color-text-light)]">posts</div>
-        </div>
-        <div className="w-px h-8 bg-[var(--color-border)]" />
-        <div>
-          <div className="font-bold text-[var(--color-text)]">{followers}</div>
-          <div className="text-xs text-[var(--color-text-light)]">followers</div>
-        </div>
-        <div className="w-px h-8 bg-[var(--color-border)]" />
-        <div>
-          <div className="font-bold text-[var(--color-text)]">{following}</div>
-          <div className="text-xs text-[var(--color-text-light)]">following</div>
-        </div>
+      {/* Connected social accounts */}
+      <div className="flex flex-col gap-2">
+        {socialAccounts.length === 0 && (
+          <p className="text-sm text-[var(--color-text-light)]">
+            No social accounts added yet.
+          </p>
+        )}
+
+        {socialAccounts.map((acc) => {
+          const logoSrc = platformLogos[acc.platform] || "/Instagram.svg";
+
+          return (
+            <div
+              key={acc.platform}
+              className="flex items-center justify-between bg-[var(--color-background)] rounded-xl px-4 py-2.5"
+            >
+              <div className="flex items-center gap-2.5">
+                <img
+                  src={logoSrc}
+                  alt={`${acc.platform} logo`}
+                  className="w-4 h-4 object-contain"
+                />
+                <span className="text-sm font-semibold text-[var(--color-text)]">
+                  {acc.handle}
+                </span>
+                {acc.verified ? (
+                  <span className="text-[10px] font-bold text-[var(--color-success)] bg-[var(--color-success)]/10 px-2 py-0.5 rounded-full">
+                    Verified
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-medium text-[var(--color-text-light)]">
+                    Unverified
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-bold text-[var(--color-text)]">
+                  {acc.followers.toLocaleString()} followers
+                </span>
+                <button
+                  onClick={() => onRemoveAccount(acc.platform)}
+                  className="opacity-40 hover:opacity-100 transition-opacity"
+                  aria-label={`Remove ${acc.platform}`}
+                >
+                  <img src="/x.svg" alt="Remove" className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Add Account Button */}
+        <button
+          onClick={onAddAccount}
+          className="mt-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-[var(--color-border)] text-sm font-semibold text-[var(--color-primary-hover)] hover:bg-[var(--color-background)] transition-colors"
+        >
+          <img src="/plus.svg" alt="Add" className="w-4 h-4" />
+          Add Social Account
+        </button>
       </div>
 
+      {/* Approval Banner */}
       {!approved && (
         <div className="text-sm text-[var(--color-warning)] bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/30 rounded-xl px-4 py-2.5">
-          Your account has not been approved for Instagram collaborations.
+          Your account has not been approved for collaborations yet.
         </div>
       )}
     </div>

@@ -1,11 +1,10 @@
 import InfluencerProfile from "../models/InfluencerProfile.js";
 
 // GET /api/influencer/profile  (protected)
-// Returns everything InfluencerDashboard.jsx needs in one call:
-// handle, followers, stats, challenges, trophies.
 export const getMyProfile = async (req, res) => {
   try {
-    const profile = await InfluencerProfile.findOne({ user: req.user._id });
+    const profile = await InfluencerProfile.findOne({ user: req.user._id })
+      .populate("savedOpportunities");
 
     if (!profile) {
       return res.status(404).json({ message: "Profile not found." });
@@ -18,12 +17,11 @@ export const getMyProfile = async (req, res) => {
 };
 
 // PUT /api/influencer/profile  (protected)
-// Lets the influencer update editable fields (e.g. after connecting
-// TikTok, or updating handle). We only allow specific fields to change
-// so someone can't PUT { approved: true } and self-approve.
+// Only "handle" is directly editable here — social accounts have their own
+// dedicated endpoints below, and stats/challenges are computed elsewhere.
 export const updateMyProfile = async (req, res) => {
   try {
-    const allowedUpdates = ["handle", "posts", "followers", "following"];
+    const allowedUpdates = ["handle"];
     const updates = {};
     for (const key of allowedUpdates) {
       if (req.body[key] !== undefined) updates[key] = req.body[key];
@@ -32,7 +30,7 @@ export const updateMyProfile = async (req, res) => {
     const profile = await InfluencerProfile.findOneAndUpdate(
       { user: req.user._id },
       updates,
-      { new: true } // return the UPDATED document, not the old one
+      { new: true }
     );
 
     if (!profile) {

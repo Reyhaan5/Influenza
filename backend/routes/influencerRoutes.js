@@ -1,10 +1,3 @@
-import express from "express";
-import {
-  getMyProfile,
-  updateMyProfile,
-  addSocialAccount,
-  removeSocialAccount,
-} from "../controllers/influencerController.js";
 import { getDashboardStats } from "../controllers/dashboardController.js";
 import { saveRateCard, getMyRateCards } from "../controllers/rateCardController.js";
 import { protect, requireRole } from "../middleware/authMiddleware.js";
