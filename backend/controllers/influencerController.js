@@ -44,3 +44,51 @@ export const updateMyProfile = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+// POST /api/influencer/social-accounts  (protected)
+// Manual entry for now — no OAuth verification yet.
+// Body: { platform, handle, followers }
+export const addSocialAccount = async (req, res) => {
+  try {
+    const { platform, handle, followers } = req.body;
+
+    if (!platform || !handle) {
+      return res.status(400).json({ message: "Platform and handle are required." });
+    }
+
+    const profile = await InfluencerProfile.findOneAndUpdate(
+      { user: req.user._id },
+      { $push: { socialAccounts: { platform, handle, followers: followers || 0, verified: false } } },
+      { new: true }
+    );
+
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found." });
+    }
+
+    res.status(201).json(profile);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// DELETE /api/influencer/social-accounts/:platform  (protected)
+export const removeSocialAccount = async (req, res) => {
+  try {
+    const { platform } = req.params;
+
+    const profile = await InfluencerProfile.findOneAndUpdate(
+      { user: req.user._id },
+      { $pull: { socialAccounts: { platform } } },
+      { new: true }
+    );
+
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found." });
+    }
+
+    res.json(profile);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
