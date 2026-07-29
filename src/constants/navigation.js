@@ -1,32 +1,6 @@
 export const navigationLinks = [
-    {
-      id: 1,
-      label: "Features",
-      href: "#features",
-    },
-    {
-      id: 2,
-      label: "How It Works",
-      href: "#how-it-works",
-    },
-    {
-      id: 3,
-      label: "For Brands",
-      href: "#brands",
-    },
-    {
-      id: 4,
-      label: "For Creators",
-      href: "#creators",
-    },
-    {
-      id: 5,
-      label: "Pricing",
-      href: "#pricing",
-    },
-    {
-      id: 6,
-      label: "Contact",
-      href: "#contact",
-    },
-  ];
+  { id: 1, label: "How It Works", href: "#how-it-works" },
+  { id: 2, label: "Rate Calculator", href: "/pricing-calculator", isRoute: true },
+  { id: 3, label: "Pricing", href: "#pricing" },
+  { id: 4, label: "Contact", href: "#contact" },
+];
