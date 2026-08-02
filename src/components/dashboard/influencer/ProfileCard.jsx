@@ -4,7 +4,7 @@ import Avatar from "./Avatar";
 // Map platforms to image paths located in your /public folder
 const platformLogos = {
   Instagram: "/Instagram.svg",
-  YouTube: "/YouTube.svg",
+  YouTube: "/Youtube.svg",
   Twitter: "/Twitter.svg",
 };
 
