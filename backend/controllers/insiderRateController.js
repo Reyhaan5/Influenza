@@ -1,15 +1,11 @@
-// backend/controllers/insiderRateController.js
+﻿// backend/controllers/insiderRateController.js
 import RateCard from "../models/RateCard.js";
 import { computeInfluencerStats } from "../services/statsService.js";
 
-// A multiplier built from platform history, not just follower count.
-// Deliberately conservative — this should reward proven track record,
-// not let one 5-star review swing someone's price by 40%.
 function computeInsiderMultiplier(stats) {
   let multiplier = 1;
   const breakdown = [];
 
-  // Completed collaborations: +2% each, capped at +20%
   const collabBonus = Math.min(stats.collaborationsCompleted * 0.02, 0.2);
   if (collabBonus > 0) {
     multiplier += collabBonus;
@@ -19,7 +15,6 @@ function computeInsiderMultiplier(stats) {
     });
   }
 
-  // Rating bonus only kicks in with enough reviews to mean something
   if (stats.reviewsCount >= 3 && stats.rating > 4.0) {
     const ratingBonus = Math.min((stats.rating - 4.0) * 0.1, 0.1);
     multiplier += ratingBonus;
@@ -42,7 +37,6 @@ function computeInsiderMultiplier(stats) {
   return { multiplier: Math.round(multiplier * 100) / 100, breakdown };
 }
 
-// GET /api/influencer/insider-rate  (protected)
 export const getInsiderRate = async (req, res) => {
   try {
     const latestCard = await RateCard.findOne({ influencer: req.user._id }).sort({ createdAt: -1 });

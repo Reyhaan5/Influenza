@@ -4,6 +4,8 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import influencerRoutes from "./routes/influencerRoutes.js";
+import publicRoutes from "./routes/publicRoutes.js";
+
 
 // Registering every model here ensures Mongoose knows about them before
 // any .populate() call tries to reference them — even ones without full
@@ -16,6 +18,7 @@ import "./models/Collaboration.js";
 import "./models/ContentPost.js";
 import "./models/Review.js";
 
+
 dotenv.config(); // loads variables from .env into process.env
 connectDB();
 
@@ -26,6 +29,8 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/influencer", influencerRoutes);
 
+app.use("/api/public", publicRoutes);
+
 app.get("/", (req, res) => {
   res.send("Influenza API is running.");
 });
@@ -34,3 +39,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+

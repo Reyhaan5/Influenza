@@ -8,6 +8,8 @@ import {
 import { getDashboardStats } from "../controllers/dashboardController.js";
 import { saveRateCard, getMyRateCards } from "../controllers/rateCardController.js";
 import { protect, requireRole } from "../middleware/authMiddleware.js";
+import { getInsiderRate } from "../controllers/insiderRateController.js";
+
 
 const router = express.Router();
 
@@ -21,4 +23,7 @@ router.delete("/social-accounts/:platform", protect, requireRole("influencer"), 
 router.post("/rate-cards", protect, requireRole("influencer"), saveRateCard);
 router.get("/rate-cards", protect, requireRole("influencer"), getMyRateCards);
 
+router.get("/insider-rate", protect, requireRole("influencer"), getInsiderRate);
+
 export default router;
+

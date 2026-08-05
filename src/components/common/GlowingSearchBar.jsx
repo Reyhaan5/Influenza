@@ -1,24 +1,43 @@
-import React, { useState } from "react";
+// src/components/common/GlowingSearchBar.jsx
+import React, { useEffect, useRef, useState } from "react";
 import { Search, Filter, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function GlowingSearchBar({ placeholder = "Search...", onSearch, onFilterClick }) {
   const [query, setQuery] = useState("");
+  const debounceRef = useRef(null);
+
+  const fireSearch = (value) => {
+    if (onSearch) onSearch(value);
+  };
 
   const handleClear = () => {
     setQuery("");
-    if (onSearch) onSearch("");
+    clearTimeout(debounceRef.current);
+    fireSearch("");
   };
 
   const handleChange = (e) => {
     const value = e.target.value;
     setQuery(value);
-    if (onSearch) onSearch(value);
+
+    // Debounced live-search — avoids firing a network call on every
+    // keystroke. Enter/submit below bypasses this and fires instantly.
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fireSearch(value), 500);
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    clearTimeout(debounceRef.current);
+    fireSearch(query);
+  };
+
+  useEffect(() => () => clearTimeout(debounceRef.current), []);
 
   return (
     <div className="relative w-full max-w-md mx-auto group">
-      {/* Rotating glow ring — brand colors */}
+      {/* Rotating glow ring — brand colors, the one signature flourish */}
       <div className="absolute -inset-[2px] rounded-2xl overflow-hidden p-[2px]">
         <div
           className="absolute inset-[-200%] animate-[spin_4s_linear_infinite] blur-md"
@@ -36,15 +55,18 @@ export default function GlowingSearchBar({ placeholder = "Search...", onSearch, 
         />
       </div>
 
-      <div className="relative flex items-center justify-between gap-3 bg-zinc-950/95 backdrop-blur-xl rounded-2xl px-4 py-3 shadow-2xl">
-        <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
+      <form
+        onSubmit={handleSubmit}
+        className="relative flex items-center justify-between gap-3 bg-[var(--color-surface)] backdrop-blur-xl rounded-2xl px-4 py-3 shadow-[var(--shadow-card)] border border-[var(--color-border)]"
+      >
+        <Search className="w-5 h-5 text-[var(--color-text-light)] flex-shrink-0" />
 
         <input
           type="text"
           value={query}
           onChange={handleChange}
           placeholder={placeholder}
-          className="w-full bg-transparent text-white text-base placeholder:text-gray-500 focus:outline-none font-medium"
+          className="w-full bg-transparent text-[var(--color-text)] text-base placeholder-[var(--color-text)]/40 focus:outline-none font-medium"
         />
 
         <AnimatePresence>
@@ -54,7 +76,7 @@ export default function GlowingSearchBar({ placeholder = "Search...", onSearch, 
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
               onClick={handleClear}
-              className="p-1 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+              className="p-1 rounded-full text-[var(--color-text-light)] hover:text-[var(--color-text)] hover:bg-[var(--color-background)] transition-colors"
               type="button"
             >
               <X className="w-4 h-4" />
@@ -62,24 +84,17 @@ export default function GlowingSearchBar({ placeholder = "Search...", onSearch, 
           )}
         </AnimatePresence>
 
-        <button
-          type="button"
-          onClick={onFilterClick}
-          className="flex items-center justify-center p-2 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white transition-all duration-200 flex-shrink-0"
-          style={{ "--tw-hover-bg": "var(--color-primary)" }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "color-mix(in srgb, var(--color-primary) 20%, transparent)";
-            e.currentTarget.style.borderColor = "color-mix(in srgb, var(--color-primary) 50%, transparent)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "";
-            e.currentTarget.style.borderColor = "";
-          }}
-          aria-label="Filter"
-        >
-          <Filter className="w-4 h-4" />
-        </button>
-      </div>
+        {onFilterClick && (
+          <button
+            type="button"
+            onClick={onFilterClick}
+            className="flex items-center justify-center p-2 rounded-xl bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text-light)] hover:bg-[var(--color-primary)]/10 hover:border-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-all duration-200 flex-shrink-0"
+            aria-label="Filter"
+          >
+            <Filter className="w-4 h-4" />
+          </button>
+        )}
+      </form>
     </div>
   );
 }
