@@ -5,6 +5,7 @@ import Login from "../pages/Login";
 import InfluencerDashboard from "../pages/InfluencerDashboard";
 import BrandDashboard from "../pages/BrandDashboard";
 import PricingCalculator from "../pages/PricingCalculator";
+import ProtectedRoute from "./ProtectedRoute";
 
 function AppRoutes() {
   return (
@@ -16,6 +17,8 @@ function AppRoutes() {
         <Route path="/influencer-dashboard" element={<InfluencerDashboard />} />
         <Route path="/brand-dashboard" element={<BrandDashboard />} />
         <Route path="/pricing-calculator" element={<PricingCalculator />} />
+        <Route path="/influencer-dashboard" element={<ProtectedRoute allowedRole="influencer"><InfluencerDashboard /></ProtectedRoute>} />
+        <Route path="/brand-dashboard" element={<ProtectedRoute allowedRole="brand"><BrandDashboard /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );
