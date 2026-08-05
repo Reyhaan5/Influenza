@@ -9,6 +9,9 @@ import ConnectBanner from "../components/dashboard/influencer/ConnectBanner";
 import StatCard from "../components/dashboard/influencer/StatCard";
 import AddSocialAccountModal from "../components/dashboard/influencer/AddSocialAccountModal";
 
+import { Link } from "react-router-dom";
+import MyRateCard from "../components/dashboard/influencer/MyRateCard";
+
 const API_URL = "http://localhost:5000/api";
 
 export default function InfluencerDashboard() {
@@ -103,6 +106,18 @@ export default function InfluencerDashboard() {
             />
           </div>
           <ConnectBanner />
+        </div>
+        <div className="mt-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-bold text-[var(--color-text)]">My Rate Card</h2>
+            <Link
+              to="/insider-rate"
+              className="text-sm font-bold text-[var(--color-primary-hover)] hover:underline"
+            >
+              See your insider rate →
+            </Link>
+          </div>
+          <MyRateCard profile={profile} />
         </div>
 
         {/* Stats, challenges, opportunities, requests, and collaborations
