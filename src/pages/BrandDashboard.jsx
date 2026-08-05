@@ -5,6 +5,7 @@ import { Megaphone, Users } from "lucide-react";
 import Navbar from "../components/layout/Navbar";
 import Section from "../components/common/Section";
 import StatCard from "../components/dashboard/influencer/StatCard";
+import BrandNav from "../components/dashboard/brand/BrandNav";
 import BrandProfileCard from "../components/dashboard/brand/BrandProfileCard";
 import ProfileCompletionBanner from "../components/dashboard/brand/ProfileCompletionBanner";
 import CompanyInfoCard from "../components/dashboard/brand/CompanyInfoCard";
@@ -277,6 +278,8 @@ export default function BrandDashboard() {
       <Navbar />
 
       <Section className="pt-32">
+        <BrandNav />
+
         <h1 className="text-3xl font-bold text-[var(--color-text)] mb-8">
           Brand Dashboard
         </h1>
