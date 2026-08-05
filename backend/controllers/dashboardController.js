@@ -1,73 +1,74 @@
-// backend/controllers/insiderRateController.js
-import RateCard from "../models/RateCard.js";
-import { computeInfluencerStats } from "../services/statsService.js";
+import Collaboration from "../models/Collaboration.js";
+import CollaborationRequest from "../models/CollaborationRequest.js";  // ← fixed, two L's
+import Review from "../models/Review.js";
 
-// A multiplier built from platform history, not just follower count.
-// Deliberately conservative — this should reward proven track record,
-// not let one 5-star review swing someone's price by 40%.
-function computeInsiderMultiplier(stats) {
-  let multiplier = 1;
-  const breakdown = [];
-
-  // Completed collaborations: +2% each, capped at +20%
-  const collabBonus = Math.min(stats.collaborationsCompleted * 0.02, 0.2);
-  if (collabBonus > 0) {
-    multiplier += collabBonus;
-    breakdown.push({
-      label: `${stats.collaborationsCompleted} completed collaborations`,
-      impact: `+${Math.round(collabBonus * 100)}%`,
-    });
-  }
-
-  // Rating bonus only kicks in with enough reviews to mean something
-  if (stats.reviewsCount >= 3 && stats.rating > 4.0) {
-    const ratingBonus = Math.min((stats.rating - 4.0) * 0.1, 0.1);
-    multiplier += ratingBonus;
-    breakdown.push({
-      label: `${stats.rating}★ average across ${stats.reviewsCount} reviews`,
-      impact: `+${Math.round(ratingBonus * 100)}%`,
-    });
-  }
-
-  if (stats.allFormats.achieved) {
-    multiplier += 0.05;
-    breakdown.push({ label: "Proven across all collab formats", impact: "+5%" });
-  }
-
-  if (stats.responseTime.achieved) {
-    multiplier += 0.03;
-    breakdown.push({ label: "Fast, reliable response time", impact: "+3%" });
-  }
-
-  return { multiplier: Math.round(multiplier * 100) / 100, breakdown };
-}
-
-// GET /api/influencer/insider-rate  (protected)
-export const getInsiderRate = async (req, res) => {
+// GET /api/influencer/dashboard  (protected)
+// Everything here is computed on the fly from real documents —
+// no counters stored anywhere, so numbers can never go stale or fake.
+export const getDashboardStats = async (req, res) => {
   try {
-    const latestCard = await RateCard.findOne({ influencer: req.user._id }).sort({ createdAt: -1 });
+    const influencerId = req.user._id;
 
-    if (!latestCard) {
-      return res.status(404).json({
-        message: "Print a rate card first — the insider rate builds on top of your base numbers.",
-      });
-    }
+    const completedCollabs = await Collaboration.find({
+      influencer: influencerId,
+      stage: "completed",
+    });
 
-    const stats = await computeInfluencerStats(req.user._id);
-    const { multiplier, breakdown } = computeInsiderMultiplier(stats);
+    const reviews = await Review.find({ influencer: influencerId });
+    const avgRating =
+      reviews.length > 0
+        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+        : 0;
 
-    const adjustedRates = Object.fromEntries(
-      Object.entries(latestCard.rates.toObject ? latestCard.rates.toObject() : latestCard.rates).map(
-        ([format, value]) => [format, Math.round(value * multiplier)]
-      )
-    );
+    // Response time challenge: average time (hours) between a brand-sent
+    // request and the influencer responding to it.
+    const respondedRequests = await CollaborationRequest.find({
+      influencer: influencerId,
+      initiatedBy: "brand",
+      respondedAt: { $ne: null },
+    });
+    const avgResponseHours =
+      respondedRequests.length > 0
+        ? respondedRequests.reduce((sum, r) => {
+            const hours = (r.respondedAt - r.requestedAt) / (1000 * 60 * 60);
+            return sum + hours;
+          }, 0) / respondedRequests.length
+        : null;
+
+    // Activeness challenge: how many opportunities the influencer applied
+    // to (self-initiated) in the last 7 days.
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const recentApplications = await CollaborationRequest.countDocuments({
+      influencer: influencerId,
+      initiatedBy: "influencer",
+      requestedAt: { $gte: sevenDaysAgo },
+    });
+
+    // "Complete one collab in each format" challenge
+    const formatsCompleted = [
+      ...new Set(completedCollabs.map((c) => c.format)),
+    ];
 
     res.json({
-      baseRates: latestCard.rates,
-      multiplier,
-      breakdown,
-      adjustedRates,
-      basedOn: { collaborationsCompleted: stats.collaborationsCompleted, rating: stats.rating },
+      stats: {
+        collaborationsCompleted: completedCollabs.length,
+        rating: Number(avgRating.toFixed(1)),
+        reviewsCount: reviews.length,
+      },
+      challenges: {
+        responseTime: {
+          avgHours: avgResponseHours !== null ? Number(avgResponseHours.toFixed(1)) : null,
+          achieved: avgResponseHours !== null && avgResponseHours < 48, // under 2 days
+        },
+        activeness: {
+          applicationsThisWeek: recentApplications,
+          achieved: recentApplications >= 7,
+        },
+        allFormats: {
+          completed: formatsCompleted,
+          achieved: formatsCompleted.length >= 3,
+        },
+      },
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
