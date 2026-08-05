@@ -4,12 +4,8 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import influencerRoutes from "./routes/influencerRoutes.js";
-<<<<<<< HEAD
 import publicRoutes from "./routes/publicRoutes.js";
-
-=======
 import brandRoutes from "./routes/brandRoutes.js";
->>>>>>> 5410e9a (Add product editing functionality and improve product description display)
 
 // Registering every model here ensures Mongoose knows about them before
 // any .populate() call tries to reference them — even ones without full
@@ -23,9 +19,7 @@ import "./models/ContentPost.js";
 import "./models/Review.js";
 import "./models/Product.js";
 
-
 dotenv.config(); // loads variables from .env into process.env
-
 connectDB(); // connect to MongoDB Atlas (see config/db.js)
 
 const app = express();
@@ -44,19 +38,13 @@ app.use("/uploads", express.static("uploads"));
 
 // Every URL starting with /api/auth goes to authRoutes.js
 app.use("/api/auth", authRoutes);
-
 // Every URL starting with /api/influencer goes to influencerRoutes.js
 app.use("/api/influencer", influencerRoutes);
-
-<<<<<<< HEAD
 app.use("/api/public", publicRoutes);
-
-=======
 // Every URL starting with /api/brand goes to brandRoutes.js
 app.use("/api/brand", brandRoutes);
 
 // Simple health check — visit http://localhost:5000/ to confirm it's running
->>>>>>> 5410e9a (Add product editing functionality and improve product description display)
 app.get("/", (req, res) => {
   res.send("Influenza API is running.");
 });
@@ -65,5 +53,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
-
-
