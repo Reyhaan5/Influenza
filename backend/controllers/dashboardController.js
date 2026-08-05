@@ -1,5 +1,5 @@
 import Collaboration from "../models/Collaboration.js";
-import CollaborationRequest from "../models/CollaborationRequest.js";
+import CollaborationRequest from "../models/CollaborationRequest.js";  // ← fixed, two L's
 import Review from "../models/Review.js";
 
 // GET /api/influencer/dashboard  (protected)
