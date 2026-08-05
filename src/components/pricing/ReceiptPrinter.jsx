@@ -1,6 +1,7 @@
+// src/components/pricing/ReceiptPrinter.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Copy, RotateCcw, TrendingUp, TrendingDown, Sparkles } from "lucide-react";
+import { ArrowRight, Copy, RotateCcw, TrendingUp, TrendingDown } from "lucide-react";
 import {
   calculatePricing,
   NICHES,
@@ -23,10 +24,6 @@ const QUESTIONS = [
 
 const EMPTY_ANSWERS = { handle: "", followers: "", avgLikes: "", avgComments: "", nicheId: "", marketId: "" };
 
-// Given a set of pre-filled answers (e.g. from a saved profile), figure out
-// which question to start on. Required fields that already have a value get
-// skipped; optional empty fields (like handle) also get skipped rather than
-// re-asked. Returns QUESTIONS.length if everything is already filled in.
 function getStartStep(initial) {
   if (!initial) return 0;
   for (let i = 0; i < QUESTIONS.length; i++) {
@@ -38,13 +35,50 @@ function getStartStep(initial) {
   return QUESTIONS.length;
 }
 
+// Deterministic pseudo-barcode: bar widths come from the actual quoted
+// price digits, so every printed barcode is unique to that rate card
+// rather than decorative filler.
+function barsFromValue(value) {
+  const digits = String(value).replace(/\D/g, "").split("").map(Number);
+  if (digits.length === 0) return [2, 1, 3, 1, 2];
+  return digits.map((d) => (d % 3) + 1);
+}
+
+function PerforationStrip() {
+  return (
+    <div className="relative h-4 bg-[var(--color-surface)] border-x border-[var(--color-border)] overflow-hidden">
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4">
+        {Array.from({ length: 14 }).map((_, i) => (
+          <span key={i} className="w-2 h-2 rounded-full bg-[var(--color-background)]" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function TornEdge() {
   return (
-    <div className="flex justify-center gap-1 -mb-[8px] overflow-hidden">
+    <div className="flex justify-center gap-1 -mb-[7px] overflow-hidden">
       {Array.from({ length: 24 }).map((_, i) => (
-        <div key={i} className="w-3.5 h-3.5 bg-zinc-950 rotate-45 -mt-[7px] flex-shrink-0" />
+        <div key={i} className="w-3.5 h-3.5 bg-[var(--color-background)] rotate-45 -mt-[7px] flex-shrink-0" />
       ))}
     </div>
+  );
+}
+
+function Barcode({ value }) {
+  const bars = useMemo(() => barsFromValue(value), [value]);
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.85, rotate: -4 }}
+      animate={{ opacity: 1, scale: 1, rotate: -2 }}
+      transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.5 }}
+      className="flex items-end gap-[2px] h-9 w-fit mx-auto"
+    >
+      {bars.map((w, i) => (
+        <div key={i} style={{ width: `${w * 2}px` }} className="h-full bg-[var(--color-text)]" />
+      ))}
+    </motion.div>
   );
 }
 
@@ -59,9 +93,6 @@ export default function ReceiptPrinter({ initialAnswers, onComplete }) {
   const [showReprintPrompt, setShowReprintPrompt] = useState(false);
   const [result, setResult] = useState(null);
 
-  // The "reprint last entry" prompt only makes sense for the standalone,
-  // no-login calculator — when a profile already supplied initialAnswers,
-  // that pre-fill takes priority instead.
   useEffect(() => {
     if (initialAnswers) return;
     const saved = loadLastEntry();
@@ -71,8 +102,6 @@ export default function ReceiptPrinter({ initialAnswers, onComplete }) {
     }
   }, [initialAnswers]);
 
-  // If a profile already supplied everything the calculator needs,
-  // skip straight to the printed result instead of showing an empty form.
   useEffect(() => {
     if (initialAnswers && startStep === QUESTIONS.length) {
       finish({ ...EMPTY_ANSWERS, ...initialAnswers });
@@ -167,125 +196,135 @@ export default function ReceiptPrinter({ initialAnswers, onComplete }) {
 
   return (
     <div className="max-w-md mx-auto">
-      {/* Printer Housing */}
-      <div className="relative rounded-t-[32px] bg-gradient-to-b from-zinc-800/90 via-zinc-900 to-zinc-950 border border-white/10 p-6 pt-7 pb-8 shadow-2xl backdrop-blur-xl overflow-hidden">
-        <div className="absolute -top-12 inset-x-0 h-28 pointer-events-none" style={{ background: "var(--color-primary)", opacity: 0.2, filter: "blur(48px)" }} />
+      {/* Print slot — the one saturated moment on the page */}
+      <div className="relative rounded-t-[28px] bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-hover)] px-6 py-3.5 flex items-center gap-2 shadow-[var(--shadow-card)]">
+        <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+        <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-white/90">
+          Rate Printer
+        </span>
+      </div>
 
-        <div className="flex items-center justify-between gap-2 mb-5 relative z-10">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full animate-pulse" style={{ backgroundColor: "var(--color-success)", boxShadow: "0 0 8px var(--color-success)" }} />
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" style={{ color: "var(--color-primary-light)" }} /> Rate Printer
-            </span>
-          </div>
-        </div>
-
+      {/* Interactive question surface */}
+      <div className="bg-[var(--color-surface)] border-x border-[var(--color-border)] px-6 py-6 shadow-sm min-h-[150px] flex flex-col justify-center">
         {showReprintPrompt ? (
-          <div className="rounded-2xl p-5 bg-zinc-900/80 border border-white/10 backdrop-blur-md text-white relative z-10 shadow-lg">
-            <p className="text-sm font-semibold text-zinc-200">
+          <div>
+            <p className="text-sm font-semibold text-[var(--color-text)]">
               You last printed a rate card{" "}
-              <span className="font-bold" style={{ color: "var(--color-primary-light)" }}>
+              <span className="font-bold text-[var(--color-primary-hover)]">
                 {daysAgo(prevEntry.savedAt)} day{daysAgo(prevEntry.savedAt) === 1 ? "" : "s"} ago
               </span>.
             </p>
             <div className="mt-4 flex flex-col gap-2.5">
               <button
                 onClick={useReprint}
-                className="w-full py-2.5 rounded-xl text-white text-sm font-bold transition-colors shadow-md"
-                style={{ backgroundColor: "var(--color-primary)" }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--color-primary-hover)")}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--color-primary)")}
+                className="w-full py-2.5 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-sm font-bold transition-colors shadow-md"
               >
                 Reprint with saved numbers
               </button>
               <button
                 onClick={startFresh}
-                className="w-full py-2.5 rounded-xl bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-300 text-sm font-semibold border border-white/5 transition-all"
+                className="w-full py-2.5 rounded-xl bg-[var(--color-background)] hover:bg-[var(--color-border)]/40 text-[var(--color-text)] text-sm font-semibold border border-[var(--color-border)] transition-all"
               >
                 Start fresh instead
               </button>
             </div>
           </div>
         ) : (
-          <div className="rounded-2xl p-5 min-h-[140px] flex flex-col justify-center bg-zinc-900/80 border border-white/10 backdrop-blur-md text-white relative z-10 shadow-lg">
-            <AnimatePresence mode="wait">
-              {printing ? (
-                <motion.p key="printing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-mono text-sm font-semibold text-center" style={{ color: "var(--color-primary-light)" }}>
+          <AnimatePresence mode="wait">
+            {printing ? (
+              <motion.div key="printing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-3">
+                <div className="relative w-40 h-1 rounded-full bg-[var(--color-background)] overflow-hidden">
+                  <motion.div
+                    className="absolute top-0 left-0 h-full w-8 rounded-full bg-[var(--color-primary)]"
+                    animate={{ x: [0, 128, 0] }}
+                    transition={{ duration: 0.9, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                </div>
+                <p className="font-mono text-xs font-semibold text-[var(--color-text-light)]">
                   Printing your rate card...
-                </motion.p>
-              ) : isFinal ? (
-                <motion.p key="done" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-mono text-sm font-semibold text-center" style={{ color: "var(--color-success)" }}>
-                  ✓ Card printed successfully
-                </motion.p>
-              ) : (
-                <motion.div key={step} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.25 }}>
-                  <p className="font-mono text-xs font-bold mb-2" style={{ color: "var(--color-primary-light)" }}>
-                    {String(step + 1).padStart(2, "0")} / {String(QUESTIONS.length).padStart(2, "0")}
-                  </p>
-                  <p className="text-sm font-bold text-white mb-3">{currentQuestion.label}</p>
+                </p>
+              </motion.div>
+            ) : isFinal ? (
+              <motion.p
+                key="done"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="font-mono text-sm font-semibold text-center text-[var(--color-success)]"
+              >
+                ✓ Card printed successfully
+              </motion.p>
+            ) : (
+              <motion.div key={step} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.25 }}>
+                <p className="font-mono text-xs font-bold mb-2 text-[var(--color-primary-hover)]">
+                  {String(step + 1).padStart(2, "0")} / {String(QUESTIONS.length).padStart(2, "0")}
+                </p>
+                <p className="text-sm font-bold text-[var(--color-text)] mb-3">{currentQuestion.label}</p>
 
-                  {currentQuestion.type === "chips" ? (
-                    <div className="flex flex-wrap gap-2">
-                      {currentQuestion.options.map((opt) => (
-                        <button
-                          key={opt.id}
-                          onClick={() => commitAnswer(opt.id)}
-                          className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-zinc-800 border border-white/10 text-zinc-200 transition-colors hover:text-white"
-                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--color-primary)")}
-                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "")}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        if (inputValue !== "" || currentQuestion.optional) commitAnswer(inputValue);
-                      }}
-                      className="flex items-center gap-2"
-                    >
-                      <input
-                        autoFocus
-                        type={currentQuestion.type}
-                        min="0"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        placeholder={currentQuestion.placeholder}
-                        className="flex-1 bg-transparent border-b-2 pb-1 text-sm font-bold outline-none text-white placeholder:text-zinc-500 transition-colors"
-                        style={{ borderColor: "color-mix(in srgb, var(--color-primary) 40%, transparent)" }}
-                      />
-                      <button type="submit" className="p-2 rounded-xl text-white flex-shrink-0 transition-colors" style={{ backgroundColor: "var(--color-primary)" }}>
-                        <ArrowRight size={14} />
+                {currentQuestion.type === "chips" ? (
+                  <div className="flex flex-wrap gap-2">
+                    {currentQuestion.options.map((opt) => (
+                      <button
+                        key={opt.id}
+                        onClick={() => commitAnswer(opt.id)}
+                        className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-text)] transition-colors hover:bg-[var(--color-primary)] hover:text-white hover:border-[var(--color-primary)]"
+                      >
+                        {opt.label}
                       </button>
-                    </form>
-                  )}
-
-                  <div className="flex gap-4 mt-3">
-                    {currentQuestion.optional && (
-                      <button onClick={handleSkip} className="text-xs font-semibold text-zinc-400 hover:text-white underline">
-                        Skip
-                      </button>
-                    )}
-                    {step > 0 && (
-                      <button onClick={handleBack} className="text-xs font-semibold text-zinc-400 hover:text-white underline">
-                        ‹ Back
-                      </button>
-                    )}
+                    ))}
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                ) : (
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (inputValue !== "" || currentQuestion.optional) commitAnswer(inputValue);
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <input
+                      autoFocus
+                      type={currentQuestion.type}
+                      min="0"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      placeholder={currentQuestion.placeholder}
+                      className="flex-1 bg-transparent border-b-2 border-[var(--color-border)] focus:border-[var(--color-primary)] pb-1 text-sm font-bold outline-none text-[var(--color-text)] placeholder-[var(--color-text)]/40 transition-colors"
+                    />
+                    <button type="submit" className="p-2 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white flex-shrink-0 transition-colors">
+                      <ArrowRight size={14} />
+                    </button>
+                  </form>
+                )}
+
+                <div className="flex gap-4 mt-3">
+                  {currentQuestion.optional && (
+                    <button onClick={handleSkip} className="text-xs font-semibold text-[var(--color-text-light)] hover:text-[var(--color-primary-hover)] underline">
+                      Skip
+                    </button>
+                  )}
+                  {step > 0 && (
+                    <button onClick={handleBack} className="text-xs font-semibold text-[var(--color-text-light)] hover:text-[var(--color-primary-hover)] underline">
+                      ‹ Back
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         )}
       </div>
 
-      {/* Printed Paper */}
-      <div className="bg-zinc-900 border-x border-white/10 px-7 pt-6 pb-4 relative z-10 text-zinc-200">
-        <p className="font-mono text-xs text-zinc-500 text-center mb-4">{answers.handle || "@yourhandle"}</p>
+      <PerforationStrip />
 
-        <div className="space-y-3 font-mono text-sm">
+      {/* Printed paper */}
+      <motion.div
+        layout
+        className="bg-[var(--color-surface)] border-x border-[var(--color-border)] px-7 pt-6 pb-4 font-mono text-[var(--color-text)]"
+      >
+        <p className="text-xs text-[var(--color-text-light)] text-center mb-4">
+          {answers.handle || "@yourhandle"}
+        </p>
+
+        <div className="space-y-3 text-sm">
           <AnimatePresence>
             {printedLines.map((q) => (
               <motion.div
@@ -296,15 +335,15 @@ export default function ReceiptPrinter({ initialAnswers, onComplete }) {
                 transition={{ type: "spring", stiffness: 300, damping: 22 }}
                 className="flex items-baseline justify-between"
               >
-                <span className="text-zinc-400 text-xs">{q.receiptLabel}</span>
-                <span className="font-bold text-white">{formatAnswer(q, answers[q.key])}</span>
+                <span className="text-[var(--color-text-light)] text-xs">{q.receiptLabel}</span>
+                <span className="font-bold text-[var(--color-text)]">{formatAnswer(q, answers[q.key])}</span>
               </motion.div>
             ))}
           </AnimatePresence>
 
           {result && (
             <>
-              <div className="border-t border-dashed border-zinc-700 my-4" />
+              <div className="border-t border-dashed border-[var(--color-border)] my-4" />
               {FORMATS.map((f, i) => (
                 <motion.div
                   key={f.id}
@@ -313,8 +352,8 @@ export default function ReceiptPrinter({ initialAnswers, onComplete }) {
                   transition={{ delay: 0.15 * i, type: "spring", stiffness: 300, damping: 22 }}
                   className="flex items-baseline justify-between text-base"
                 >
-                  <span className="text-zinc-400 text-sm">{f.label}</span>
-                  <span className="font-extrabold" style={{ color: "var(--color-primary-light)" }}>
+                  <span className="text-[var(--color-text-light)] text-sm">{f.label}</span>
+                  <span className="font-extrabold text-[var(--color-primary-hover)]">
                     {result.market.symbol}
                     {result.rates[f.id].toLocaleString()}
                   </span>
@@ -322,11 +361,14 @@ export default function ReceiptPrinter({ initialAnswers, onComplete }) {
               ))}
 
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="pt-3 flex items-center justify-between">
-                <span className="text-xs text-zinc-400">
+                <span className="text-xs text-[var(--color-text-light)]">
                   {result.tier.label} · {result.engagementRatePct}% engagement
                 </span>
                 {deltaPct !== null && deltaPct !== 0 && (
-                  <span className="flex items-center gap-1 text-xs font-bold" style={{ color: deltaPct > 0 ? "var(--color-success)" : "var(--color-danger)" }}>
+                  <span
+                    className="flex items-center gap-1 text-xs font-bold"
+                    style={{ color: deltaPct > 0 ? "var(--color-success)" : "var(--color-danger)" }}
+                  >
                     {deltaPct > 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                     {deltaPct > 0 ? "+" : ""}
                     {deltaPct}% since last print
@@ -334,13 +376,16 @@ export default function ReceiptPrinter({ initialAnswers, onComplete }) {
                 )}
               </motion.div>
 
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="text-[10px] text-zinc-500 pt-1 text-center">
-                Printed {new Date().toLocaleDateString()} — reprint whenever your numbers change
-              </motion.p>
+              <div className="pt-5 flex flex-col items-center gap-2">
+                <Barcode value={result.rates.post} />
+                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="text-[10px] text-[var(--color-text-light)]">
+                  Printed {new Date().toLocaleDateString()} — reprint whenever your numbers change
+                </motion.p>
+              </div>
             </>
           )}
         </div>
-      </div>
+      </motion.div>
 
       <TornEdge />
 
@@ -348,14 +393,14 @@ export default function ReceiptPrinter({ initialAnswers, onComplete }) {
         <div className="flex gap-3 mt-6">
           <button
             onClick={handleCopy}
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-white text-sm font-bold transition-colors shadow-lg"
-            style={{ backgroundColor: "var(--color-primary)" }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--color-primary-hover)")}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--color-primary)")}
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-sm font-bold transition-colors shadow-lg"
           >
             <Copy size={15} /> Copy rate card
           </button>
-          <button onClick={startOver} className="p-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-white/10 transition-all">
+          <button
+            onClick={startOver}
+            className="p-3 rounded-xl bg-[var(--color-background)] hover:bg-[var(--color-border)]/40 text-[var(--color-text)] border border-[var(--color-border)] transition-all"
+          >
             <RotateCcw size={15} />
           </button>
         </div>
