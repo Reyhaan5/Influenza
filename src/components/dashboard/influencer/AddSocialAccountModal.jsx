@@ -14,7 +14,7 @@ export default function AddSocialAccountModal({ onClose, onSubmit }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-text)]/40 px-4">
       <div className="w-full max-w-sm bg-[var(--color-surface)] rounded-2xl p-6 shadow-xl relative">
         <button onClick={onClose} className="absolute top-4 right-4 text-[var(--color-text)]/50 hover:text-[var(--color-text)]">
           <X size={18} />

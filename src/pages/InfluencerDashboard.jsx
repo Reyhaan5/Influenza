@@ -12,7 +12,7 @@ import AddSocialAccountModal from "../components/dashboard/influencer/AddSocialA
 import { Link } from "react-router-dom";
 import MyRateCard from "../components/dashboard/influencer/MyRateCard";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../config/api";
 
 export default function InfluencerDashboard() {
   const [profile, setProfile] = useState(null);

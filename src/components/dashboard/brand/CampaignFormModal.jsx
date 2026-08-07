@@ -37,7 +37,7 @@ export default function CampaignFormModal({ campaign, onClose, onSubmit, saving 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-text)]/40 px-4">
       <div className="w-full max-w-lg bg-[var(--color-surface)] rounded-2xl p-6 shadow-xl relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}

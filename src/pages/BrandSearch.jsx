@@ -7,7 +7,7 @@ import Section from "../components/common/Section";
 import BrandNav from "../components/dashboard/brand/BrandNav";
 import CreatorSearchCard from "../components/dashboard/brand/CreatorSearchCard";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../config/api";
 const PLATFORMS = ["", "Instagram", "YouTube", "Twitter"];
 
 export default function BrandSearch() {

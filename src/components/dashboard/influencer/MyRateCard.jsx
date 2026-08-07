@@ -4,7 +4,7 @@ import { RefreshCcw, Clock } from "lucide-react";
 import Avatar from "./Avatar";
 import ReceiptPrinter from "../../pricing/ReceiptPrinter";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../../../config/api";
 
 function StatTile({ label, value, symbol }) {
   return (

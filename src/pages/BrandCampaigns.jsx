@@ -8,7 +8,7 @@ import BrandNav from "../components/dashboard/brand/BrandNav";
 import CampaignCard from "../components/dashboard/brand/CampaignCard";
 import CampaignFormModal from "../components/dashboard/brand/CampaignFormModal";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../config/api";
 
 export default function BrandCampaigns() {
   const [campaigns, setCampaigns] = useState([]);

@@ -87,7 +87,7 @@ function Input({ label, value, onChange, placeholder, readOnly = false, type = "
         onChange={onChange}
         placeholder={placeholder}
         className={`w-full rounded-xl border border-[var(--color-border)] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]
-        ${readOnly ? "bg-gray-100 cursor-not-allowed" : "bg-[var(--color-background)]"}`}
+        ${readOnly ? "bg-[var(--color-background)] cursor-not-allowed" : "bg-[var(--color-background)]"}`}
       />
     </div>
   );
