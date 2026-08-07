@@ -32,8 +32,8 @@ import {
           border
           border-[var(--color-accent)]
           bg-gradient-to-br
-          from-white
-          to-[#F8F5FC]
+          from-[var(--color-surface)]
+          to-[var(--color-background)]
           p-8
           min-h-[170px]
           shadow-md
@@ -53,7 +53,7 @@ import {
             h-28
             w-28
             rounded-full
-            bg-[#8B5FBF]/10
+            bg-[var(--color-primary)]/10
             blur-2xl
           "
         />
@@ -70,8 +70,8 @@ import {
               justify-center
               rounded-2xl
               bg-gradient-to-br
-              from-[#8B5FBF]
-              to-[#61398F]
+              from-[var(--color-primary)]
+              to-[var(--color-primary-hover)]
               text-white
               shadow-lg
               transition-transform
@@ -107,8 +107,8 @@ import {
                 font-semibold
                 ${
                   positive
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
+                    ? "bg-[var(--color-success)]/10 text-[var(--color-success)]"
+                    : "bg-[var(--color-danger)]/10 text-[var(--color-danger)]"
                 }
               `}
             >

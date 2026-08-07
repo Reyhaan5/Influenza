@@ -5,27 +5,27 @@ function StatusChip({
   }) {
     const colors = {
       green: {
-        dot: "bg-green-500",
-        text: "text-green-700",
-        bg: "bg-green-50",
+        dot: "bg-[var(--color-success)]",
+        text: "text-[var(--color-success)]",
+        bg: "bg-[var(--color-success)]/10",
       },
   
       purple: {
-        dot: "bg-[#8B5FBF]",
-        text: "text-[#8B5FBF]",
-        bg: "bg-[#F3EDFA]",
+        dot: "bg-[var(--color-primary)]",
+        text: "text-[var(--color-primary)]",
+        bg: "bg-[var(--color-primary)]/10",
       },
   
       orange: {
-        dot: "bg-orange-500",
-        text: "text-orange-700",
-        bg: "bg-orange-50",
+        dot: "bg-[var(--color-warning)]",
+        text: "text-[var(--color-warning)]",
+        bg: "bg-[var(--color-warning)]/10",
       },
   
       red: {
-        dot: "bg-red-500",
-        text: "text-red-700",
-        bg: "bg-red-50",
+        dot: "bg-[var(--color-danger)]",
+        text: "text-[var(--color-danger)]",
+        bg: "bg-[var(--color-danger)]/10",
       },
     };
   
@@ -39,7 +39,7 @@ function StatusChip({
           gap-3
           rounded-full
           border
-          border-white/60
+          border-[var(--color-surface)]/60
           px-4
           py-2.5
           text-sm

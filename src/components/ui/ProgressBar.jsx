@@ -6,16 +6,16 @@ function ProgressBar({
   }) {
     const colors = {
       primary:
-        "bg-gradient-to-r from-[#8B5FBF] to-[#61398F]",
+        "bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-hover)]",
   
       green:
-        "bg-gradient-to-r from-green-400 to-green-600",
+        "bg-gradient-to-r from-[var(--color-success)] to-[var(--color-success)]",
   
       orange:
-        "bg-gradient-to-r from-orange-400 to-orange-600",
+        "bg-gradient-to-r from-[var(--color-warning)] to-[var(--color-warning)]",
   
       red:
-        "bg-gradient-to-r from-red-400 to-red-600",
+        "bg-gradient-to-r from-[var(--color-danger)] to-[var(--color-danger)]",
     };
   
     return (
@@ -27,7 +27,7 @@ function ProgressBar({
             {label}
           </span>
   
-          <span className="rounded-full bg-[#F5F3F7] px-3 py-1 text-sm font-bold text-[var(--color-primary)]">
+          <span className="rounded-full bg-[var(--color-background)] px-3 py-1 text-sm font-bold text-[var(--color-primary)]">
             {value}%
           </span>
   
@@ -41,7 +41,7 @@ function ProgressBar({
             w-full
             overflow-hidden
             rounded-full
-            bg-[#ECE7F4]
+            bg-[var(--color-border)]/30
           "
         >
           {/* Progress */}
