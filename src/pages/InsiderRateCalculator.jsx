@@ -6,7 +6,7 @@ import { TrendingUp } from "lucide-react";
 import Navbar from "../components/layout/Navbar";
 import Section from "../components/common/Section";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../config/api";
 const FORMAT_LABELS = { post: "Feed Post", reel: "Reel", story: "Story" };
 
 export default function InsiderRateCalculator() {

@@ -11,7 +11,7 @@ function SectionHeading({
         }`}
       >
         {eyebrow && (
-          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#8B5FBF]">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[var(--color-primary)]">
             {eyebrow}
           </p>
         )}

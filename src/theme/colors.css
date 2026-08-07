@@ -4,37 +4,43 @@
      BRAND COLORS
   ========================== */
 
-  --color-primary: #8B5FBF;
-  --color-primary-hover: #61398F;
-  --color-primary-light: #D6C6E1;
+  --color-primary: #1E9DF1;
+  --color-primary-hover: color-mix(in srgb, #1E9DF1 82%, black);
+  --color-primary-light: #E3ECF6;
 
   /* ==========================
      BACKGROUND & SURFACES
   ========================== */
 
-  --color-background: #F5F3F7;
+  --color-background: #F7F8F8;
   --color-surface: #FFFFFF;
+
+  /* ==========================
+     ACCENT
+  ========================== */
+
+  --color-accent: #E3ECF6;
 
   /* ==========================
      TEXT
   ========================== */
 
-  --color-text: #4A4A4A;
-  --color-text-light: #6B7280;
+  --color-text: #0F1419;
+  --color-text-light: #536471;
 
   /* ==========================
      BORDERS
   ========================== */
 
-  --color-border: #D6C6E1;
+  --color-border: #E1EAEF;
 
   /* ==========================
      STATUS COLORS
   ========================== */
 
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
-  --color-danger: #EF4444;
+  --color-success: #00B87A;
+  --color-warning: #F7B928;
+  --color-danger: #F4212E;
 
   /* ==========================
      BORDER RADIUS
@@ -42,14 +48,14 @@
 
   --radius-sm: 12px;
   --radius-md: 16px;
-  --radius-lg: 24px;
+  --radius-lg: 21px;
 
   /* ==========================
      SHADOWS
   ========================== */
 
-  --shadow-card: 0 10px 40px rgba(97,57,143,.08);
-  --shadow-navbar: 0 8px 30px rgba(97,57,143,.08);
+  --shadow-card: none;
+  --shadow-navbar: none;
 
   /* ==========================
      TRANSITIONS

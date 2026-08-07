@@ -13,21 +13,21 @@ import {
 
 function Footer() {
   return (
-    <footer className="relative mt-32 overflow-hidden border-t border-[var(--color-accent)] bg-gradient-to-b from-white via-[#faf8fd] to-[var(--color-background)]">
+    <footer className="relative mt-32 overflow-hidden border-t border-[var(--color-accent)] bg-gradient-to-b from-[var(--color-surface)] via-[var(--color-background)] to-[var(--color-background)]">
 
       {/* Background Glow */}
 
-      <div className="absolute -left-40 top-20 h-80 w-80 rounded-full bg-[#8B5FBF]/10 blur-[120px]" />
+      <div className="absolute -left-40 top-20 h-80 w-80 rounded-full bg-[var(--color-primary)]/10 blur-[120px]" />
 
-      <div className="absolute right-0 bottom-0 h-72 w-72 rounded-full bg-[#61398F]/10 blur-[120px]" />
+      <div className="absolute right-0 bottom-0 h-72 w-72 rounded-full bg-[var(--color-primary-hover)]/10 blur-[120px]" />
 
       <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-10">
 
         {/* CTA */}
 
-        <div className="rounded-[36px] border border-[var(--color-accent)] bg-white/70 p-12 text-center shadow-xl backdrop-blur-xl">
+        <div className="rounded-[36px] border border-[var(--color-accent)] bg-[var(--color-surface)]/70 p-12 text-center shadow-xl backdrop-blur-xl">
 
-          <span className="inline-flex rounded-full bg-[#8B5FBF]/10 px-4 py-2 text-sm font-semibold text-[#8B5FBF]">
+          <span className="inline-flex rounded-full bg-[var(--color-primary)]/10 px-4 py-2 text-sm font-semibold text-[var(--color-primary)]">
             Built for Modern Marketing Teams
           </span>
 
@@ -43,12 +43,12 @@ function Footer() {
 
           <div className="mt-10 flex flex-wrap justify-center gap-4">
 
-            <button className="flex items-center gap-2 rounded-xl bg-[#8B5FBF] px-7 py-4 font-semibold text-white transition hover:scale-105 hover:shadow-xl">
+            <button className="flex items-center gap-2 rounded-xl bg-[var(--color-primary)] px-7 py-4 font-semibold text-white transition hover:scale-105 hover:shadow-xl">
               Get Started
               <ArrowRight size={18} />
             </button>
 
-            <button className="rounded-xl border border-[var(--color-accent)] bg-white px-7 py-4 font-semibold text-[var(--color-text)] transition hover:border-[#8B5FBF] hover:text-[#8B5FBF]">
+            <button className="rounded-xl border border-[var(--color-accent)] bg-[var(--color-surface)] px-7 py-4 font-semibold text-[var(--color-text)] transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]">
               Book a Demo
             </button>
 
@@ -74,7 +74,7 @@ function Footer() {
               every stage of influencer marketing.
             </p>
 
-            <div className="mt-6 inline-flex rounded-full bg-[#8B5FBF]/10 px-4 py-2 text-sm font-semibold text-[#8B5FBF]">
+            <div className="mt-6 inline-flex rounded-full bg-[var(--color-primary)]/10 px-4 py-2 text-sm font-semibold text-[var(--color-primary)]">
               ★ Trusted by growing brands
             </div>
 
@@ -90,7 +90,7 @@ function Footer() {
               ].map((Icon, index) => (
                 <button
                   key={index}
-                  className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--color-accent)] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-[#8B5FBF] hover:text-white hover:shadow-xl"
+                  className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--color-accent)] bg-[var(--color-surface)] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-[var(--color-primary)] hover:text-white hover:shadow-xl"
                 >
                   <Icon size={18} />
                 </button>
@@ -118,7 +118,7 @@ function Footer() {
               ].map((item) => (
                 <li
                   key={item}
-                  className="cursor-pointer text-[var(--color-text-light)] transition hover:translate-x-1 hover:text-[#8B5FBF]"
+                  className="cursor-pointer text-[var(--color-text-light)] transition hover:translate-x-1 hover:text-[var(--color-primary)]"
                 >
                   {item}
                 </li>
@@ -146,7 +146,7 @@ function Footer() {
               ].map((item) => (
                 <li
                   key={item}
-                  className="cursor-pointer text-[var(--color-text-light)] transition hover:translate-x-1 hover:text-[#8B5FBF]"
+                  className="cursor-pointer text-[var(--color-text-light)] transition hover:translate-x-1 hover:text-[var(--color-primary)]"
                 >
                   {item}
                 </li>
@@ -174,7 +174,7 @@ function Footer() {
               ].map((item) => (
                 <li
                   key={item}
-                  className="cursor-pointer text-[var(--color-text-light)] transition hover:translate-x-1 hover:text-[#8B5FBF]"
+                  className="cursor-pointer text-[var(--color-text-light)] transition hover:translate-x-1 hover:text-[var(--color-primary)]"
                 >
                   {item}
                 </li>
@@ -221,7 +221,7 @@ function Footer() {
             ].map((item) => (
               <span
                 key={item}
-                className="cursor-pointer transition hover:text-[#8B5FBF]"
+                className="cursor-pointer transition hover:text-[var(--color-primary)]"
               >
                 {item}
               </span>

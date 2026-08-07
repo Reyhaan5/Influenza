@@ -6,7 +6,7 @@ import Section from "../components/common/Section";
 import BrandNav from "../components/dashboard/brand/BrandNav";
 import CollaborationRow from "../components/dashboard/brand/CollaborationRow";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../config/api";
 
 export default function BrandCollaborations() {
   const [collaborations, setCollaborations] = useState([]);

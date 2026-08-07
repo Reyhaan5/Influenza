@@ -11,18 +11,18 @@ function GlassCard({
           overflow-hidden
           rounded-[36px]
           border
-          border-white/60
-          bg-white/85
+          border-[var(--color-surface)]/60
+          bg-[var(--color-surface)]/85
           backdrop-blur-2xl
   
-          shadow-[0_15px_50px_rgba(99,58,143,0.12)]
+          shadow-[0_15px_50px_color-mix(in_srgb,var(--color-primary-hover)_12%,transparent)]
   
           transition-all
           duration-500
   
           ${
             hover
-              ? "hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(99,58,143,0.18)]"
+              ? "hover:-translate-y-1 hover:shadow-[0_30px_80px_color-mix(in_srgb,var(--color-primary-hover)_18%,transparent)]"
               : ""
           }
   
@@ -38,7 +38,7 @@ function GlassCard({
             h-72
             w-72
             rounded-full
-            bg-[#8B5FBF]/15
+            bg-[var(--color-primary)]/15
             blur-3xl
           "
         />
@@ -52,7 +52,7 @@ function GlassCard({
             h-72
             w-72
             rounded-full
-            bg-[#D6C6E1]/30
+            bg-[var(--color-primary-light)]/30
             blur-3xl
           "
         />
@@ -63,9 +63,9 @@ function GlassCard({
             absolute
             inset-0
             bg-gradient-to-br
-            from-white/70
+            from-[var(--color-surface)]/70
             via-transparent
-            to-[#F5F3F7]
+            to-[var(--color-background)]
             opacity-80
           "
         />

@@ -22,11 +22,11 @@ export default function SocialAuthOptions({ themeTokens }) {
   return (
     <Box sx={{ width: "100%" }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-        <Divider sx={{ flex: 1, borderColor: "#EDEDED" }} />
+        <Divider sx={{ flex: 1, borderColor: "var(--color-border)" }} />
         <Typography sx={{ fontSize: "0.75rem", color: themeTokens.muted, fontWeight: 500 }}>
           or
         </Typography>
-        <Divider sx={{ flex: 1, borderColor: "#EDEDED" }} />
+        <Divider sx={{ flex: 1, borderColor: "var(--color-border)" }} />
       </Box>
 
       <Stack direction="row" spacing={1.5}>

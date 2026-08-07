@@ -1,36 +1,183 @@
+// src/pages/Login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
+import { User, Mail, Lock } from "lucide-react";
+import { FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
 
-import FormField from "../components/auth/FormField";
-import PasswordField from "../components/auth/PasswordField";
-import SegmentedToggle from "../components/auth/SegmentedToggle";
-import AuthSidebar from "../components/auth/AuthSidebar";
-import SocialButton from "../components/auth/SocialButton";
+import { API_URL } from "../config/api";
 
-const API_URL = "http://localhost:5000/api";
+function PillField({ icon: Icon, ...props }) {
+  return (
+    <div className="relative w-full flex items-center">
+      <Icon size={16} className="absolute left-4 text-[var(--color-text)]/40 pointer-events-none" />
+      <input
+        {...props}
+        className="w-full pl-10 pr-4 py-3 rounded-full bg-[var(--color-background)] text-sm text-[var(--color-text)] placeholder-[var(--color-text)]/40 outline-none border border-transparent focus:border-[var(--color-primary)] transition-colors"
+      />
+    </div>
+  );
+}
 
-const EmailIcon = () => (
-  <svg width="20" height="20" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-[var(--color-text)]/40 transition-colors group-focus-within:text-[var(--color-primary)]">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0l-7.5-4.615a2.25 2.25 0 01-1.07-1.916V6.75" />
-  </svg>
-);
+function SocialRow() {
+  return (
+    <div className="flex items-center justify-center gap-3 mt-5">
+      {[
+        { key: "google", node: <img src="/Google.svg" alt="Google" className="w-4 h-4" /> },
+        { key: "facebook", node: <img src="/Facebook.svg" alt="Facebook" className="w-4 h-4" /> },
+        { key: "twitter", node: <FaXTwitter size={14} className="text-[var(--color-text)]" /> },
+        { key: "linkedin", node: <FaLinkedinIn size={14} className="text-[var(--color-text)]" /> },
+      ].map((s) => (
+        <button
+          key={s.key}
+          type="button"
+          className="w-9 h-9 rounded-full border border-[var(--color-border)] flex items-center justify-center hover:border-[var(--color-primary)] hover:-translate-y-0.5 transition-all"
+        >
+          {s.node}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function AuthFields({
+  mode,
+  form,
+  role,
+  agreed,
+  loading,
+  error,
+  onChange,
+  onRoleChange,
+  onAgreeToggle,
+  onSubmit,
+  onForgot,
+}) {
+  const isSignup = mode === "signup";
+
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.form
+        key={mode}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+        onSubmit={onSubmit}
+        className="w-full flex flex-col items-center gap-3.5"
+      >
+        <h2 className="text-2xl font-black text-[var(--color-text)] mb-1 self-start">
+          {isSignup ? "Sign up" : "Sign in"}
+        </h2>
+
+        {isSignup && (
+          <PillField
+            icon={User}
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            value={form.name}
+            onChange={onChange}
+            required
+          />
+        )}
+
+        <PillField
+          icon={Mail}
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={onChange}
+          required
+        />
+
+        <PillField
+          icon={Lock}
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={onChange}
+          required
+        />
+
+        {isSignup && (
+          <div className="w-full flex gap-2">
+            {["influencer", "brand"].map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => onRoleChange(r)}
+                className={`flex-1 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+                  role === r
+                    ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)]"
+                    : "border-[var(--color-border)] text-[var(--color-text)]/70"
+                }`}
+              >
+                {r === "influencer" ? "Influencer" : "Brand"}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {!isSignup && (
+          <button
+            type="button"
+            onClick={onForgot}
+            className="self-end text-xs font-semibold text-[var(--color-primary-hover)] hover:underline -mt-1.5"
+          >
+            Forgot password?
+          </button>
+        )}
+
+        {isSignup && (
+          <label className="w-full flex items-start gap-2 text-[11px] text-[var(--color-text)]/60 leading-snug cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={onAgreeToggle}
+              className="mt-0.5 accent-[var(--color-primary)]"
+            />
+            I agree to the Terms &amp; Conditions
+          </label>
+        )}
+
+        {error && (
+          <p className="w-full text-xs font-medium text-[var(--color-danger)] bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 rounded-xl px-3 py-2">
+            {error}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="mt-1 px-10 py-3 rounded-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-sm font-bold uppercase tracking-wide shadow-md transition-colors disabled:opacity-60"
+        >
+          {loading ? "Please wait..." : isSignup ? "Sign Up" : "Login"}
+        </button>
+
+        <p className="text-[11px] text-[var(--color-text)]/50">Or continue with</p>
+        <SocialRow />
+      </motion.form>
+    </AnimatePresence>
+  );
+}
 
 export default function InfluenzeAuth() {
   const navigate = useNavigate();
 
-  const [mode, setMode] = useState("signup");
+  const [mode, setMode] = useState("login");
   const [agreed, setAgreed] = useState(false);
-  const [role, setRole] = useState("influencer"); // or "brand"
-  const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "" });
+  const [role, setRole] = useState("influencer");
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const isSignup = mode === "signup";
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,7 +193,7 @@ export default function InfluenzeAuth() {
       let res;
       if (isSignup) {
         res = await axios.post(`${API_URL}/auth/register`, {
-          name: `${form.firstName} ${form.lastName}`.trim(),
+          name: form.name,
           email: form.email,
           password: form.password,
           role,
@@ -61,7 +208,6 @@ export default function InfluenzeAuth() {
       const { token, user } = res.data;
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-
       navigate(user.role === "brand" ? "/brand-dashboard" : "/influencer-dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong. Try again.");
@@ -70,115 +216,112 @@ export default function InfluenzeAuth() {
     }
   };
 
+  const curvePanelStyle = {
+    background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
+    borderRadius: isSignup
+      ? "50% 0 0 50% / 50% 0 0 50%"
+      : "0 50% 50% 0 / 0 50% 50% 0",
+  };
+
   return (
-    <main className="min-h-screen w-screen flex items-stretch justify-center bg-[var(--color-background)] overflow-x-hidden selection:bg-[var(--color-primary)] selection:text-white">
-      <div className="w-full min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[var(--color-surface)]">
-        <AuthSidebar />
+    <main className="min-h-screen w-full flex items-center justify-center p-4 sm:p-8 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-hover)] relative">
+      <button
+        type="button"
+        aria-label="Go back"
+        onClick={() => navigate("/")}
+        className="fixed top-6 left-6 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md hover:bg-white/25 transition-colors"
+      >
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+      </button>
 
-        <div className="w-full flex flex-col justify-center items-center px-6 sm:px-[clamp(2rem,6vw,4rem)] py-12 relative">
-          <div className="w-full max-w-[26rem] flex flex-col gap-6 animate-fadeIn">
-            <div className="flex items-center justify-between w-full">
-              <button type="button" aria-label="Go back" onClick={() => navigate("/")} className="group w-10 h-10 flex items-center justify-center rounded-full border border-[var(--color-border)] text-[var(--color-text)] transition-all duration-300 hover:bg-[var(--color-primary)] hover:text-white hover:border-[var(--color-primary)] hover:-translate-x-1 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30 shadow-sm">
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="transition-transform duration-200 group-hover:-translate-x-0.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                </svg>
-              </button>
-              <div className="lg:hidden flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[var(--color-primary)] animate-pulse" />
-                <span className="text-[var(--color-primary-hover)] font-black text-xl tracking-tight">Influenze</span>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-1.5 pt-2">
-              <h1 className="text-[clamp(1.85rem,3vw,2.4rem)] font-black text-[var(--color-text)] tracking-tight leading-tight">
-                {isSignup ? "Create an account" : "Welcome back"}
-              </h1>
-              <p className="text-sm text-[var(--color-text)]/70 font-medium">
-                {isSignup ? "Already have an account? " : "Don't have an account? "}
-                <button type="button" onClick={() => setMode(isSignup ? "login" : "signup")} className="text-[var(--color-primary-hover)] font-bold underline underline-offset-4 decoration-[var(--color-primary-hover)]/30 hover:decoration-[var(--color-primary-hover)] transition-all focus:outline-none">
-                  {isSignup ? "Log in" : "Sign up"}
-                </button>
+      {/* Desktop: sliding curve card */}
+      <div className="hidden md:block relative w-full max-w-4xl min-h-[600px] bg-[var(--color-surface)] rounded-[32px] shadow-2xl overflow-hidden">
+        <motion.div
+          className="absolute inset-y-0 w-1/2 flex items-center justify-center text-center px-12"
+          animate={{ left: isSignup ? "50%" : "0%" }}
+          transition={{ type: "spring", stiffness: 70, damping: 18 }}
+          style={curvePanelStyle}
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={mode + "-cta"}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, delay: 0.15 }}
+              className="flex flex-col items-center gap-4 text-white max-w-xs"
+            >
+              <h3 className="text-2xl font-black">{isSignup ? "One of us?" : "New here?"}</h3>
+              <p className="text-sm text-white/85 leading-relaxed">
+                {isSignup
+                  ? "Welcome back! Sign in to continue your journey with us."
+                  : "Join us today and discover a world of possibilities. Create your account in seconds!"}
               </p>
-            </div>
-
-            <SegmentedToggle value={mode} onChange={setMode} />
-
-            {isSignup && (
-              <div className="flex gap-2">
-                {["influencer", "brand"].map((r) => (
-                  <button key={r} type="button" onClick={() => setRole(r)} className={`flex-1 py-2 rounded-lg text-sm font-semibold border transition-colors ${role === r ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)]" : "border-[var(--color-border)] text-[var(--color-text)]"}`}>
-                    {r === "influencer" ? "I'm an Influencer" : "I'm a Brand"}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {error && (
-              <div className="text-sm text-[var(--color-danger)] bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 rounded-xl px-4 py-2.5">
-                {error}
-              </div>
-            )}
-
-            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-              <div className={`grid transition-all duration-300 ease-in-out ${isSignup ? "grid-rows-[1fr] opacity-100 mb-0" : "grid-rows-[0fr] opacity-0 pointer-events-none -mb-4"}`}>
-                <div className="overflow-hidden flex flex-col sm:flex-row gap-4 p-0.5">
-                  <FormField label="First Name" name="firstName" placeholder="John" value={form.firstName} onChange={handleChange} />
-                  <FormField label="Last Name" name="lastName" placeholder="Doe" value={form.lastName} onChange={handleChange} />
-                </div>
-              </div>
-
-              <FormField label="Email Address" type="email" name="email" icon={<EmailIcon />} placeholder="you@influenze.com" value={form.email} onChange={handleChange} />
-
-              <PasswordField name="password" placeholder="••••••••" value={form.password} onChange={handleChange} />
-
-              {!isSignup && (
-                <div className="flex justify-end -mt-2">
-                  <button type="button" onClick={() => navigate("/forgot-password")} className="text-xs font-bold text-[var(--color-primary-hover)] hover:underline focus:outline-none">
-                    Forgot password?
-                  </button>
-                </div>
-              )}
-
-              {isSignup && (
-                <div className="flex items-start gap-3 pt-1 select-none group cursor-pointer" onClick={() => setAgreed(!agreed)}>
-                  <button type="button" role="checkbox" aria-checked={agreed} aria-label="Agree to Terms & Conditions" onClick={(e) => { e.stopPropagation(); setAgreed((a) => !a); }} className={`mt-0.5 w-5 h-5 flex-shrink-0 rounded-md border-2 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30 ${agreed ? "bg-[var(--color-primary)] border-[var(--color-primary)] text-white scale-105" : "bg-[var(--color-surface)] border-[var(--color-border)] group-hover:border-[var(--color-primary)]"}`}>
-                    {agreed && (
-                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" strokeWidth={4} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                      </svg>
-                    )}
-                  </button>
-                  <span className="text-xs sm:text-sm text-[var(--color-text)]/70 leading-relaxed font-medium">
-                    I agree to the{" "}
-                    <a href="#terms" onClick={(e) => e.stopPropagation()} className="text-[var(--color-primary-hover)] font-bold underline decoration-[var(--color-primary-hover)]/30 hover:decoration-[var(--color-primary-hover)] transition-all">
-                      Terms &amp; Conditions
-                    </a>
-                  </span>
-                </div>
-              )}
-
-              <button type="submit" disabled={loading} className="w-full py-3.5 px-6 text-sm font-bold text-white bg-[var(--color-primary)] rounded-xl mt-2 transition-all duration-200 shadow-md hover:shadow-lg hover:bg-[var(--color-primary-hover)] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-[var(--color-primary)]/30 min-h-[3.25rem] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60">
-                <span>{loading ? "Please wait..." : isSignup ? "Create Account" : "Log In"}</span>
-                {!loading && (
-                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                )}
+              <button
+                type="button"
+                onClick={() => setMode(isSignup ? "login" : "signup")}
+                className="px-8 py-2.5 rounded-full border-2 border-white text-white text-xs font-bold uppercase tracking-wide hover:bg-white hover:text-[var(--color-primary)] transition-colors"
+              >
+                {isSignup ? "Sign In" : "Sign Up"}
               </button>
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
 
-              <div className="flex items-center gap-4 py-2">
-                <div className="h-px flex-1 bg-[var(--color-border)]" />
-                <span className="text-[10px] text-[var(--color-text)]/40 font-black uppercase tracking-widest">or continue with</span>
-                <div className="h-px flex-1 bg-[var(--color-border)]" />
-              </div>
+        <motion.div
+          className="absolute inset-y-0 w-1/2 flex items-center justify-center px-10 lg:px-14"
+          animate={{ left: isSignup ? "0%" : "50%" }}
+          transition={{ type: "spring", stiffness: 70, damping: 18 }}
+        >
+          <AuthFields
+            mode={mode}
+            form={form}
+            role={role}
+            agreed={agreed}
+            loading={loading}
+            error={error}
+            onChange={handleChange}
+            onRoleChange={setRole}
+            onAgreeToggle={() => setAgreed((a) => !a)}
+            onSubmit={handleSubmit}
+            onForgot={() => navigate("/forgot-password")}
+          />
+        </motion.div>
+      </div>
 
-              <div className="flex flex-col sm:flex-row gap-3">
-                <SocialButton icon={<img src="/Google.svg" alt="Google" className="w-[18px] h-[18px] transition-transform group-hover:scale-110" />}>Google</SocialButton>
-                <SocialButton icon={<img src="/Facebook.svg" alt="Facebook" className="w-[18px] h-[18px] transition-transform group-hover:scale-110" />}>Facebook</SocialButton>
-              </div>
-            </form>
-          </div>
+      {/* Mobile: simple stacked card */}
+      <div className="md:hidden w-full max-w-sm bg-[var(--color-surface)] rounded-[28px] shadow-2xl p-7">
+        <div className="flex items-center justify-center gap-2 mb-5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[var(--color-primary)] animate-pulse" />
+          <span className="text-[var(--color-primary-hover)] font-black text-lg tracking-tight">Influenza</span>
         </div>
+
+        <AuthFields
+          mode={mode}
+          form={form}
+          role={role}
+          agreed={agreed}
+          loading={loading}
+          error={error}
+          onChange={handleChange}
+          onRoleChange={setRole}
+          onAgreeToggle={() => setAgreed((a) => !a)}
+          onSubmit={handleSubmit}
+          onForgot={() => navigate("/forgot-password")}
+        />
+
+        <p className="text-center text-xs text-[var(--color-text)]/60 mt-5">
+          {isSignup ? "Already have an account? " : "New here? "}
+          <button
+            type="button"
+            onClick={() => setMode(isSignup ? "login" : "signup")}
+            className="font-bold text-[var(--color-primary-hover)] underline underline-offset-2"
+          >
+            {isSignup ? "Sign in" : "Sign up"}
+          </button>
+        </p>
       </div>
     </main>
   );

@@ -5,19 +5,19 @@ function Badge({
   }) {
     const variants = {
       primary:
-        "bg-gradient-to-r from-[#8B5FBF]/15 to-[#61398F]/15 text-[#61398F] border-[#8B5FBF]/20",
+        "bg-gradient-to-r from-[var(--color-primary)]/15 to-[var(--color-primary-hover)]/15 text-[var(--color-primary-hover)] border-[var(--color-primary)]/20",
   
       success:
-        "bg-green-100 text-green-700 border-green-200",
+        "bg-[var(--color-success)]/10 text-[var(--color-success)] border-[var(--color-success)]/20",
   
       warning:
-        "bg-yellow-100 text-yellow-700 border-yellow-200",
+        "bg-[var(--color-warning)]/10 text-[var(--color-warning)] border-[var(--color-warning)]/20",
   
       danger:
-        "bg-red-100 text-red-700 border-red-200",
+        "bg-[var(--color-danger)]/10 text-[var(--color-danger)] border-[var(--color-danger)]/20",
   
       white:
-        "bg-white/20 text-white border-white/20",
+        "bg-[var(--color-surface)]/20 text-white border-[var(--color-surface)]/20",
     };
   
     return (

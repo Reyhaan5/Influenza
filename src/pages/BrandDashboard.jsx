@@ -12,8 +12,7 @@ import CompanyInfoCard from "../components/dashboard/brand/CompanyInfoCard";
 import CompanySavedBar from "../components/dashboard/brand/CompanySavedBar";
 import ProductInfoCard from "../components/dashboard/brand/ProductInfoCard";
 
-const API_URL = "http://localhost:5000/api";
-const API_ORIGIN = "http://localhost:5000";
+import { API_URL, API_ORIGIN } from "../config/api";
 
 const loggedInUser = JSON.parse(localStorage.getItem("user"));
 
