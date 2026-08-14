@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes.js";
 import influencerRoutes from "./routes/influencerRoutes.js";
 import publicRoutes from "./routes/publicRoutes.js";
 import brandRoutes from "./routes/brandRoutes.js";
+import collaborationRequestRoutes from "./routes/collaborationRequestRoutes.js";
 
 // Registering every model here ensures Mongoose knows about them before
 // any .populate() call tries to reference them — even ones without full
@@ -43,6 +44,8 @@ app.use("/api/influencer", influencerRoutes);
 app.use("/api/public", publicRoutes);
 // Every URL starting with /api/brand goes to brandRoutes.js
 app.use("/api/brand", brandRoutes);
+// Every URL starting with /api/collaboration-requests goes to collaborationRequestRoutes.js
+app.use("/api/collaboration-requests", collaborationRequestRoutes);
 
 // Simple health check — visit http://localhost:5000/ to confirm it's running
 app.get("/", (req, res) => {

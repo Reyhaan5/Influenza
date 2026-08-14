@@ -9,6 +9,9 @@ import ProtectedRoute from "./ProtectedRoute";
 import BrandCampaigns from "../pages/BrandCampaigns";
 import BrandSearch from "../pages/BrandSearch";
 import BrandCollaborations from "../pages/BrandCollaborations";
+import InsiderRateCalculator from "../pages/InsiderRateCalculator";
+import CollaborationRequests from "../pages/CollaborationRequests";
+import BrowseOpportunities from "../pages/BrowseOpportunities";
 
 function AppRoutes() {
   return (
@@ -27,6 +30,22 @@ function AppRoutes() {
           }
         />
         <Route
+          path="/insider-rate"
+          element={
+            <ProtectedRoute allowedRole="influencer">
+              <InsiderRateCalculator />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/opportunities"
+          element={
+            <ProtectedRoute allowedRole="influencer">
+              <BrowseOpportunities />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/brand-dashboard"
           element={
             <ProtectedRoute allowedRole="brand">
@@ -34,9 +53,39 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
-        <Route path="/brand-dashboard/campaigns" element={<BrandCampaigns />} />
-        <Route path="/brand-dashboard/search" element={<BrandSearch />} />
-        <Route path="/brand-dashboard/collaborations" element={<BrandCollaborations />} />
+        <Route
+          path="/brand-dashboard/campaigns"
+          element={
+            <ProtectedRoute allowedRole="brand">
+              <BrandCampaigns />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/brand-dashboard/search"
+          element={
+            <ProtectedRoute allowedRole="brand">
+              <BrandSearch />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/brand-dashboard/collaborations"
+          element={
+            <ProtectedRoute allowedRole="brand">
+              <BrandCollaborations />
+            </ProtectedRoute>
+          }
+        />
+        {/* Shared by both roles — the page itself branches on user.role */}
+        <Route
+          path="/collaboration-requests"
+          element={
+            <ProtectedRoute>
+              <CollaborationRequests />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

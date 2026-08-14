@@ -89,11 +89,29 @@ export default function InfluencerDashboard() {
     <>
       <Navbar />
       <Section className="pt-32">
-        <h1 className="text-3xl font-extrabold text-[var(--color-text)]">Dashboard</h1>
-        <p className="mt-2 text-[var(--color-text-light)] max-w-2xl">
-          Earn from your influence through gifted and paid collabs. Connect your accounts and start
-          receiving opportunities.
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="text-3xl font-extrabold text-[var(--color-text)]">Dashboard</h1>
+            <p className="mt-2 text-[var(--color-text-light)] max-w-2xl">
+              Earn from your influence through gifted and paid collabs. Connect your accounts and start
+              receiving opportunities.
+            </p>
+          </div>
+          <div className="flex gap-2 flex-shrink-0">
+            <Link
+              to="/opportunities"
+              className="px-4 py-2.5 rounded-xl border border-[var(--color-border)] text-sm font-semibold text-[var(--color-text)] hover:bg-[var(--color-background)] transition-colors"
+            >
+              Browse Campaigns
+            </Link>
+            <Link
+              to="/collaboration-requests"
+              className="px-4 py-2.5 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-sm font-semibold transition-colors"
+            >
+              My Requests
+            </Link>
+          </div>
+        </div>
 
         <div className="mt-8 grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
