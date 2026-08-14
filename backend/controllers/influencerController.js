@@ -1,4 +1,6 @@
 import InfluencerProfile from "../models/InfluencerProfile.js";
+import Opportunity from "../models/Opportunity.js";
+import CollaborationRequest from "../models/CollaborationRequest.js";
 
 // GET /api/influencer/profile  (protected)
 export const getMyProfile = async (req, res) => {
@@ -65,6 +67,35 @@ export const addSocialAccount = async (req, res) => {
     }
 
     res.status(201).json(profile);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// GET /api/influencer/opportunities  (protected)
+// Open campaigns an influencer can browse and apply to, annotated with
+// whether they've already sent a request for each one.
+export const getOpenOpportunities = async (req, res) => {
+  try {
+    const opportunities = await Opportunity.find({ status: "open" })
+      .populate("brand", "name")
+      .sort({ createdAt: -1 });
+
+    const myRequests = await CollaborationRequest.find({
+      influencer: req.user._id,
+      opportunity: { $ne: null },
+    }).select("opportunity status");
+
+    const requestByOpportunity = new Map(
+      myRequests.map((r) => [String(r.opportunity), r.status])
+    );
+
+    const withStatus = opportunities.map((o) => ({
+      ...o.toObject(),
+      myRequestStatus: requestByOpportunity.get(String(o._id)) || null,
+    }));
+
+    res.json({ opportunities: withStatus });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
