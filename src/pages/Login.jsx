@@ -1,10 +1,10 @@
-// src/pages/Login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Mail, Lock } from "lucide-react";
 import { FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
+import { useAuth } from "../context/AuthContext";
 
 import { API_URL } from "../config/api";
 
@@ -167,6 +167,7 @@ function AuthFields({
 
 export default function InfluenzeAuth() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [mode, setMode] = useState("login");
   const [agreed, setAgreed] = useState(false);
@@ -206,8 +207,7 @@ export default function InfluenzeAuth() {
       }
 
       const { token, user } = res.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      login(token, user);
       navigate(user.role === "brand" ? "/brand-dashboard" : "/influencer-dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong. Try again.");

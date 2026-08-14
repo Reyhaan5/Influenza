@@ -10,7 +10,8 @@ export default function StatCard({
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 shadow-[var(--shadow-card)] flex items-center gap-4">
 
       <div className="p-3 rounded-xl bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
-        <Icon size={24} />
+        {/* If Icon is standard JSX element, render directly; otherwise render as a React component */}
+        {React.isValidElement(Icon) ? Icon : Icon && <Icon size={24} />}
       </div>
 
       <div>

@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+﻿import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, X, LayoutDashboard, LogOut } from "lucide-react";
 import { megaMenu } from "../../constants/navMenu";
 import { ShiftingDropDown } from "../ui/ShiftingDropDown";
+import { useAuth } from "../../context/AuthContext";
+import Avatar from "../dashboard/influencer/Avatar";
 
 function AnimatedNavLink({ href, isRoute, children }) {
   const content = (
@@ -20,9 +22,70 @@ function AnimatedNavLink({ href, isRoute, children }) {
   );
 }
 
+function ProfileMenu({ user, logout }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const dashboardPath = user.role === "brand" ? "/brand-dashboard" : "/influencer-dashboard";
+
+  const handleLogout = () => {
+    logout();
+    setOpen(false);
+    navigate("/");
+  };
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center justify-center rounded-full ring-2 ring-transparent hover:ring-[var(--color-primary)]/30 transition-all"
+        aria-label="Account menu"
+      >
+        <Avatar name={user.name} size={40} />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 mt-3 w-52 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-xl overflow-hidden py-2">
+          <div className="px-4 py-2 border-b border-[var(--color-border)]">
+            <p className="text-sm font-semibold text-[var(--color-text)] truncate">{user.name}</p>
+            <p className="text-xs text-[var(--color-text-light)] truncate">{user.email}</p>
+          </div>
+
+          <Link
+            to={dashboardPath}
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-[var(--color-text)] hover:bg-[var(--color-background)]"
+          >
+            <LayoutDashboard size={16} />
+            Dashboard
+          </Link>
+
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2.5 w-full text-left px-4 py-2.5 text-sm font-medium text-[var(--color-danger)] hover:bg-[var(--color-background)]"
+          >
+            <LogOut size={16} />
+            Sign Out
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30);
@@ -43,8 +106,7 @@ function Navbar() {
             Influenza
           </Link>
 
-          {/* Desktop Nav: data-driven mega menu + the one plain link
-              (Contact) that doesn't need a dropdown */}
+          {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-4">
             <ShiftingDropDown tabs={megaMenu} />
             <AnimatedNavLink href="#faq">Contact</AnimatedNavLink>
@@ -52,18 +114,24 @@ function Navbar() {
 
           {/* Desktop Action Buttons */}
           <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
-            <Link
-              to="/login"
-              className="px-5 py-2.5 text-base font-semibold text-[var(--color-text)] border border-[var(--color-border)] rounded-full hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors"
-            >
-              Sign In
-            </Link>
-            <Link
-              to="/signup"
-              className="px-5 py-2.5 text-base font-semibold text-white bg-[var(--color-primary)] rounded-full hover:bg-[var(--color-primary-hover)] transition-colors shadow-sm"
-            >
-              Get Started
-            </Link>
+            {user ? (
+              <ProfileMenu user={user} logout={logout} />
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="px-5 py-2.5 text-base font-semibold text-[var(--color-text)] border border-[var(--color-border)] rounded-full hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  className="px-5 py-2.5 text-base font-semibold text-white bg-[var(--color-primary)] rounded-full hover:bg-[var(--color-primary-hover)] transition-colors shadow-sm"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -76,9 +144,7 @@ function Navbar() {
           </button>
         </div>
 
-        {/* Mobile Dropdown — flattens the same megaMenu data used on
-            desktop into a grouped list, so mobile never drifts out of
-            sync with the desktop menu content. */}
+        {/* Mobile Dropdown */}
         <div className={`lg:hidden overflow-hidden transition-all duration-300 ${isOpen ? "max-h-[32rem] overflow-y-auto opacity-100 mt-5" : "max-h-0 opacity-0"}`}>
           <nav className="flex flex-col gap-6 pb-3">
             {megaMenu.map((tab) => (
@@ -123,13 +189,46 @@ function Navbar() {
             </a>
           </nav>
 
-          <div className="flex flex-col gap-3 mt-2">
-            <Link to="/login" className="w-full text-center px-5 py-3 text-base font-semibold text-[var(--color-text)] border border-[var(--color-border)] rounded-full">
-              Sign In
-            </Link>
-            <Link to="/signup" className="w-full text-center px-5 py-3 text-base font-semibold text-white bg-[var(--color-primary)] rounded-full">
-              Get Started
-            </Link>
+          {user ? (
+            <div className="flex items-center gap-3 mt-2 px-1">
+              <Avatar name={user.name} size={40} />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-[var(--color-text)] truncate">{user.name}</p>
+                <p className="text-xs text-[var(--color-text-light)] truncate">{user.email}</p>
+              </div>
+            </div>
+          ) : null}
+
+          <div className="flex flex-col gap-3 mt-4">
+            {user ? (
+              <>
+                <Link
+                  to={user.role === "brand" ? "/brand-dashboard" : "/influencer-dashboard"}
+                  onClick={() => setIsOpen(false)}
+                  className="w-full text-center px-5 py-3 text-base font-semibold text-white bg-[var(--color-primary)] rounded-full"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsOpen(false);
+                  }}
+                  className="w-full text-center px-5 py-3 text-base font-semibold text-[var(--color-danger)] border border-[var(--color-border)] rounded-full"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="w-full text-center px-5 py-3 text-base font-semibold text-[var(--color-text)] border border-[var(--color-border)] rounded-full">
+                  Sign In
+                </Link>
+                <Link to="/signup" className="w-full text-center px-5 py-3 text-base font-semibold text-white bg-[var(--color-primary)] rounded-full">
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
