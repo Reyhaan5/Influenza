@@ -4,6 +4,7 @@ import {
   updateMyProfile,
   addSocialAccount,
   removeSocialAccount,
+  getOpenOpportunities,
 } from "../controllers/influencerController.js";
 import { getDashboardStats } from "../controllers/dashboardController.js";
 import { saveRateCard, getMyRateCards } from "../controllers/rateCardController.js";
@@ -24,6 +25,8 @@ router.post("/rate-cards", protect, requireRole("influencer"), saveRateCard);
 router.get("/rate-cards", protect, requireRole("influencer"), getMyRateCards);
 
 router.get("/insider-rate", protect, requireRole("influencer"), getInsiderRate);
+
+router.get("/opportunities", protect, requireRole("influencer"), getOpenOpportunities);
 
 export default router;
 

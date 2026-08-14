@@ -17,9 +17,27 @@ export default function BrandSearch() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [requestStatuses, setRequestStatuses] = useState({}); // influencerUserId -> "pending" | "accepted" | "rejected"
+  const [sendingId, setSendingId] = useState(null);
 
   const token = localStorage.getItem("token");
   const authHeader = { headers: { Authorization: `Bearer ${token}` } };
+
+  const handleSendRequest = async (profile) => {
+    const influencerId = profile.user?._id;
+    if (!influencerId) return;
+
+    setSendingId(influencerId);
+    try {
+      await axios.post(`${API_URL}/collaboration-requests`, { influencerId }, authHeader);
+      setRequestStatuses((prev) => ({ ...prev, [influencerId]: "pending" }));
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || "Failed to send request.");
+    } finally {
+      setSendingId(null);
+    }
+  };
 
   const handleSearch = async () => {
     setLoading(true);
@@ -95,7 +113,13 @@ export default function BrandSearch() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {results.map((profile) => (
-            <CreatorSearchCard key={profile._id} profile={profile} />
+            <CreatorSearchCard
+              key={profile._id}
+              profile={profile}
+              requestStatus={requestStatuses[profile.user?._id]}
+              sending={sendingId === profile.user?._id}
+              onSendRequest={() => handleSendRequest(profile)}
+            />
           ))}
         </div>
       </Section>

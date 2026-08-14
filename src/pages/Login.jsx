@@ -24,10 +24,10 @@ function SocialRow() {
   return (
     <div className="flex items-center justify-center gap-3 mt-5">
       {[
-        { key: "google", node: <img src="/Google.svg" alt="Google" className="w-4 h-4" /> },
-        { key: "facebook", node: <img src="/Facebook.svg" alt="Facebook" className="w-4 h-4" /> },
-        { key: "twitter", node: <FaXTwitter size={14} className="text-[var(--color-text)]" /> },
-        { key: "linkedin", node: <FaLinkedinIn size={14} className="text-[var(--color-text)]" /> },
+        { key: "google", node: <img src="/icons/google.svg" alt="Google" className="w-4 h-4" /> },
+        { key: "facebook", node: <img src="/icons/facebook.svg" alt="Facebook" className="w-4 h-4" /> },
+        { key: "twitter", node: <img src="/icons/twitter.svg" alt="Twitter" className="w-4 h-4" /> },
+        { key: "linkedin", node: <img src="/icons/linkedin.svg" alt="LinkedIn" className="w-4 h-4" /> },
       ].map((s) => (
         <button
           key={s.key}
@@ -231,9 +231,11 @@ export default function InfluenzeAuth() {
         onClick={() => navigate("/")}
         className="fixed top-6 left-6 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md hover:bg-white/25 transition-colors"
       >
-        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-        </svg>
+        <img  
+          src="/icons/arrow-left.svg" 
+          alt="Back" 
+          className="w-[18px] h-[18px]" 
+        />
       </button>
 
       {/* Desktop: sliding curve card */}
