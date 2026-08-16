@@ -8,6 +8,7 @@ import Avatar from "../components/dashboard/influencer/Avatar";
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
 import { API_URL } from "../config/api";
+import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
 
 export default function Messages() {
   const { user } = useAuth();
