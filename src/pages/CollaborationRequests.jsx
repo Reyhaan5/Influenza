@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { Check, X, Clock, ArrowUpRight } from "lucide-react";
+import { Check, X, Clock, ArrowUpRight, MessageCircle } from "lucide-react";
 
 import Navbar from "../components/layout/Navbar";
 import Section from "../components/common/Section";
@@ -16,12 +16,14 @@ const STATUS_STYLES = {
 };
 
 function RequestRow({ request, isMyTurnToRespond, onRespond, responding }) {
-  const otherPartyName =
+  const otherParty =
     request.brand && request.influencer
       ? request.__viewerRole === "brand"
-        ? request.influencer?.name
-        : request.brand?.name
-      : "Unknown";
+        ? request.influencer
+        : request.brand
+      : null;
+
+  const otherPartyName = otherParty?.name || "Unknown";
 
   return (
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 shadow-[var(--shadow-card)] flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -46,6 +48,15 @@ function RequestRow({ request, isMyTurnToRespond, onRespond, responding }) {
           {request.status === "rejected" && <X size={13} />}
           {request.status}
         </span>
+
+        {otherParty?._id && (
+          <Link
+            to={`/messages?with=${otherParty._id}`}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text)] text-xs font-semibold hover:bg-[var(--color-background)] transition"
+          >
+            <MessageCircle size={13} /> Message
+          </Link>
+        )}
 
         {isMyTurnToRespond && request.status === "pending" && (
           <div className="flex gap-2">

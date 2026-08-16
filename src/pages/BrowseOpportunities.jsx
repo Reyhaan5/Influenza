@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
-import { Target, Calendar, Send, Check, Clock } from "lucide-react";
+import { Target, Calendar, Send, Check, Clock, MessageCircle } from "lucide-react";
 
 import Navbar from "../components/layout/Navbar";
 import Section from "../components/common/Section";
@@ -39,24 +40,35 @@ function OpportunityCard({ opportunity, onApply, applying }) {
         <p className="text-xs text-[var(--color-text)]/70 italic">{opportunity.requirements}</p>
       )}
 
-      {status ? (
-        <span className="self-start flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--color-background)] text-[var(--color-text-light)] mt-1">
-          {status === "pending" && <Clock size={14} />}
-          {status === "accepted" && <Check size={14} className="text-[var(--color-success)]" />}
-          {status === "pending" && "Application pending"}
-          {status === "accepted" && "You're collaborating"}
-          {status === "rejected" && "Application declined"}
-        </span>
-      ) : (
-        <button
-          onClick={onApply}
-          disabled={applying}
-          className="self-start flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white transition disabled:opacity-60 mt-1"
-        >
-          <Send size={14} />
-          {applying ? "Applying..." : "Apply"}
-        </button>
-      )}
+      <div className="flex items-center gap-2 flex-wrap mt-1">
+        {status ? (
+          <span className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--color-background)] text-[var(--color-text-light)]">
+            {status === "pending" && <Clock size={14} />}
+            {status === "accepted" && <Check size={14} className="text-[var(--color-success)]" />}
+            {status === "pending" && "Application pending"}
+            {status === "accepted" && "You're collaborating"}
+            {status === "rejected" && "Application declined"}
+          </span>
+        ) : (
+          <button
+            onClick={onApply}
+            disabled={applying}
+            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white transition disabled:opacity-60"
+          >
+            <Send size={14} />
+            {applying ? "Applying..." : "Apply"}
+          </button>
+        )}
+
+        {opportunity.brand?._id && (
+          <Link
+            to={`/messages?with=${opportunity.brand._id}`}
+            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-background)] transition"
+          >
+            <MessageCircle size={14} /> Message
+          </Link>
+        )}
+      </div>
     </div>
   );
 }

@@ -12,6 +12,7 @@ import BrandCollaborations from "../pages/BrandCollaborations";
 import InsiderRateCalculator from "../pages/InsiderRateCalculator";
 import CollaborationRequests from "../pages/CollaborationRequests";
 import BrowseOpportunities from "../pages/BrowseOpportunities";
+import Messages from "../pages/Messages";
 
 function AppRoutes() {
   return (
@@ -83,6 +84,15 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <CollaborationRequests />
+            </ProtectedRoute>
+          }
+        />
+        {/* Shared by both roles — chat between brands and influencers */}
+        <Route
+          path="/messages"
+          element={
+            <ProtectedRoute>
+              <Messages />
             </ProtectedRoute>
           }
         />
