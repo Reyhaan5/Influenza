@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+﻿import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Home from "../pages/Home";
 import Login from "../pages/Login";
@@ -13,6 +13,8 @@ import InsiderRateCalculator from "../pages/InsiderRateCalculator";
 import CollaborationRequests from "../pages/CollaborationRequests";
 import BrowseOpportunities from "../pages/BrowseOpportunities";
 import Messages from "../pages/Messages";
+import BrowseCategories from "../pages/BrowseCategories";
+import CategoryResults from "../pages/CategoryResults";
 
 function AppRoutes() {
   return (
@@ -22,6 +24,11 @@ function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Login />} />
         <Route path="/pricing-calculator" element={<PricingCalculator />} />
+
+        {/* Public — no login required */}
+        <Route path="/categories" element={<BrowseCategories />} />
+        <Route path="/categories/:category" element={<CategoryResults />} />
+
         <Route
           path="/influencer-dashboard"
           element={

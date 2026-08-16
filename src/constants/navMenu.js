@@ -1,4 +1,4 @@
-import { industries } from "./industries";
+﻿import { industries } from "./industries";
 import { howItWorksSteps } from "./howItWorks";
 
 export const megaMenu = [
@@ -146,6 +146,13 @@ export const megaMenu = [
     columns: [
       {
         items: [
+          {
+            imageSrc: "/icons/search.svg",
+            title: "Browse by Category",
+            description: "Explore creators across every niche",
+            href: "/categories",
+            isRoute: true,
+          },
           {
             imageSrc: "/icons/blog.svg",
             title: "Blog",
