@@ -24,6 +24,7 @@ import "./models/Review.js";
 import "./models/Product.js";
 import "./models/Conversation.js";
 import "./models/Message.js";
+import "./models/GalleryContent.js";
 
 dotenv.config(); // loads variables from .env into process.env
 connectDB(); // connect to MongoDB Atlas (see config/db.js)

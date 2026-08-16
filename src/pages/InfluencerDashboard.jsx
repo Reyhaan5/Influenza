@@ -1,8 +1,8 @@
 ﻿import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-import Navbar from "../components/layout/Navbar";
-import Section from "../components/common/Section";
+import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
+import Heading from "../components/ui/Heading";
 import ProfileCard from "../components/dashboard/influencer/ProfileCard";
 import ConnectBanner from "../components/dashboard/influencer/ConnectBanner";
 import StatCard from "../components/dashboard/influencer/StatCard";
@@ -80,134 +80,98 @@ export default function InfluencerDashboard() {
 
   if (loading) {
     return (
-      <>
-        <Navbar />
-        <Section className="pt-32">
-          <p className="text-[var(--color-text-light)]">Loading your dashboard...</p>
-        </Section>
-      </>
+      <InfluencerDashboardLayout>
+        <p className="text-[var(--color-text-light)]">Loading your dashboard...</p>
+      </InfluencerDashboardLayout>
     );
   }
 
   if (error || !profile || !dashboard) {
     return (
-      <>
-        <Navbar />
-        <Section className="pt-32">
-          <p className="text-[var(--color-danger)]">{error || "Something went wrong."}</p>
-        </Section>
-      </>
+      <InfluencerDashboardLayout>
+        <p className="text-[var(--color-danger)]">{error || "Something went wrong."}</p>
+      </InfluencerDashboardLayout>
     );
   }
 
   return (
-    <>
-      <Navbar />
-      <Section className="pt-32">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-3xl font-extrabold text-[var(--color-text)]">Dashboard</h1>
-            <p className="mt-2 text-[var(--color-text-light)] max-w-2xl">
-              Earn from your influence through gifted and paid collabs. Connect your accounts and start
-              receiving opportunities.
-            </p>
-          </div>
-          <div className="flex gap-2 flex-shrink-0">
-            <Link
-              to="/opportunities"
-              className="px-4 py-2.5 rounded-xl border border-[var(--color-border)] text-sm font-semibold text-[var(--color-text)] hover:bg-[var(--color-background)] transition-colors"
-            >
-              Browse Campaigns
-            </Link>
-            <Link
-              to="/collaboration-requests"
-              className="px-4 py-2.5 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-sm font-semibold transition-colors"
-            >
-              My Requests
-            </Link>
-          </div>
+    <InfluencerDashboardLayout>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <Heading level={1}>Dashboard</Heading>
+          <p className="mt-2 text-[var(--color-text-light)] max-w-2xl">
+            Earn from your influence through gifted and paid collabs. Connect your accounts and start
+            receiving opportunities.
+          </p>
         </div>
+        <div className="flex gap-2 flex-shrink-0">
+          <Link
+            to="/opportunities"
+            className="px-4 py-2.5 rounded-xl border border-[var(--color-border)] text-sm font-semibold text-[var(--color-text)] hover:bg-[var(--color-background)] transition-colors"
+          >
+            Browse Campaigns
+          </Link>
+          <Link
+            to="/collaboration-requests"
+            className="px-4 py-2.5 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-sm font-semibold transition-colors"
+          >
+            My Requests
+          </Link>
+        </div>
+      </div>
 
-        <div className="mt-8 grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <ProfileCard
-              handle={profile.handle}
-              socialAccounts={profile.socialAccounts}
-              categories={profile.categories || []}
-              approved={profile.approved}
-              onAddAccount={() => setShowAddModal(true)}
-              onRemoveAccount={handleRemoveAccount}
-              onEditCategories={() => setShowCategoryModal(true)}
-            />
-          </div>
-          <ConnectBanner />
+      <div className="mt-8 grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <ProfileCard
+            handle={profile.handle}
+            socialAccounts={profile.socialAccounts}
+            categories={profile.categories || []}
+            approved={profile.approved}
+            onAddAccount={() => setShowAddModal(true)}
+            onRemoveAccount={handleRemoveAccount}
+            onEditCategories={() => setShowCategoryModal(true)}
+          />
         </div>
-        <div className="mt-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-bold text-[var(--color-text)]">My Rate Card</h2>
-            <Link
-              to="/insider-rate"
-              className="text-sm font-bold text-[var(--color-primary-hover)] hover:underline"
-            >
-              See your insider rate →
-            </Link>
-          </div>
-          <MyRateCard profile={profile} />
-        </div>
+        <ConnectBanner />
+      </div>
 
-        {/* Stats, challenges, opportunities, requests, and collaborations
-            sections plug in here once those backend endpoints exist. */}
-        <div className="mt-8">
-          <h2 className="font-bold text-[var(--color-text)] mb-4">My Stats</h2>
-          <div className="grid sm:grid-cols-3 gap-5">
-            <StatCard
-              icon={<img src="/icons/camera.svg" alt="Camera" className="w-5 h-5 object-contain" />}
-              label="Collaborations Completed"
-              value={dashboard.stats.collaborationsCompleted}
-            />
-            <StatCard
-              icon={<img src="/icons/star.svg" alt="Star" className="w-5 h-5 object-contain" />}
-              label="Rating"
-              value={dashboard.stats.rating}
-              suffix={`out of ${dashboard.stats.reviewsCount} reviews`}
-            />
-            <StatCard
-              icon={<img src="/icons/gift.svg" alt="Gift" className="w-5 h-5 object-contain" />}
-              label="Formats Completed"
-              value={dashboard.challenges.allFormats.completed.length}
-              suffix="out of 3"
-            />
-          </div>
-        </div>
+      <div className="mt-6 grid sm:grid-cols-2 gap-6">
+        <StatCard
+          icon={<img src="/icons/camera.svg" alt="" className="w-5 h-5 object-contain" />}
+          label="Total Collaborations"
+          value={dashboard.stats.collaborationsCompleted}
+          suffix={dashboard.stats.collaborationsCompleted === 0 ? "No collaborations yet" : undefined}
+        />
+        <StatCard
+          icon={<img src="/icons/star.svg" alt="" className="w-5 h-5 object-contain" />}
+          label="Reviews"
+          value={dashboard.stats.reviewsCount > 0 ? dashboard.stats.rating : "—"}
+          suffix={dashboard.stats.reviewsCount > 0 ? `${dashboard.stats.reviewsCount} reviews` : "No reviews yet"}
+        />
+      </div>
 
-        <div className="mt-8">
-          <h2 className="font-bold text-[var(--color-text)] mb-4">Challenges</h2>
-          <div className="flex flex-col gap-3">
-            <ChallengeRow
-              title="Response time"
-              description="Respond to brand requests in under 2 days."
-              achieved={dashboard.challenges.responseTime.achieved}
-              detail={
-                dashboard.challenges.responseTime.avgHours !== null
-                  ? `Current average: ${dashboard.challenges.responseTime.avgHours}h`
-                  : "No responded requests yet."
-              }
-            />
-            <ChallengeRow
-              title="Stay active"
-              description="Apply to 7+ opportunities this week."
-              achieved={dashboard.challenges.activeness.achieved}
-              detail={`${dashboard.challenges.activeness.applicationsThisWeek}/7 this week`}
-            />
-            <ChallengeRow
-              title="Try every format"
-              description="Complete a collaboration in money, barter, and product formats."
-              achieved={dashboard.challenges.allFormats.achieved}
-              detail={`Completed: ${dashboard.challenges.allFormats.completed.join(", ") || "none yet"}`}
-            />
-          </div>
+      <div className="mt-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-bold text-[var(--color-text)]">My Rate Card</h2>
+          <Link
+            to="/insider-rate"
+            className="text-sm font-bold text-[var(--color-primary-hover)] hover:underline"
+          >
+            See your insider rate →
+          </Link>
         </div>
-      </Section>
+        <MyRateCard profile={profile} />
+      </div>
+
+      <div className="mt-8 flex items-center justify-between">
+        <h2 className="font-bold text-[var(--color-text)]">Highlighted content</h2>
+        <Link
+          to="/content-gallery"
+          className="text-sm text-[var(--color-text-light)] hover:text-[var(--color-primary-hover)] hover:underline"
+        >
+          Manage portfolio →
+        </Link>
+      </div>
 
       {showAddModal && (
         <AddSocialAccountModal
@@ -224,25 +188,6 @@ export default function InfluencerDashboard() {
           onSave={handleSaveCategories}
         />
       )}
-    </>
-  );
-}
-
-function ChallengeRow({ title, description, achieved, detail }) {
-  return (
-    <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 shadow-[var(--shadow-card)] flex items-center justify-between gap-4">
-      <div>
-        <div className="flex items-center gap-2">
-          <h4 className="font-bold text-[var(--color-text)]">{title}</h4>
-          {achieved && (
-            <span className="text-[10px] font-bold text-[var(--color-success)] bg-[var(--color-success)]/10 px-2 py-0.5 rounded-full">
-              Achieved
-            </span>
-          )}
-        </div>
-        <p className="text-sm text-[var(--color-text-light)] mt-1">{description}</p>
-      </div>
-      <span className="text-sm font-semibold text-[var(--color-text)] whitespace-nowrap">{detail}</span>
-    </div>
+    </InfluencerDashboardLayout>
   );
 }
