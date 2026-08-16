@@ -1,6 +1,14 @@
 @import "tailwindcss";
 
 @import "./theme/colors.css";
+@import "./theme/typography.css";
+
+@theme {
+  --font-sans: var(--font-family-primary);
+  --text-xs: var(--font-size-xs);
+  --text-sm: var(--font-size-sm);
+  --text-md: var(--font-size-md);
+}
 
 html,
 body,
@@ -12,6 +20,9 @@ body,
 }
 
 body {
-  font-family: Inter, sans-serif;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-base);
+  line-height: var(--line-height-base);
   background: var(--color-background);
 }
