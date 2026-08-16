@@ -1,6 +1,6 @@
 ﻿import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, LayoutDashboard, LogOut } from "lucide-react";
+import { Menu, X, LayoutDashboard, LogOut, Mail } from "lucide-react";
 import { megaMenu } from "../../constants/navMenu";
 import { ShiftingDropDown } from "../ui/ShiftingDropDown";
 import { useAuth } from "../../context/AuthContext";
@@ -69,6 +69,15 @@ function ProfileMenu({ user, logout }) {
             Dashboard
           </Link>
 
+          <Link
+            to="/messages"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-[var(--color-text)] hover:bg-[var(--color-background)]"
+          >
+            <Mail size={16} />
+            Messages
+          </Link>
+
           <button
             onClick={handleLogout}
             className="flex items-center gap-2.5 w-full text-left px-4 py-2.5 text-sm font-medium text-[var(--color-danger)] hover:bg-[var(--color-background)]"
@@ -86,6 +95,7 @@ function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30);
@@ -101,18 +111,15 @@ function Navbar() {
         }`}
       >
         <div className="flex items-center justify-between gap-8 sm:gap-12">
-          {/* Logo */}
           <Link to="/" className="text-2xl font-extrabold tracking-tight text-[var(--color-primary)] flex-shrink-0">
             Influenza
           </Link>
 
-          {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-4">
             <ShiftingDropDown tabs={megaMenu} />
             <AnimatedNavLink href="#faq">Contact</AnimatedNavLink>
           </nav>
 
-          {/* Desktop Action Buttons */}
           <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
             {user ? (
               <ProfileMenu user={user} logout={logout} />
@@ -134,7 +141,6 @@ function Navbar() {
             )}
           </div>
 
-          {/* Mobile Menu Toggle */}
           <button
             className="lg:hidden flex items-center justify-center w-10 h-10 text-[var(--color-text)]"
             onClick={() => setIsOpen((o) => !o)}
@@ -144,28 +150,30 @@ function Navbar() {
           </button>
         </div>
 
-        {/* Mobile Dropdown */}
         <div className={`lg:hidden overflow-hidden transition-all duration-300 ${isOpen ? "max-h-[32rem] overflow-y-auto opacity-100 mt-5" : "max-h-0 opacity-0"}`}>
           <nav className="flex flex-col gap-6 pb-3">
-            {megaMenu.map((tab) => (
-              <div key={tab.id}>
-                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-[var(--color-text-light)]">
-                  {tab.title}
-                </p>
-                <div className="flex flex-col gap-2.5">
-                  {tab.columns
-                    .flatMap((col) => col.items)
-                    .map((item) =>
-                      item.isRoute ? (
-                        <Link
-                          key={item.title}
-                          to={item.href}
-                          className="text-base font-semibold text-[var(--color-text)]"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          {item.title}
-                        </Link>
-                      ) : (
+            {megaMenu.map((tab) => {
+              const flatItems = tab.columns.flatMap((col) => col.items);
+              return (
+                <div key={tab.id}>
+                  <p className="mb-2 text-xs font-bold uppercase tracking-wide text-[var(--color-text-light)]">
+                    {tab.title}
+                  </p>
+                  <div className="flex flex-col gap-2.5">
+                    {flatItems.map((item) => {
+                      if (item.isRoute) {
+                        return (
+                          <Link
+                            key={item.title}
+                            to={item.href}
+                            className="text-base font-semibold text-[var(--color-text)]"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            {item.title}
+                          </Link>
+                        );
+                      }
+                      return (
                         <a
                           key={item.title}
                           href={item.href}
@@ -174,11 +182,12 @@ function Navbar() {
                         >
                           {item.title}
                         </a>
-                      )
-                    )}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             <a
               href="#faq"
@@ -190,46 +199,62 @@ function Navbar() {
           </nav>
 
           {user ? (
-            <div className="flex items-center gap-3 mt-2 px-1">
-              <Avatar name={user.name} size={40} />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-[var(--color-text)] truncate">{user.name}</p>
-                <p className="text-xs text-[var(--color-text-light)] truncate">{user.email}</p>
+            <div className="border-t border-[var(--color-border)] pt-4 mt-2">
+              <div className="flex items-center gap-3 px-1 mb-4">
+                <Avatar name={user.name} size={40} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-[var(--color-text)] truncate">{user.name}</p>
+                  <p className="text-xs text-[var(--color-text-light)] truncate">{user.email}</p>
+                </div>
               </div>
-            </div>
-          ) : null}
-
-          <div className="flex flex-col gap-3 mt-4">
-            {user ? (
-              <>
+              <div className="flex flex-col gap-3">
                 <Link
                   to={user.role === "brand" ? "/brand-dashboard" : "/influencer-dashboard"}
                   onClick={() => setIsOpen(false)}
-                  className="w-full text-center px-5 py-3 text-base font-semibold text-white bg-[var(--color-primary)] rounded-full"
+                  className="flex items-center gap-2.5 text-sm font-medium text-[var(--color-text)]"
                 >
+                  <LayoutDashboard size={16} />
                   Dashboard
+                </Link>
+                <Link
+                  to="/messages"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2.5 text-sm font-medium text-[var(--color-text)]"
+                >
+                  <Mail size={16} />
+                  Messages
                 </Link>
                 <button
                   onClick={() => {
                     logout();
                     setIsOpen(false);
+                    navigate("/");
                   }}
-                  className="w-full text-center px-5 py-3 text-base font-semibold text-[var(--color-danger)] border border-[var(--color-border)] rounded-full"
+                  className="flex items-center gap-2.5 text-sm font-medium text-[var(--color-danger)] text-left w-full"
                 >
+                  <LogOut size={16} />
                   Sign Out
                 </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className="w-full text-center px-5 py-3 text-base font-semibold text-[var(--color-text)] border border-[var(--color-border)] rounded-full">
-                  Sign In
-                </Link>
-                <Link to="/signup" className="w-full text-center px-5 py-3 text-base font-semibold text-white bg-[var(--color-primary)] rounded-full">
-                  Get Started
-                </Link>
-              </>
-            )}
-          </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3 border-t border-[var(--color-border)] pt-4 mt-2">
+              <Link
+                to="/login"
+                onClick={() => setIsOpen(false)}
+                className="w-full text-center px-5 py-2.5 text-base font-semibold text-[var(--color-text)] border border-[var(--color-border)] rounded-full hover:border-[var(--color-primary)] transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/signup"
+                onClick={() => setIsOpen(false)}
+                className="w-full text-center px-5 py-2.5 text-base font-semibold text-white bg-[var(--color-primary)] rounded-full hover:bg-[var(--color-primary-hover)] transition-colors shadow-sm"
+              >
+                Get Started
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </header>

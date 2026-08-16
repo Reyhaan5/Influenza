@@ -1,12 +1,15 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import http from "http";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import influencerRoutes from "./routes/influencerRoutes.js";
 import publicRoutes from "./routes/publicRoutes.js";
 import brandRoutes from "./routes/brandRoutes.js";
 import collaborationRequestRoutes from "./routes/collaborationRequestRoutes.js";
+import messageRoutes from "./routes/messageRoutes.js";
+import { initSocket } from "./socket/index.js";
 
 // Registering every model here ensures Mongoose knows about them before
 // any .populate() call tries to reference them — even ones without full
@@ -19,6 +22,8 @@ import "./models/Collaboration.js";
 import "./models/ContentPost.js";
 import "./models/Review.js";
 import "./models/Product.js";
+import "./models/Conversation.js";
+import "./models/Message.js";
 
 dotenv.config(); // loads variables from .env into process.env
 connectDB(); // connect to MongoDB Atlas (see config/db.js)
@@ -46,13 +51,19 @@ app.use("/api/public", publicRoutes);
 app.use("/api/brand", brandRoutes);
 // Every URL starting with /api/collaboration-requests goes to collaborationRequestRoutes.js
 app.use("/api/collaboration-requests", collaborationRequestRoutes);
+// Every URL starting with /api/messages goes to messageRoutes.js
+app.use("/api/messages", messageRoutes);
 
 // Simple health check — visit http://localhost:5000/ to confirm it's running
 app.get("/", (req, res) => {
   res.send("Influenza API is running.");
 });
 
+// Wrap Express in a raw HTTP server so Socket.IO can attach to the same port
+const httpServer = http.createServer(app);
+initSocket(httpServer);
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

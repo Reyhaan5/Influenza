@@ -1,5 +1,6 @@
 import React from "react";
-import { Send, Check, Clock } from "lucide-react";
+import { Send, Check, Clock, MessageCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 import Avatar from "../influencer/Avatar";
 
 export default function CreatorSearchCard({ profile, requestStatus, sending, onSendRequest }) {
@@ -35,24 +36,33 @@ export default function CreatorSearchCard({ profile, requestStatus, sending, onS
         </p>
       )}
 
-      {requestStatus ? (
-        <span className="self-start flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--color-background)] text-[var(--color-text-light)]">
-          {requestStatus === "pending" && <Clock size={14} />}
-          {requestStatus === "accepted" && <Check size={14} className="text-[var(--color-success)]" />}
-          {requestStatus === "pending" && "Request pending"}
-          {requestStatus === "accepted" && "Collaborating"}
-          {requestStatus === "rejected" && "Request declined"}
-        </span>
-      ) : (
-        <button
-          onClick={onSendRequest}
-          disabled={sending}
-          className="self-start flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white transition disabled:opacity-60"
+      <div className="flex items-center gap-2 flex-wrap">
+        {requestStatus ? (
+          <span className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--color-background)] text-[var(--color-text-light)]">
+            {requestStatus === "pending" && <Clock size={14} />}
+            {requestStatus === "accepted" && <Check size={14} className="text-[var(--color-success)]" />}
+            {requestStatus === "pending" && "Request pending"}
+            {requestStatus === "accepted" && "Collaborating"}
+            {requestStatus === "rejected" && "Request declined"}
+          </span>
+        ) : (
+          <button
+            onClick={onSendRequest}
+            disabled={sending}
+            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white transition disabled:opacity-60"
+          >
+            <Send size={14} />
+            {sending ? "Sending..." : "Send Request"}
+          </button>
+        )}
+
+        <Link
+          to={`/messages?with=${profile.user?._id}`}
+          className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-background)] transition"
         >
-          <Send size={14} />
-          {sending ? "Sending..." : "Send Request"}
-        </button>
-      )}
+          <MessageCircle size={14} /> Message
+        </Link>
+      </div>
     </div>
   );
 }
