@@ -1,5 +1,6 @@
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
+import { getIO } from "../socket/index.js";
 
 export const getOrCreateConversation = async (req, res) => {
   try {
@@ -53,5 +54,40 @@ export const getMessages = async (req, res) => {
     res.json({ messages: messages.reverse() });
   } catch (error) {
     res.status(500).json({ message: "Unable to fetch messages.", error: error.message });
+  }
+};
+
+// DELETE /api/messages/conversations/:id  (protected)
+// Deletes the conversation and all its messages for BOTH participants.
+// Only someone in the conversation can delete it.
+export const deleteConversation = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const conversation = await Conversation.findById(id);
+    if (!conversation) {
+      return res.status(404).json({ message: "Conversation not found." });
+    }
+
+    const participantIds = conversation.participants.map((p) => String(p));
+    if (!participantIds.includes(String(req.user._id))) {
+      return res.status(403).json({ message: "Not authorized." });
+    }
+
+    await Message.deleteMany({ conversation: id });
+    await conversation.deleteOne();
+
+    // Tell the other participant(s) in realtime so it disappears from their
+    // sidebar immediately, not just on next page load.
+    const io = getIO();
+    if (io) {
+      participantIds.forEach((participantId) => {
+        io.to(`user:${participantId}`).emit("conversationDeleted", { conversationId: id });
+      });
+    }
+
+    res.json({ message: "Conversation deleted.", conversationId: id });
+  } catch (error) {
+    res.status(500).json({ message: "Unable to delete conversation.", error: error.message });
   }
 };

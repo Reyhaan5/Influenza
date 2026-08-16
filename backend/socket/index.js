@@ -6,6 +6,14 @@ import Message from "../models/Message.js";
 
 let io;
 
+// Lets REST controllers (e.g. deleteConversation) push realtime events
+// without needing their own socket connection.
+export function getIO() {
+  return io;
+}
+
+  // ...rest unchanged
+
 export function initSocket(httpServer) {
   io = new Server(httpServer, {
     cors: {

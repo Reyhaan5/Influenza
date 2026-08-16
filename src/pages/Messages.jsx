@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import { Send } from "lucide-react";
+import { Send, Trash2 } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import Section from "../components/common/Section";
@@ -19,6 +19,7 @@ export default function Messages() {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
 
   const authHeader = () => ({
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -84,16 +85,39 @@ export default function Messages() {
     };
 
     const onConversationUpdated = ({ conversationId, lastMessage, lastMessageAt }) => {
-      setConversations((prev) =>
-        prev.map((c) => (c._id === conversationId ? { ...c, lastMessage, lastMessageAt } : c))
-      );
+      setConversations((prev) => {
+        const exists = prev.some((c) => c._id === conversationId);
+
+        if (exists) {
+          return prev.map((c) =>
+            c._id === conversationId ? { ...c, lastMessage, lastMessageAt } : c
+          );
+        }
+
+        // We don't have this conversation yet (e.g. someone just messaged us
+        // for the first time) — refetch the full list so it appears with its
+        // participants populated, rather than silently dropping the update.
+        fetchConversations();
+        return prev;
+      });
+    };
+
+    const onConversationDeleted = ({ conversationId }) => {
+      setConversations((prev) => prev.filter((c) => c._id !== conversationId));
+      setActiveId((prevActiveId) => {
+        if (prevActiveId !== conversationId) return prevActiveId;
+        setMessages([]);
+        return null;
+      });
     };
 
     socket.on("newMessage", onNewMessage);
     socket.on("conversationUpdated", onConversationUpdated);
+    socket.on("conversationDeleted", onConversationDeleted);
     return () => {
       socket.off("newMessage", onNewMessage);
       socket.off("conversationUpdated", onConversationUpdated);
+      socket.off("conversationDeleted", onConversationDeleted);
     };
   }, [socket, activeId]);
 
@@ -105,6 +129,32 @@ export default function Messages() {
   };
 
   const otherParticipant = (c) => c.participants.find((p) => p._id !== user.id) || c.participants[0];
+
+  const handleDeleteConversation = async (e, conversationId) => {
+    e.stopPropagation(); // don't let the click also select this conversation
+
+    const confirmed = window.confirm(
+      "Delete this conversation? This removes all messages for both people and can't be undone."
+    );
+    if (!confirmed) return;
+
+    setDeletingId(conversationId);
+    try {
+      await axios.delete(`${API_URL}/messages/conversations/${conversationId}`, authHeader());
+
+      setConversations((prev) => prev.filter((c) => c._id !== conversationId));
+
+      if (activeId === conversationId) {
+        setActiveId(null);
+        setMessages([]);
+      }
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || "Failed to delete conversation.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
     <>
@@ -122,21 +172,35 @@ export default function Messages() {
               conversations.map((c) => {
                 const other = otherParticipant(c);
                 return (
-                  <button
+                  <div
                     key={c._id}
-                    onClick={() => setActiveId(c._id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-left border-b border-[var(--color-border)] hover:bg-[var(--color-background)] transition ${
+                    className={`group w-full flex items-center gap-2 pl-4 pr-2 py-3 border-b border-[var(--color-border)] hover:bg-[var(--color-background)] transition ${
                       activeId === c._id ? "bg-[var(--color-background)]" : ""
                     }`}
                   >
-                    <Avatar name={other?.name} size={36} />
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-[var(--color-text)] truncate">{other?.name}</p>
-                      <p className="text-xs text-[var(--color-text-light)] truncate">
-                        {c.lastMessage || "Say hello 👋"}
-                      </p>
-                    </div>
-                  </button>
+                    <button
+                      onClick={() => setActiveId(c._id)}
+                      className="flex-1 min-w-0 flex items-center gap-3 text-left"
+                    >
+                      <Avatar name={other?.name} size={36} />
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-[var(--color-text)] truncate">{other?.name}</p>
+                        <p className="text-xs text-[var(--color-text-light)] truncate">
+                          {c.lastMessage || "Say hello 👋"}
+                        </p>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={(e) => handleDeleteConversation(e, c._id)}
+                      disabled={deletingId === c._id}
+                      aria-label="Delete conversation"
+                      title="Delete conversation"
+                      className="flex-shrink-0 p-2 rounded-lg text-[var(--color-text-light)] opacity-0 group-hover:opacity-100 hover:bg-[var(--color-danger)]/10 hover:text-[var(--color-danger)] transition disabled:opacity-50"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
                 );
               })
             )}
