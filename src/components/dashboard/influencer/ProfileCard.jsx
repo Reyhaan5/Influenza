@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import Avatar from "./Avatar";
 
 // Map platforms to image paths located in your /public folder
@@ -11,9 +11,11 @@ const platformLogos = {
 export default function ProfileCard({
   handle,
   socialAccounts = [],
+  categories = [],
   approved,
   onAddAccount,
   onRemoveAccount,
+  onEditCategories,
 }) {
   return (
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 shadow-[var(--shadow-card)] flex flex-col gap-5 h-full">
@@ -34,6 +36,36 @@ export default function ProfileCard({
         <span className="font-bold text-[var(--color-text)] text-lg">
           {handle}
         </span>
+      </div>
+
+      {/* Categories */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-semibold text-[var(--color-text)]">Categories</span>
+          <button
+            onClick={onEditCategories}
+            className="text-xs font-semibold text-[var(--color-primary-hover)] hover:underline"
+          >
+            {categories.length > 0 ? "Edit" : "Add categories"}
+          </button>
+        </div>
+
+        {categories.length > 0 ? (
+          <div className="flex flex-wrap gap-1.5">
+            {categories.map((cat) => (
+              <span
+                key={cat}
+                className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary-hover)]"
+              >
+                {cat}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-[var(--color-text-light)]">
+            Add up to 3 niches so brands (and the public category pages) can find you.
+          </p>
+        )}
       </div>
 
       {/* Connected social accounts */}

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Camera, Star, Gift } from "lucide-react";
 
 import Navbar from "../components/layout/Navbar";
 import Section from "../components/common/Section";
@@ -8,6 +7,7 @@ import ProfileCard from "../components/dashboard/influencer/ProfileCard";
 import ConnectBanner from "../components/dashboard/influencer/ConnectBanner";
 import StatCard from "../components/dashboard/influencer/StatCard";
 import AddSocialAccountModal from "../components/dashboard/influencer/AddSocialAccountModal";
+import CategoryPickerModal from "../components/dashboard/influencer/CategoryPickerModal";
 
 import { Link } from "react-router-dom";
 import MyRateCard from "../components/dashboard/influencer/MyRateCard";
@@ -20,6 +20,8 @@ export default function InfluencerDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [savingCategories, setSavingCategories] = useState(false);
 
   const authHeader = () => ({
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -60,6 +62,19 @@ export default function InfluencerDashboard() {
       setProfile(res.data);
     } catch (err) {
       alert(err.response?.data?.message || "Failed to remove account.");
+    }
+  };
+
+  const handleSaveCategories = async (categories) => {
+    setSavingCategories(true);
+    try {
+      const res = await axios.put(`${API_URL}/influencer/profile`, { categories }, authHeader());
+      setProfile(res.data);
+      setShowCategoryModal(false);
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to save categories.");
+    } finally {
+      setSavingCategories(false);
     }
   };
 
@@ -118,9 +133,11 @@ export default function InfluencerDashboard() {
             <ProfileCard
               handle={profile.handle}
               socialAccounts={profile.socialAccounts}
+              categories={profile.categories || []}
               approved={profile.approved}
               onAddAccount={() => setShowAddModal(true)}
               onRemoveAccount={handleRemoveAccount}
+              onEditCategories={() => setShowCategoryModal(true)}
             />
           </div>
           <ConnectBanner />
@@ -144,18 +161,18 @@ export default function InfluencerDashboard() {
           <h2 className="font-bold text-[var(--color-text)] mb-4">My Stats</h2>
           <div className="grid sm:grid-cols-3 gap-5">
             <StatCard
-              icon={<Camera size={20} />}
+              icon={<img src="/icons/camera.svg" alt="Camera" className="w-5 h-5 object-contain" />}
               label="Collaborations Completed"
               value={dashboard.stats.collaborationsCompleted}
             />
             <StatCard
-              icon={<Star size={20} />}
+              icon={<img src="/icons/star.svg" alt="Star" className="w-5 h-5 object-contain" />}
               label="Rating"
               value={dashboard.stats.rating}
               suffix={`out of ${dashboard.stats.reviewsCount} reviews`}
             />
             <StatCard
-              icon={<Gift size={20} />}
+              icon={<img src="/icons/gift.svg" alt="Gift" className="w-5 h-5 object-contain" />}
               label="Formats Completed"
               value={dashboard.challenges.allFormats.completed.length}
               suffix="out of 3"
@@ -196,6 +213,15 @@ export default function InfluencerDashboard() {
         <AddSocialAccountModal
           onClose={() => setShowAddModal(false)}
           onSubmit={handleAddAccount}
+        />
+      )}
+
+      {showCategoryModal && (
+        <CategoryPickerModal
+          initialCategories={profile.categories || []}
+          saving={savingCategories}
+          onClose={() => setShowCategoryModal(false)}
+          onSave={handleSaveCategories}
         />
       )}
     </>
