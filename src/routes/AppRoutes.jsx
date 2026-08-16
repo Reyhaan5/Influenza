@@ -15,6 +15,7 @@ import BrowseOpportunities from "../pages/BrowseOpportunities";
 import Messages from "../pages/Messages";
 import BrowseCategories from "../pages/BrowseCategories";
 import CategoryResults from "../pages/CategoryResults";
+import ContentGallery from "../pages/ContentGallery";
 
 function AppRoutes() {
   return (
@@ -28,6 +29,7 @@ function AppRoutes() {
         {/* Public — no login required */}
         <Route path="/categories" element={<BrowseCategories />} />
         <Route path="/categories/:category" element={<CategoryResults />} />
+        <Route path="/content-gallery" element={<ContentGallery />} />
 
         <Route
           path="/influencer-dashboard"

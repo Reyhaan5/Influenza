@@ -8,6 +8,7 @@ import Section from "../components/common/Section";
 import BrandNav from "../components/dashboard/brand/BrandNav";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../config/api";
+import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
 
 const STATUS_STYLES = {
   pending: "bg-[var(--color-warning)]/10 text-[var(--color-warning)]",
@@ -24,6 +25,7 @@ function RequestRow({ request, isMyTurnToRespond, onRespond, responding }) {
       : null;
 
   const otherPartyName = otherParty?.name || "Unknown";
+  const isInfluencer = user?.role === "influencer";
 
   return (
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 shadow-[var(--shadow-card)] flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -31,11 +33,18 @@ function RequestRow({ request, isMyTurnToRespond, onRespond, responding }) {
         <p className="font-bold text-[var(--color-text)]">{otherPartyName}</p>
         <p className="text-xs text-[var(--color-text-light)] mt-1">
           {request.opportunity?.title || "Direct outreach"}
-          {request.opportunity?.rewardValue ? ` · ${request.opportunity.rewardValue}` : ""}
+          {request.opportunity?.rewardValue
+            ? ` · ${request.opportunity.rewardValue}`
+            : ""}
         </p>
         <p className="text-xs text-[var(--color-text-light)] mt-1">
-          {request.initiatedBy === "brand" ? "Brand reached out" : "Influencer applied"} ·{" "}
-          {new Date(request.requestedAt || request.createdAt).toLocaleDateString()}
+          {request.initiatedBy === "brand"
+            ? "Brand reached out"
+            : "Influencer applied"}{" "}
+          ·{" "}
+          {new Date(
+            request.requestedAt || request.createdAt,
+          ).toLocaleDateString()}
         </p>
       </div>
 
@@ -93,7 +102,10 @@ export default function CollaborationRequests() {
 
   const fetchRequests = async () => {
     try {
-      const res = await axios.get(`${API_URL}/collaboration-requests`, authHeader());
+      const res = await axios.get(
+        `${API_URL}/collaboration-requests`,
+        authHeader(),
+      );
       setRequests(res.data.requests || []);
     } catch (error) {
       console.error(error);
@@ -109,7 +121,11 @@ export default function CollaborationRequests() {
   const handleRespond = async (id, status) => {
     setRespondingId(id);
     try {
-      await axios.put(`${API_URL}/collaboration-requests/${id}`, { status }, authHeader());
+      await axios.put(
+        `${API_URL}/collaboration-requests/${id}`,
+        { status },
+        authHeader(),
+      );
       await fetchRequests();
     } catch (error) {
       console.error(error);
@@ -123,12 +139,13 @@ export default function CollaborationRequests() {
 
   return (
     <>
-      <Navbar />
-      <Section className="pt-32">
+      const content = (
+      <>
         {isBrand && <BrandNav />}
-
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-[var(--color-text)]">Collaboration Requests</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-text)]">
+            Collaboration Requests
+          </h1>
           {!isBrand && (
             <Link
               to="/opportunities"
@@ -166,7 +183,14 @@ export default function CollaborationRequests() {
             })}
           </div>
         )}
-      </Section>
+      </>
+      ); return isInfluencer ? (
+      <InfluencerDashboardLayout>{content}</InfluencerDashboardLayout>) : (
+      <>
+        <Navbar />
+        <Section className="pt-32">{content}</Section>
+      </>
+      );
     </>
   );
 }

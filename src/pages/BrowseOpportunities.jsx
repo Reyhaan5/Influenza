@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { Target, Calendar, Send, Check, Clock, MessageCircle } from "lucide-react";
 
-import Navbar from "../components/layout/Navbar";
-import Section from "../components/common/Section";
+import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
 import { API_URL } from "../config/api";
 
 function OpportunityCard({ opportunity, onApply, applying }) {

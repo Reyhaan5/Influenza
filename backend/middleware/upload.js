@@ -23,17 +23,22 @@ const storage = multer.diskStorage({
   },
 });
 
+// NOTE: extended beyond the original image-only filter so the Content
+// Gallery can accept short video clips too. Same known caveat as before —
+// this still writes to Render's ephemeral local disk, so files vanish on
+// redeploy until we move this to cloud storage (Cloudinary/S3).
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image/")) {
+  if (file.mimetype.startsWith("image/") || file.mimetype.startsWith("video/")) {
     cb(null, true);
   } else {
-    cb(new Error("Only image files are allowed."), false);
+    cb(new Error("Only image or video files are allowed."), false);
   }
 };
 
 const upload = multer({
   storage,
   fileFilter,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB — generous enough for short clips
 });
 
 export default upload;

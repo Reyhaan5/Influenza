@@ -3,6 +3,44 @@ import { howItWorksSteps } from "./howItWorks";
 
 export const megaMenu = [
   {
+    id: "customers",
+    title: "Customers",
+    columns: [
+      {
+        heading: "Get Started",
+        items: [
+          {
+            imageSrc: "/icons/create-campaign.svg",
+            title: "Create Campaign",
+            description: "Define campaign objectives, budget, audience and creator preferences from a single workspace.",
+            href: "#how-it-works",
+          },
+          {
+            imageSrc: "/icons/intelligent-analysis.svg",
+            title: "Intelligent Analysis",
+            description: "Our platform evaluates audience quality, campaign compatibility, pricing intelligence and performance indicators to recommend the most suitable creators.",
+            href: "#how-it-works",
+          },
+          {
+            imageSrc: "/icons/launch-track.svg",
+            title: "Launch & Track",
+            description: "Collaborate with creators, monitor campaign progress and measure performance through one centralized dashboard.",
+            href: "#how-it-works",
+          },
+        ],
+      },
+      {
+        heading: "By Industry",
+        items: industries.slice(0, 4).map((industry) => ({
+          emoji: industry.icon,
+          title: industry.title,
+          description: `Reach ${industry.title.toLowerCase()} audiences with matched creators`,
+          href: "#",
+        })),
+      },
+    ],
+  },
+  {
     id: "platform",
     title: "Platform",
     columns: [
@@ -72,40 +110,109 @@ export const megaMenu = [
     ],
   },
   {
-    id: "brands",
-    title: "For Brands",
+    id: "resources",
+    title: "Resources",
     columns: [
       {
-        heading: "Get Started",
+        heading: "Explore",
         items: [
           {
-            imageSrc: "/icons/create-campaign.svg",
-            title: "Create Campaign",
-            description: "Define campaign objectives, budget, audience and creator preferences from a single workspace.",
-            href: "#how-it-works",
+            imageSrc: "/icons/camera.svg",
+            title: "Content Gallery",
+            description: "Browse real content published by creators on Influenza — no login needed",
+            href: "/content-gallery",
+            isRoute: true,
           },
           {
-            imageSrc: "/icons/intelligent-analysis.svg",
-            title: "Intelligent Analysis",
-            description: "Our platform evaluates audience quality, campaign compatibility, pricing intelligence and performance indicators to recommend the most suitable creators.",
-            href: "#how-it-works",
+            imageSrc: "/icons/users.svg",
+            title: "Meet the Creators",
+            description: "Explore creators across every niche",
+            href: "/categories",
+            isRoute: true,
           },
           {
-            imageSrc: "/icons/launch-track.svg",
-            title: "Launch & Track",
-            description: "Collaborate with creators, monitor campaign progress and measure performance through one centralized dashboard.",
-            href: "#how-it-works",
+            imageSrc: "/icons/wallet.svg",
+            title: "Rate Card Calculator",
+            description: "See fair, data-backed pricing for a creator",
+            href: "/pricing-calculator",
+            isRoute: true,
           },
         ],
       },
       {
-        heading: "By Industry",
-        items: industries.slice(0, 4).map((industry) => ({
-          emoji: industry.icon,
-          title: industry.title,
-          description: `Reach ${industry.title.toLowerCase()} audiences with matched creators`,
-          href: "#",
-        })),
+        heading: "Discover More",
+        items: [
+          {
+            imageSrc: "/icons/star.svg",
+            title: "Success Stories",
+            description: "See results from brands using Influenza",
+            href: "#",
+          },
+          {
+            imageSrc: "/icons/help.svg",
+            title: "Help Center",
+            description: "Get your questions answered with our FAQ",
+            href: "#faq",
+          },
+          {
+            imageSrc: "/icons/blog.svg",
+            title: "Blog",
+            description: "Playbooks and updates from the Influenza team",
+            href: "#",
+          },
+          {
+            imageSrc: "/icons/mail.svg",
+            title: "Contact",
+            description: "Get in touch with our team",
+            href: "#faq",
+          },
+        ],
+      },
+      {
+        heading: "Insights & Tools",
+        items: [
+          {
+            imageSrc: "/icons/analytics.svg",
+            title: "Business Tools",
+            description: "Growth and productivity tools for brands",
+            href: "#",
+          },
+          {
+            imageSrc: "/icons/create-campaign.svg",
+            title: "Marketing Tools",
+            description: "Marketing tools for creators and brands",
+            href: "#",
+          },
+          {
+            imageSrc: "/icons/docs.svg",
+            title: "Guides",
+            description: "Guides for brands and creators",
+            href: "#",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "pricing",
+    title: "Pricing",
+    columns: [
+      {
+        items: [
+          {
+            imageSrc: "/icons/plans.svg",
+            title: "Plans",
+            description: "See plans for brands and teams",
+            href: "#pricing",
+          },
+          {
+            imageSrc: "/icons/wallet.svg",
+            title: "Rate Calculator",
+            description: "Estimate creator pricing instantly",
+            href: "/pricing-calculator",
+            isRoute: true,
+          },
+        ],
       },
     ],
   },
@@ -136,72 +243,15 @@ export const megaMenu = [
             href: "/pricing-calculator",
             isRoute: true,
           },
-        ],
-      },
-    ],
-  },
-  {
-    id: "resources",
-    title: "Resources",
-    columns: [
-      {
-        items: [
           {
-            imageSrc: "/icons/search.svg",
-            title: "Browse by Category",
-            description: "Explore creators across every niche",
-            href: "/categories",
-            isRoute: true,
-          },
-          {
-            imageSrc: "/icons/blog.svg",
-            title: "Blog",
-            description: "Playbooks and updates from the Influenza team",
-            href: "#",
-          },
-          {
-            imageSrc: "/icons/docs.svg",
-            title: "Documentation",
-            description: "Guides for brands and influencers",
-            href: "#",
-          },
-          {
-            imageSrc: "/icons/help.svg",
-            title: "Help Center",
-            description: "Get your questions answered fast",
-            href: "#",
-          },
-          {
-            imageSrc: "/icons/api.svg",
-            title: "API",
-            description: "Build on top of the Influenza platform",
-            href: "#",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "pricing",
-    title: "Pricing",
-    columns: [
-      {
-        items: [
-          {
-            imageSrc: "/icons/plans.svg",
-            title: "Plans",
-            description: "See plans for brands and teams",
-            href: "#pricing",
-          },
-          {
-            imageSrc: "/icons/wallet.svg",
-            title: "Rate Calculator",
-            description: "Estimate creator pricing instantly",
-            href: "/pricing-calculator",
+            imageSrc: "/icons/camera.svg",
+            title: "Add to Content Gallery",
+            description: "Showcase your best work publicly, no brand required",
+            href: "/influencer-dashboard",
             isRoute: true,
           },
         ],
       },
     ],
   },
-];  
+];

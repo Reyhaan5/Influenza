@@ -5,7 +5,8 @@ import {
   Wallet,
   TrendingUp,
   Search,
-  Users,
+  Send,
+  Mail,
   Camera,
   Settings,
   LogOut,
@@ -15,10 +16,10 @@ import { useAuth } from "../../../context/AuthContext";
 
 const NAV_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: Home, to: "/influencer-dashboard" },
-  { key: "rate-card", label: "Rate Card", icon: Wallet, to: "/influencer-dashboard" },
   { key: "insider-rate", label: "Insider Rate", icon: TrendingUp, to: "/insider-rate" },
-  { key: "opportunities", label: "Opportunities", icon: Search, comingSoon: true },
-  { key: "requests", label: "Requests", icon: Users, comingSoon: true },
+  { key: "opportunities", label: "Opportunities", icon: Search, to: "/opportunities" },
+  { key: "requests", label: "Invitations", icon: Send, to: "/collaboration-requests" },
+  { key: "inbox", label: "Inbox", icon: Mail, to: "/messages" },
   { key: "collaborations", label: "Collaborations", icon: Camera, comingSoon: true },
 ];
 
@@ -67,7 +68,7 @@ export default function InfluencerSidebar() {
               <div
                 key={item.key}
                 className="relative flex h-11 w-full items-center rounded-xl text-[var(--color-text-light)]/50 cursor-not-allowed select-none"
-                title={open ? undefined : `${item.label} — coming soon`}
+                title={open ? undefined : `${item.label} - coming soon`}
               >
                 <div className="grid h-11 w-11 flex-shrink-0 place-content-center">
                   <Icon className="h-4 w-4" />
@@ -107,7 +108,7 @@ export default function InfluencerSidebar() {
       <div className="border-t border-[var(--color-border)] px-2 py-2 space-y-1">
         <div
           className="flex h-11 w-full items-center rounded-xl text-[var(--color-text-light)]/50 cursor-not-allowed"
-          title={open ? undefined : "Settings — coming soon"}
+          title={open ? undefined : "Settings - coming soon"}
         >
           <div className="grid h-11 w-11 flex-shrink-0 place-content-center">
             <Settings className="h-4 w-4" />
