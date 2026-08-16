@@ -1,0 +1,16 @@
+:root {
+  --font-family-primary: "Inter Variable", Inter, sans-serif;
+  --font-size-xs: 14px;
+  --font-size-sm: 16px;
+  --font-size-md: 30px;
+  --font-size-base: 16px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-base: 400;
+  --line-height-base: 24px;
+  --line-height-tight: 1.2;
+  --line-height-relaxed: 1.5;
+}
