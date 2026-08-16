@@ -1,10 +1,12 @@
-// backend/routes/publicRoutes.js
+﻿// backend/routes/publicRoutes.js
 import express from "express";
 import { lookupInstagramHandle } from "../controllers/instagramController.js";
+import { getCreatorsByCategory } from "../controllers/publicCreatorsController.js";
 
 const router = express.Router();
 
-// No auth — this page is intentionally usable without login.
+// No auth — these are intentionally usable without login.
 router.get("/instagram-lookup", lookupInstagramHandle);
+router.get("/creators-by-category", getCreatorsByCategory);
 
 export default router;
