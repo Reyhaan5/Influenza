@@ -1,4 +1,14 @@
-import mongoose from "mongoose";
+﻿import mongoose from "mongoose";
+import dns from "dns";
+
+// WINDOWS DNS FIX — DO NOT REMOVE
+// Windows' default DNS resolver (via c-ares) frequently fails to resolve
+// the SRV record for MongoDB Atlas (mongodb+srv://...), throwing
+// "querySrv ECONNREFUSED". Forcing Node to use public DNS servers and
+// preferring IPv4 results fixes this reliably. This must run before
+// mongoose.connect() is ever called.
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
+dns.setDefaultResultOrder("ipv4first");
 
 const connectDB = async () => {
   try {

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+﻿import mongoose from "mongoose";
 
 const socialAccountSchema = new mongoose.Schema(
   {
@@ -23,6 +23,19 @@ const influencerProfileSchema = new mongoose.Schema(
 
     socialAccounts: [socialAccountSchema],
     savedOpportunities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Opportunity" }],
+
+    // Niches the influencer associates with their profile. Capped at 3 so the
+    // category browse/search feature stays meaningful (see publicCreatorsController.js).
+    categories: {
+      type: [String],
+      default: [],
+      validate: {
+        validator: function (arr) {
+          return Array.isArray(arr) && arr.length <= 3;
+        },
+        message: "You can select up to 3 categories.",
+      },
+    },
 
     // NOTE: collaborationsCompleted, rating, challenges, and milestones are
     // NOT stored here — they're computed live from CollaborationRequest,

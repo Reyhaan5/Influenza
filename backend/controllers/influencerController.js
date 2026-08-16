@@ -1,6 +1,8 @@
-import InfluencerProfile from "../models/InfluencerProfile.js";
+﻿import InfluencerProfile from "../models/InfluencerProfile.js";
 import Opportunity from "../models/Opportunity.js";
 import CollaborationRequest from "../models/CollaborationRequest.js";
+
+const MAX_CATEGORIES = 3;
 
 // GET /api/influencer/profile  (protected)
 export const getMyProfile = async (req, res) => {
@@ -19,20 +21,40 @@ export const getMyProfile = async (req, res) => {
 };
 
 // PUT /api/influencer/profile  (protected)
-// Only "handle" is directly editable here — social accounts have their own
-// dedicated endpoints below, and stats/challenges are computed elsewhere.
+// "handle" and "categories" are directly editable here — social accounts have
+// their own dedicated endpoints below, and stats/challenges are computed elsewhere.
 export const updateMyProfile = async (req, res) => {
   try {
-    const allowedUpdates = ["handle"];
+    const allowedUpdates = ["handle", "categories"];
     const updates = {};
     for (const key of allowedUpdates) {
       if (req.body[key] !== undefined) updates[key] = req.body[key];
     }
 
+    if (updates.categories !== undefined) {
+      if (!Array.isArray(updates.categories)) {
+        return res.status(400).json({ message: "categories must be an array." });
+      }
+
+      const cleaned = [
+        ...new Set(
+          updates.categories
+            .map((c) => String(c).trim())
+            .filter(Boolean)
+        ),
+      ];
+
+      if (cleaned.length > MAX_CATEGORIES) {
+        return res.status(400).json({ message: `You can select up to ${MAX_CATEGORIES} categories.` });
+      }
+
+      updates.categories = cleaned;
+    }
+
     const profile = await InfluencerProfile.findOneAndUpdate(
       { user: req.user._id },
       updates,
-      { new: true }
+      { new: true, runValidators: true }
     );
 
     if (!profile) {
