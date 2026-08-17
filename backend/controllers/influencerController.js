@@ -4,7 +4,7 @@ import CollaborationRequest from "../models/CollaborationRequest.js";
 
 const MAX_CATEGORIES = 3;
 
-// GET /api/influencer/profile  (protected)
+// GET /api/influencer/profile (protected)
 export const getMyProfile = async (req, res) => {
   try {
     const profile = await InfluencerProfile.findOne({ user: req.user._id })
@@ -20,7 +20,7 @@ export const getMyProfile = async (req, res) => {
   }
 };
 
-// PUT /api/influencer/profile  (protected)
+// PUT /api/influencer/profile (protected)
 // "handle" and "categories" are directly editable here — social accounts have
 // their own dedicated endpoints below, and stats/challenges are computed elsewhere.
 export const updateMyProfile = async (req, res) => {
@@ -51,6 +51,9 @@ export const updateMyProfile = async (req, res) => {
       updates.categories = cleaned;
     }
 
+    // Force profile approval to true when updating profile
+    updates.approved = true;
+
     const profile = await InfluencerProfile.findOneAndUpdate(
       { user: req.user._id },
       updates,
@@ -67,7 +70,7 @@ export const updateMyProfile = async (req, res) => {
   }
 };
 
-// POST /api/influencer/social-accounts  (protected)
+// POST /api/influencer/social-accounts (protected)
 // Manual entry for now — no OAuth verification yet.
 // Body: { platform, handle, followers }
 export const addSocialAccount = async (req, res) => {
@@ -94,7 +97,28 @@ export const addSocialAccount = async (req, res) => {
   }
 };
 
-// GET /api/influencer/opportunities  (protected)
+// DELETE /api/influencer/social-accounts/:platform (protected)
+export const removeSocialAccount = async (req, res) => {
+  try {
+    const { platform } = req.params;
+
+    const profile = await InfluencerProfile.findOneAndUpdate(
+      { user: req.user._id },
+      { $pull: { socialAccounts: { platform } } },
+      { new: true }
+    );
+
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found." });
+    }
+
+    res.json(profile);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// GET /api/influencer/opportunities (protected)
 // Open campaigns an influencer can browse and apply to, annotated with
 // whether they've already sent a request for each one.
 export const getOpenOpportunities = async (req, res) => {
@@ -123,22 +147,18 @@ export const getOpenOpportunities = async (req, res) => {
   }
 };
 
-// DELETE /api/influencer/social-accounts/:platform  (protected)
-export const removeSocialAccount = async (req, res) => {
+// PATCH /api/influencer/approve-all (protected / admin)
+// Utility controller function to approve all unapproved profiles in one request
+export const approveAllInfluencers = async (req, res) => {
   try {
-    const { platform } = req.params;
-
-    const profile = await InfluencerProfile.findOneAndUpdate(
-      { user: req.user._id },
-      { $pull: { socialAccounts: { platform } } },
-      { new: true }
+    const result = await InfluencerProfile.updateMany(
+      { approved: { $ne: true } },
+      { $set: { approved: true } }
     );
-
-    if (!profile) {
-      return res.status(404).json({ message: "Profile not found." });
-    }
-
-    res.json(profile);
+    res.json({
+      message: "Successfully auto-approved all existing profiles.",
+      modifiedCount: result.modifiedCount,
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }

@@ -112,30 +112,27 @@ export default function BrowseOpportunities() {
   };
 
   return (
-    <>
-      <Navbar />
-      <Section className="pt-32">
-        <h1 className="text-2xl font-bold text-[var(--color-text)] mb-6">Browse Campaigns</h1>
+    <InfluencerDashboardLayout>
+      <h1 className="text-2xl font-bold text-[var(--color-text)] mb-6">Browse Campaigns</h1>
 
-        {loading ? (
-          <p className="text-[var(--color-text-light)]">Loading campaigns...</p>
-        ) : opportunities.length === 0 ? (
-          <div className="text-center py-16 border border-dashed border-[var(--color-border)] rounded-2xl">
-            <p className="text-[var(--color-text-light)]">No open campaigns right now — check back soon.</p>
-          </div>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {opportunities.map((o) => (
-              <OpportunityCard
-                key={o._id}
-                opportunity={o}
-                applying={applyingId === o._id}
-                onApply={() => handleApply(o._id)}
-              />
-            ))}
-          </div>
-        )}
-      </Section>
-    </>
+      {loading ? (
+        <p className="text-[var(--color-text-light)]">Loading campaigns...</p>
+      ) : opportunities.length === 0 ? (
+        <div className="text-center py-16 border border-dashed border-[var(--color-border)] rounded-2xl">
+          <p className="text-[var(--color-text-light)]">No open campaigns right now — check back soon.</p>
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {opportunities.map((o) => (
+            <OpportunityCard
+              key={o._id}
+              opportunity={o}
+              applying={applyingId === o._id}
+              onApply={() => handleApply(o._id)}
+            />
+          ))}
+        </div>
+      )}
+    </InfluencerDashboardLayout>
   );
 }

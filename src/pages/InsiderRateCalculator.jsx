@@ -1,10 +1,9 @@
-// src/pages/InsiderRateCalculator.jsx  — new dedicated page
+// src/pages/InsiderRateCalculator.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { TrendingUp } from "lucide-react";
-import Navbar from "../components/layout/Navbar";
-import Section from "../components/common/Section";
+import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
 
 import { API_URL } from "../config/api";
 const FORMAT_LABELS = { post: "Feed Post", reel: "Reel", story: "Story" };
@@ -32,9 +31,8 @@ export default function InsiderRateCalculator() {
   }, [navigate]);
 
   return (
-    <>
-      <Navbar />
-      <Section className="pt-32 max-w-2xl">
+    <InfluencerDashboardLayout>
+      <div className="max-w-2xl">
         <span className="inline-flex rounded-full bg-[var(--color-primary)]/10 px-4 py-2 text-sm font-semibold text-[var(--color-primary)]">
           Members only
         </span>
@@ -95,7 +93,7 @@ export default function InsiderRateCalculator() {
             </div>
           </div>
         )}
-      </Section>
-    </>
+      </div>
+    </InfluencerDashboardLayout>
   );
 }
