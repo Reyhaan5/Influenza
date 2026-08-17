@@ -25,7 +25,6 @@ function RequestRow({ request, isMyTurnToRespond, onRespond, responding }) {
       : null;
 
   const otherPartyName = otherParty?.name || "Unknown";
-  const isInfluencer = user?.role === "influencer";
 
   return (
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 shadow-[var(--shadow-card)] flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -136,61 +135,60 @@ export default function CollaborationRequests() {
   };
 
   const isBrand = user?.role === "brand";
+  const isInfluencer = user?.role === "influencer";
 
-  return (
+  const content = (
     <>
-      const content = (
-      <>
-        {isBrand && <BrandNav />}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-[var(--color-text)]">
-            Collaboration Requests
-          </h1>
-          {!isBrand && (
-            <Link
-              to="/opportunities"
-              className="flex items-center gap-1.5 text-sm font-bold text-[var(--color-primary-hover)] hover:underline"
-            >
-              Browse open campaigns <ArrowUpRight size={16} />
-            </Link>
-          )}
-        </div>
-
-        {loading ? (
-          <p className="text-[var(--color-text-light)]">Loading requests...</p>
-        ) : requests.length === 0 ? (
-          <div className="text-center py-16 border border-dashed border-[var(--color-border)] rounded-2xl">
-            <p className="text-[var(--color-text-light)]">
-              {isBrand
-                ? "No requests yet — send one from Search Creators."
-                : "No requests yet — brands you match with will show up here, or apply to a campaign."}
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {requests.map((r) => {
-              // The viewer can respond if they did NOT initiate the request.
-              const isMyTurnToRespond = r.initiatedBy !== user?.role;
-              return (
-                <RequestRow
-                  key={r._id}
-                  request={{ ...r, __viewerRole: user?.role }}
-                  isMyTurnToRespond={isMyTurnToRespond}
-                  onRespond={handleRespond}
-                  responding={respondingId === r._id}
-                />
-              );
-            })}
-          </div>
+      {isBrand && <BrandNav />}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-[var(--color-text)]">
+          Collaboration Requests
+        </h1>
+        {!isBrand && (
+          <Link
+            to="/opportunities"
+            className="flex items-center gap-1.5 text-sm font-bold text-[var(--color-primary-hover)] hover:underline"
+          >
+            Browse open campaigns <ArrowUpRight size={16} />
+          </Link>
         )}
-      </>
-      ); return isInfluencer ? (
-      <InfluencerDashboardLayout>{content}</InfluencerDashboardLayout>) : (
-      <>
-        <Navbar />
-        <Section className="pt-32">{content}</Section>
-      </>
-      );
+      </div>
+
+      {loading ? (
+        <p className="text-[var(--color-text-light)]">Loading requests...</p>
+      ) : requests.length === 0 ? (
+        <div className="text-center py-16 border border-dashed border-[var(--color-border)] rounded-2xl">
+          <p className="text-[var(--color-text-light)]">
+            {isBrand
+              ? "No requests yet — send one from Search Creators."
+              : "No requests yet — brands you match with will show up here, or apply to a campaign."}
+          </p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {requests.map((r) => {
+            const isMyTurnToRespond = r.initiatedBy !== user?.role;
+            return (
+              <RequestRow
+                key={r._id}
+                request={{ ...r, __viewerRole: user?.role }}
+                isMyTurnToRespond={isMyTurnToRespond}
+                onRespond={handleRespond}
+                responding={respondingId === r._id}
+              />
+            );
+          })}
+        </div>
+      )}
+    </>
+  );
+
+  return isInfluencer ? (
+    <InfluencerDashboardLayout>{content}</InfluencerDashboardLayout>
+  ) : (
+    <>
+      <Navbar />
+      <Section className="pt-32">{content}</Section>
     </>
   );
 }
