@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Search as SearchIcon } from "lucide-react";
 
-import BrandDashboardLayout from "../components/dashboard/brand/BrandDashboardLayout";
+import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 import CreatorSearchCard from "../components/dashboard/brand/CreatorSearchCard";
 
 import { API_URL } from "../config/api";

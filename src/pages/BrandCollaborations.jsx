@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-import BrandDashboardLayout from "../components/dashboard/brand/BrandDashboardLayout";
+import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 import CollaborationRow from "../components/dashboard/brand/CollaborationRow";
 
 import { API_URL } from "../config/api";

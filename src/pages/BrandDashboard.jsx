@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Megaphone, Users } from "lucide-react";
 
-import BrandDashboardLayout from "../components/dashboard/brand/BrandDashboardLayout";
+import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 import Heading from "../components/ui/Heading";
 import StatCard from "../components/dashboard/influencer/StatCard";
 import BrandProfileCard from "../components/dashboard/brand/BrandProfileCard";

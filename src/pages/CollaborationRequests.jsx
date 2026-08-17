@@ -6,7 +6,7 @@ import { Check, X, Clock, ArrowUpRight, MessageCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../config/api";
 import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
-import BrandDashboardLayout from "../components/dashboard/brand/BrandDashboardLayout";
+import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 
 const STATUS_STYLES = {
   pending: "bg-[var(--color-warning)]/10 text-[var(--color-warning)]",

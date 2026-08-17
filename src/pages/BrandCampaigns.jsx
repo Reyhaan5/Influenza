@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Plus } from "lucide-react";
 
-import BrandDashboardLayout from "../components/dashboard/brand/BrandDashboardLayout";
+import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 import CampaignCard from "../components/dashboard/brand/CampaignCard";
 import CampaignFormModal from "../components/dashboard/brand/CampaignFormModal";
 

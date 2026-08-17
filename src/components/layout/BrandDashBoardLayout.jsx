@@ -1,5 +1,5 @@
 import React from "react";
-import BrandSidebar from "./BrandSidebar";
+import BrandSidebar from "../dashboard/brand/BrandSidebar";
 
 export default function BrandDashboardLayout({ children }) {
   return (
