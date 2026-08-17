@@ -1,90 +1,139 @@
 // src/pages/PricingCalculator.jsx
+
 import { useState } from "react";
 import axios from "axios";
+
 import Navbar from "../components/layout/Navbar";
 import Section from "../components/common/Section";
 import ReceiptPrinter from "../components/pricing/ReceiptPrinter";
 import GlowingSearchBar from "../components/common/GlowingSearchBar";
 
-import { API_URL } from "../config/api";
+const API_URL = "http://localhost:5000/api";
 
 export default function PricingCalculator() {
   const [prefill, setPrefill] = useState(undefined);
   const [notice, setNotice] = useState("");
   const [searching, setSearching] = useState(false);
-  const [key, setKey] = useState(0); // forces ReceiptPrinter to remount with new prefill
+  const [key, setKey] = useState(0);
 
   const handleSearch = async (query) => {
     const handle = query.trim();
+
     if (!handle) return;
 
     setSearching(true);
     setNotice("");
 
     try {
-      const res = await axios.get(`${API_URL}/public/instagram-lookup`, {
-        params: { handle },
-      });
+      const response = await axios.get(
+        `${API_URL}/public/instagram-lookup`,
+        {
+          params: {
+            handle,
+          },
+        }
+      );
 
-      if (res.data.found) {
+      const data = response.data;
+
+      if (data.found) {
         setPrefill({
-          handle: res.data.handle,
-          followers: String(res.data.followers),
-          avgLikes: String(res.data.avgLikes),
-          avgComments: String(res.data.avgComments),
+          handle: data.handle,
+          followers: String(data.followers),
+          avgLikes: String(data.avgLikes),
+          avgComments: String(data.avgComments),
         });
-        setNotice(`Pulled live stats for ${res.data.handle}.`);
+
+        setNotice(`Pulled live stats for ${data.handle}.`);
       } else {
-        setPrefill({ handle: handle.startsWith("@") ? handle : `@${handle}` });
+        const formattedHandle = handle.startsWith("@")
+          ? handle
+          : `@${handle}`;
+
+        setPrefill({
+          handle: formattedHandle,
+        });
+
         setNotice(
-          "Couldn't auto-fetch that account's stats (private, personal, or not eligible) — enter the rest manually below."
+          "Couldn't fetch this Instagram account. You can enter the remaining details manually."
         );
       }
-    } catch (err) {
-      setPrefill({ handle: handle.startsWith("@") ? handle : `@${handle}` });
-      setNotice("Lookup failed — enter your stats manually below.");
+    } catch (error) {
+      console.error("Instagram lookup error:", error);
+
+      const formattedHandle = handle.startsWith("@")
+        ? handle
+        : `@${handle}`;
+
+      setPrefill({
+        handle: formattedHandle,
+      });
+
+      setNotice(
+        "Instagram lookup failed. You can enter your stats manually."
+      );
     } finally {
       setSearching(false);
-      setKey((k) => k + 1);
+
+      // Remount ReceiptPrinter so it receives the new values.
+      setKey((previousKey) => previousKey + 1);
     }
   };
 
   return (
     <>
       <Navbar />
+
       <Section className="pt-40">
+
         <div className="max-w-xl mx-auto text-center">
+
           <span className="inline-flex rounded-full bg-[var(--color-primary)]/10 px-4 py-2 text-sm font-semibold text-[var(--color-primary)]">
             Free · No login required
           </span>
+
           <h1 className="mt-6 text-4xl md:text-5xl font-extrabold text-[var(--color-text)] leading-tight">
             What should you charge?
           </h1>
+
           <p className="mt-4 text-lg text-[var(--color-text-light)]">
-            Search an Instagram handle to auto-fill your numbers, or skip straight to manual entry.
+            Search an Instagram handle to auto-fill your numbers, or skip
+            straight to manual entry.
           </p>
+
         </div>
 
         <div className="mt-10 max-w-md mx-auto">
-          <GlowingSearchBar
-            placeholder="Search @yourhandle..."
-            onSearch={() => {}}
-            onFilterClick={undefined}
-          />
-          {/* GlowingSearchBar fires onSearch per keystroke — wire a submit-on-enter
-              wrapper here in the component itself, or swap to onFilterClick as
-              the explicit "search" trigger. Flagging this as a follow-up. */}
+
+        <GlowingSearchBar
+  placeholder="Search @yourhandle..."
+  onSearch={handleSearch}
+  onFilterClick={undefined}
+/>
+
         </div>
 
-        {notice && (
+        {searching && (
+          <p className="mt-4 text-center text-sm text-[var(--color-text-light)]">
+            Fetching Instagram data...
+          </p>
+        )}
+
+        {notice && !searching && (
           <p className="mt-4 text-center text-sm text-[var(--color-text-light)] max-w-md mx-auto">
             {notice}
           </p>
         )}
 
         <div className="mt-10">
-          <ReceiptPrinter key={key} initialAnswers={prefill} />
+
+          <ReceiptPrinter
+            key={key}
+            initialAnswers={prefill}
+          />
+
         </div>
+
       </Section>
     </>
   );

@@ -1,43 +1,42 @@
 // src/components/common/GlowingSearchBar.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { Search, Filter, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function GlowingSearchBar({ placeholder = "Search...", onSearch, onFilterClick }) {
+export default function GlowingSearchBar({
+  placeholder = "Search...",
+  onSearch,
+  onFilterClick,
+}) {
   const [query, setQuery] = useState("");
-  const debounceRef = useRef(null);
-
-  const fireSearch = (value) => {
-    if (onSearch) onSearch(value);
-  };
 
   const handleClear = () => {
     setQuery("");
-    clearTimeout(debounceRef.current);
-    fireSearch("");
+
+    if (onSearch) {
+      onSearch("");
+    }
   };
 
   const handleChange = (e) => {
-    const value = e.target.value;
-    setQuery(value);
-
-    // Debounced live-search — avoids firing a network call on every
-    // keystroke. Enter/submit below bypasses this and fires instantly.
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => fireSearch(value), 500);
+    setQuery(e.target.value);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    clearTimeout(debounceRef.current);
-    fireSearch(query);
-  };
 
-  useEffect(() => () => clearTimeout(debounceRef.current), []);
+    const value = query.trim();
+
+    if (!value) return;
+
+    if (onSearch) {
+      onSearch(value);
+    }
+  };
 
   return (
     <div className="relative w-full max-w-md mx-auto group">
-      {/* Rotating glow ring — brand colors, the one signature flourish */}
+      {/* Rotating glow ring */}
       <div className="absolute -inset-[2px] rounded-2xl overflow-hidden p-[2px]">
         <div
           className="absolute inset-[-200%] animate-[spin_4s_linear_infinite] blur-md"
@@ -46,6 +45,7 @@ export default function GlowingSearchBar({ placeholder = "Search...", onSearch, 
               "conic-gradient(from 0deg, transparent 0 300deg, var(--color-primary-light) 320deg, var(--color-primary) 340deg, var(--color-primary-hover) 360deg)",
           }}
         />
+
         <div
           className="absolute inset-[-200%] animate-[spin_4s_linear_infinite] opacity-80"
           style={{
