@@ -19,7 +19,9 @@ const influencerProfileSchema = new mongoose.Schema(
       unique: true,
     },
     handle: { type: String, required: true },
-    approved: { type: Boolean, default: false },
+    
+    // Updated default to true so influencers show up immediately in Brand Search
+    approved: { type: Boolean, default: true },
 
     socialAccounts: [socialAccountSchema],
     savedOpportunities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Opportunity" }],
