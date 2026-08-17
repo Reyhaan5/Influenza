@@ -3,12 +3,10 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { Check, X, Clock, ArrowUpRight, MessageCircle } from "lucide-react";
 
-import Navbar from "../components/layout/Navbar";
-import Section from "../components/common/Section";
-import BrandNav from "../components/dashboard/brand/BrandNav";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../config/api";
 import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
+import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 
 const STATUS_STYLES = {
   pending: "bg-[var(--color-warning)]/10 text-[var(--color-warning)]",
@@ -139,7 +137,6 @@ export default function CollaborationRequests() {
 
   const content = (
     <>
-      {isBrand && <BrandNav />}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-[var(--color-text)]">
           Collaboration Requests
@@ -183,12 +180,9 @@ export default function CollaborationRequests() {
     </>
   );
 
-  return isInfluencer ? (
-    <InfluencerDashboardLayout>{content}</InfluencerDashboardLayout>
-  ) : (
-    <>
-      <Navbar />
-      <Section className="pt-32">{content}</Section>
-    </>
-  );
-}
+  if (isInfluencer) {
+    return <InfluencerDashboardLayout>{content}</InfluencerDashboardLayout>;
+  }
+
+  return <BrandDashboardLayout>{content}</BrandDashboardLayout>;
+} 
