@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-import Navbar from "../components/layout/Navbar";
-import Section from "../components/common/Section";
-import BrandNav from "../components/dashboard/brand/BrandNav";
+import BrandDashboardLayout from "../components/dashboard/brand/BrandDashboardLayout";
 import CollaborationRow from "../components/dashboard/brand/CollaborationRow";
 
 import { API_URL } from "../config/api";
@@ -47,29 +45,22 @@ export default function BrandCollaborations() {
   };
 
   return (
-    <>
-      <Navbar />
-      <Section className="pt-32">
-        <BrandNav />
+    <BrandDashboardLayout>
+      <h1 className="text-2xl font-bold text-[var(--color-text)] mb-6">Collaborations</h1>
 
-        <h1 className="text-2xl font-bold text-[var(--color-text)] mb-6">Collaborations</h1>
-
-        {loading ? (
-          <p className="text-[var(--color-text-light)]">Loading collaborations...</p>
-        ) : collaborations.length === 0 ? (
-          <div className="text-center py-16 border border-dashed border-[var(--color-border)] rounded-2xl">
-            <p className="text-[var(--color-text-light)]">
-              No active collaborations yet.
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {collaborations.map((c) => (
-              <CollaborationRow key={c._id} collab={c} onUpdate={handleUpdate} />
-            ))}
-          </div>
-        )}
-      </Section>
-    </>
+      {loading ? (
+        <p className="text-[var(--color-text-light)]">Loading collaborations...</p>
+      ) : collaborations.length === 0 ? (
+        <div className="text-center py-16 border border-dashed border-[var(--color-border)] rounded-2xl">
+          <p className="text-[var(--color-text-light)]">No active collaborations yet.</p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {collaborations.map((c) => (
+            <CollaborationRow key={c._id} collab={c} onUpdate={handleUpdate} />
+          ))}
+        </div>
+      )}
+    </BrandDashboardLayout>
   );
 }
