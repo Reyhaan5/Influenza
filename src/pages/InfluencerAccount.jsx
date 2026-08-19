@@ -4,9 +4,9 @@ import axios from "axios";
 import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
 import Heading from "../components/ui/Heading";
 import AccountSettingsTab from "../components/dashboard/influencer/AccountSettingsTab";
-import MatchProfileTab from "../components/dashboard/influencer/MatchProfileTab";
-import ReviewsTab from "../components/dashboard/influencer/ReviewsTab";
-import PortfolioTab from "../components/dashboard/influencer/PortfolioTab";
+import MatchProfileTab from "../components/dashboard/influencer/matchProfileTab";
+import ReviewsTab from "../components/dashboard/influencer/reviewsTab";
+import PortfolioTab from "../components/dashboard/influencer/PortFolioTab";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../config/api";
 
