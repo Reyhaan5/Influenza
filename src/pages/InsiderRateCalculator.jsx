@@ -1,4 +1,4 @@
-// src/pages/InsiderRateCalculator.jsx
+// src/pages/InsiderRateCalculator.jsx  — new dedicated page
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";

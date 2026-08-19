@@ -4,6 +4,8 @@ import Collaboration from "../models/Collaboration.js";
 import InfluencerProfile from "../models/InfluencerProfile.js";
 import Review from "../models/Review.js";
 
+const MAX_HIGHLIGHTED = 10;
+
 // Best-effort guess when a doc doesn't have an explicit mediaType field
 // (ContentPost doesn't store one — it just has a mediaUrl).
 function guessMediaType(url = "") {
@@ -44,6 +46,7 @@ export const getPublicGallery = async (req, res) => {
         mediaType: d.mediaType || guessMediaType(d.mediaUrl),
         caption: d.caption,
         platform: d.platform,
+        highlighted: !!d.highlighted,
         source: "showcase",
         createdAt: d.createdAt,
       })),
@@ -55,6 +58,7 @@ export const getPublicGallery = async (req, res) => {
         mediaType: guessMediaType(d.mediaUrl),
         caption: d.caption,
         platform: d.platform,
+        highlighted: false,
         source: "collaboration",
         createdAt: d.publishedAt || d.createdAt,
       })),
@@ -100,7 +104,11 @@ export const getPublicGallery = async (req, res) => {
       items = items.filter((i) => (i.platform || "").toLowerCase() === platform.toLowerCase());
     }
 
-    items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    // Highlighted content surfaces first, then newest first.
+    items.sort((a, b) => {
+      if (a.highlighted !== b.highlighted) return a.highlighted ? -1 : 1;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
 
     const total = items.length;
     const start = (pageNum - 1) * limitNum;
@@ -155,6 +163,38 @@ export const getMyGalleryItems = async (req, res) => {
     res.json({ items });
   } catch (error) {
     res.status(500).json({ message: "Unable to fetch your gallery items.", error: error.message });
+  }
+};
+
+// ======================================
+// PATCH /api/influencer/gallery/:id/highlight  (protected, influencer)
+// Toggles the "star" on a portfolio item. Capped at MAX_HIGHLIGHTED so the
+// Portfolio tab's "0 of 10" counter means something.
+// ======================================
+export const toggleHighlight = async (req, res) => {
+  try {
+    const item = await GalleryContent.findOne({ _id: req.params.id, influencer: req.user._id });
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found." });
+    }
+
+    if (!item.highlighted) {
+      const highlightedCount = await GalleryContent.countDocuments({
+        influencer: req.user._id,
+        highlighted: true,
+      });
+      if (highlightedCount >= MAX_HIGHLIGHTED) {
+        return res.status(400).json({ message: `You can highlight up to ${MAX_HIGHLIGHTED} items.` });
+      }
+    }
+
+    item.highlighted = !item.highlighted;
+    await item.save();
+
+    res.json({ item });
+  } catch (error) {
+    res.status(500).json({ message: "Unable to update item.", error: error.message });
   }
 };
 
