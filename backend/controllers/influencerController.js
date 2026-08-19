@@ -70,6 +70,55 @@ export const updateMyProfile = async (req, res) => {
   }
 };
 
+// PUT /api/influencer/match-profile (protected)
+// Powers the "Match Profile" tab. Uses dot-notation $set so each section
+// (Collaboration, Payment, Audience, etc.) can save independently without
+// wiping out fields from the other sections.
+export const updateMatchProfile = async (req, res) => {
+  try {
+    const allowedFields = [
+      "campaignActive",
+      "invitationsActive",
+      "collaborationFormats",
+      "paymentType",
+      "minAskingPrice",
+      "maxAskingPrice",
+      "bio",
+      "accountNiche",
+      "topics",
+      "leadTimeDays",
+      "preferredCompanies",
+      "audience",
+      "followersLocation",
+    ];
+
+    const set = {};
+    for (const key of allowedFields) {
+      if (req.body[key] !== undefined) {
+        set[`matchProfile.${key}`] = req.body[key];
+      }
+    }
+
+    if (Object.keys(set).length === 0) {
+      return res.status(400).json({ message: "No valid fields provided." });
+    }
+
+    const profile = await InfluencerProfile.findOneAndUpdate(
+      { user: req.user._id },
+      { $set: set },
+      { new: true, runValidators: true }
+    );
+
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found." });
+    }
+
+    res.json(profile);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 // POST /api/influencer/social-accounts (protected)
 // Manual entry for now — no OAuth verification yet.
 // Body: { platform, handle, followers }
