@@ -3,6 +3,7 @@
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import InfluencerDashboard from "../pages/InfluencerDashboard";
+import InfluencerAccount from "../pages/InfluencerAccount";
 import BrandDashboard from "../pages/BrandDashboard";
 import PricingCalculator from "../pages/PricingCalculator";
 import ProtectedRoute from "./ProtectedRoute";
@@ -36,6 +37,14 @@ function AppRoutes() {
           element={
             <ProtectedRoute allowedRole="influencer">
               <InfluencerDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/account"
+          element={
+            <ProtectedRoute allowedRole="influencer">
+              <InfluencerAccount />
             </ProtectedRoute>
           }
         />

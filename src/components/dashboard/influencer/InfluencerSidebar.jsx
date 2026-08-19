@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
-  Wallet,
   TrendingUp,
   Search,
   Send,
@@ -11,11 +10,18 @@ import {
   Settings,
   LogOut,
   ChevronsRight,
+  ChevronDown,
+  User,
+  PenSquare,
+  Power,
+  UserCog,
 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
+import Avatar from "./Avatar";
 
 const NAV_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: Home, to: "/influencer-dashboard" },
+  { key: "account", label: "My Account", icon: UserCog, to: "/account" },
   { key: "insider-rate", label: "Insider Rate", icon: TrendingUp, to: "/insider-rate" },
   { key: "opportunities", label: "Opportunities", icon: Search, to: "/opportunities" },
   { key: "requests", label: "Invitations", icon: Send, to: "/collaboration-requests" },
@@ -25,6 +31,8 @@ const NAV_ITEMS = [
 
 export default function InfluencerSidebar() {
   const [open, setOpen] = useState(true);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef(null);
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -34,30 +42,101 @@ export default function InfluencerSidebar() {
     navigate("/login");
   };
 
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (accountRef.current && !accountRef.current.contains(e.target)) {
+        setAccountOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
   return (
     <nav
       className={`sticky top-0 h-screen shrink-0 border-r border-[var(--color-border)] bg-[var(--color-surface)] transition-all duration-300 ease-in-out ${
         open ? "w-64" : "w-16"
       } flex flex-col`}
     >
-      {/* Brand */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-[var(--color-border)]">
-        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-[var(--color-primary)] text-white font-black text-sm">
-          IZ
-        </div>
-        {open && (
-          <div className="min-w-0">
-            <p className="font-extrabold text-[var(--color-primary)] leading-tight truncate">
-              Influenza
-            </p>
-            <p className="text-xs text-[var(--color-text-light)] truncate">
-              {user?.name || "Creator"}
-            </p>
+      {/* Account Profile Header Dropdown */}
+      <div className="relative border-b border-[var(--color-border)]" ref={accountRef}>
+        <button
+          onClick={() => setAccountOpen((o) => !o)}
+          className="flex w-full items-center gap-3 px-4 py-4 text-left hover:bg-[var(--color-background)] transition-colors"
+        >
+          <Avatar name={user?.name} size={36} />
+          {open && (
+            <>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold text-[var(--color-text)] truncate">
+                  {user?.name || "Creator"}
+                </p>
+                <p className="text-xs text-[var(--color-text-light)] truncate">
+                  {user?.email}
+                </p>
+              </div>
+              <ChevronDown
+                size={16}
+                className={`flex-shrink-0 text-[var(--color-text-light)] transition-transform duration-200 ${
+                  accountOpen ? "rotate-180" : ""
+                }`}
+              />
+            </>
+          )}
+        </button>
+
+        {accountOpen && (
+          <div
+            className={`absolute z-20 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-xl py-2 overflow-hidden ${
+              open ? "left-3 right-3 top-full mt-1" : "left-full top-2 ml-2 w-56"
+            }`}
+          >
+            {/* Opens Dashboard */}
+            <Link
+              to="/influencer-dashboard"
+              onClick={() => setAccountOpen(false)}
+              className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-[var(--color-text)] hover:bg-[var(--color-background)]"
+            >
+              <User size={16} className="text-[var(--color-primary)]" />
+              Your Profile
+            </Link>
+
+            {/* Edit Profile -> Redirects to Account Settings page */}
+            <Link
+              to="/account?tab=account-settings"
+              onClick={() => setAccountOpen(false)}
+              className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-[var(--color-text)] hover:bg-[var(--color-background)]"
+            >
+              <UserCog size={16} className="text-[var(--color-primary)]" />
+              Edit Profile
+            </Link>
+
+            <button
+              disabled
+              title="Coming soon"
+              className="flex items-center gap-2.5 w-full text-left px-4 py-2.5 text-sm font-medium text-[var(--color-text-light)]/60 cursor-not-allowed"
+            >
+              <PenSquare size={16} />
+              Edit Templates
+              <span className="ml-auto text-[9px] font-bold uppercase tracking-wide bg-[var(--color-background)] px-1.5 py-0.5 rounded-full">
+                Soon
+              </span>
+            </button>
+
+            <div className="border-t border-[var(--color-border)] my-1" />
+
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2.5 w-full text-left px-4 py-2.5 text-sm font-medium text-[var(--color-danger)] hover:bg-[var(--color-danger)]/10"
+            >
+              <Power size={16} />
+              Logout
+            </button>
           </div>
         )}
       </div>
 
-      {/* Nav */}
+      {/* Navigation Links */}
       <div className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
         {NAV_ITEMS.map((item) => {
           const isActive = item.to && location.pathname === item.to;
@@ -104,7 +183,7 @@ export default function InfluencerSidebar() {
         })}
       </div>
 
-      {/* Footer: settings + logout */}
+      {/* Footer Actions */}
       <div className="border-t border-[var(--color-border)] px-2 py-2 space-y-1">
         <div
           className="flex h-11 w-full items-center rounded-xl text-[var(--color-text-light)]/50 cursor-not-allowed"
@@ -134,7 +213,7 @@ export default function InfluencerSidebar() {
         </button>
       </div>
 
-      {/* Collapse toggle */}
+      {/* Collapse Toggle */}
       <button
         onClick={() => setOpen(!open)}
         className="border-t border-[var(--color-border)] hover:bg-[var(--color-background)] transition-colors"
@@ -148,9 +227,7 @@ export default function InfluencerSidebar() {
             />
           </div>
           {open && (
-            <span className="text-sm font-medium text-[var(--color-text-light)]">
-              Collapse
-            </span>
+            <span className="text-sm font-medium text-[var(--color-text-light)]">Collapse</span>
           )}
         </div>
       </button>

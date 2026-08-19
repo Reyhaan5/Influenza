@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
-import { Target, Calendar, Send, Check, Clock, MessageCircle } from "lucide-react";
+import { Target, Calendar, Send, Check, Clock } from "lucide-react";
 
 import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
 import { API_URL } from "../config/api";
@@ -39,35 +38,24 @@ function OpportunityCard({ opportunity, onApply, applying }) {
         <p className="text-xs text-[var(--color-text)]/70 italic">{opportunity.requirements}</p>
       )}
 
-      <div className="flex items-center gap-2 flex-wrap mt-1">
-        {status ? (
-          <span className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--color-background)] text-[var(--color-text-light)]">
-            {status === "pending" && <Clock size={14} />}
-            {status === "accepted" && <Check size={14} className="text-[var(--color-success)]" />}
-            {status === "pending" && "Application pending"}
-            {status === "accepted" && "You're collaborating"}
-            {status === "rejected" && "Application declined"}
-          </span>
-        ) : (
-          <button
-            onClick={onApply}
-            disabled={applying}
-            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white transition disabled:opacity-60"
-          >
-            <Send size={14} />
-            {applying ? "Applying..." : "Apply"}
-          </button>
-        )}
-
-        {opportunity.brand?._id && (
-          <Link
-            to={`/messages?with=${opportunity.brand._id}`}
-            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-background)] transition"
-          >
-            <MessageCircle size={14} /> Message
-          </Link>
-        )}
-      </div>
+      {status ? (
+        <span className="self-start flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--color-background)] text-[var(--color-text-light)] mt-1">
+          {status === "pending" && <Clock size={14} />}
+          {status === "accepted" && <Check size={14} className="text-[var(--color-success)]" />}
+          {status === "pending" && "Application pending"}
+          {status === "accepted" && "You're collaborating"}
+          {status === "rejected" && "Application declined"}
+        </span>
+      ) : (
+        <button
+          onClick={onApply}
+          disabled={applying}
+          className="self-start flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white transition disabled:opacity-60 mt-1"
+        >
+          <Send size={14} />
+          {applying ? "Applying..." : "Apply"}
+        </button>
+      )}
     </div>
   );
 }
@@ -115,24 +103,24 @@ export default function BrowseOpportunities() {
     <InfluencerDashboardLayout>
       <h1 className="text-2xl font-bold text-[var(--color-text)] mb-6">Browse Campaigns</h1>
 
-      {loading ? (
-        <p className="text-[var(--color-text-light)]">Loading campaigns...</p>
-      ) : opportunities.length === 0 ? (
-        <div className="text-center py-16 border border-dashed border-[var(--color-border)] rounded-2xl">
-          <p className="text-[var(--color-text-light)]">No open campaigns right now — check back soon.</p>
-        </div>
-      ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {opportunities.map((o) => (
-            <OpportunityCard
-              key={o._id}
-              opportunity={o}
-              applying={applyingId === o._id}
-              onApply={() => handleApply(o._id)}
-            />
-          ))}
-        </div>
-      )}
+        {loading ? (
+          <p className="text-[var(--color-text-light)]">Loading campaigns...</p>
+        ) : opportunities.length === 0 ? (
+          <div className="text-center py-16 border border-dashed border-[var(--color-border)] rounded-2xl">
+            <p className="text-[var(--color-text-light)]">No open campaigns right now — check back soon.</p>
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {opportunities.map((o) => (
+              <OpportunityCard
+                key={o._id}
+                opportunity={o}
+                applying={applyingId === o._id}
+                onApply={() => handleApply(o._id)}
+              />
+            ))}
+          </div>
+        )}
     </InfluencerDashboardLayout>
   );
 }

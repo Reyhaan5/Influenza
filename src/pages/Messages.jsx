@@ -32,6 +32,7 @@ export default function Messages() {
     return res.data.conversations || [];
   }, []);
 
+  // On load: open ?with=<userId> conversation, else the most recent one
   useEffect(() => {
     const otherUserId = searchParams.get("with");
     (async () => {
@@ -56,6 +57,7 @@ export default function Messages() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Load history + join room whenever active conversation changes
   useEffect(() => {
     if (!activeId) return;
     axios
@@ -68,6 +70,7 @@ export default function Messages() {
     return () => socket?.emit("leaveConversation", activeId);
   }, [activeId, socket]);
 
+  // Real-time listeners
   useEffect(() => {
     if (!socket) return;
 
@@ -92,6 +95,9 @@ export default function Messages() {
           );
         }
 
+        // We don't have this conversation yet (e.g. someone just messaged us
+        // for the first time) — refetch the full list so it appears with its
+        // participants populated, rather than silently dropping the update.
         fetchConversations();
         return prev;
       });
@@ -126,7 +132,7 @@ export default function Messages() {
   const otherParticipant = (c) => c.participants.find((p) => p._id !== user.id) || c.participants[0];
 
   const handleDeleteConversation = async (e, conversationId) => {
-    e.stopPropagation();
+    e.stopPropagation(); // don't let the click also select this conversation
 
     const confirmed = window.confirm(
       "Delete this conversation? This removes all messages for both people and can't be undone."
@@ -151,9 +157,7 @@ export default function Messages() {
     }
   };
 
-  const isInfluencer = user?.role === "influencer";
-
-  const content = (
+  const body = (
     <>
       <h1 className="text-2xl font-bold text-[var(--color-text)] mb-6">Messages</h1>
 
@@ -252,12 +256,14 @@ export default function Messages() {
     </>
   );
 
-  return isInfluencer ? (
-    <InfluencerDashboardLayout>{content}</InfluencerDashboardLayout>
-  ) : (
-    <>
-      <Navbar />
-      <Section className="pt-32">{content}</Section>
-    </>
-  );
+  if (user?.role === "brand") {
+    return (
+      <>
+        <Navbar />
+        <Section className="pt-32">{body}</Section>
+      </>
+    );
+  }
+
+  return <InfluencerDashboardLayout>{body}</InfluencerDashboardLayout>;
 }

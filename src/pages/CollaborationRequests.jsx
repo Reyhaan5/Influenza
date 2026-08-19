@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { Check, X, Clock, ArrowUpRight, MessageCircle } from "lucide-react";
+import { Check, X, Clock, ArrowUpRight } from "lucide-react";
 
+import Navbar from "../components/layout/Navbar";
+import Section from "../components/common/Section";
+import BrandNav from "../components/dashboard/brand/BrandNav";
+import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../config/api";
-import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
-import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 
 const STATUS_STYLES = {
   pending: "bg-[var(--color-warning)]/10 text-[var(--color-warning)]",
@@ -15,14 +17,12 @@ const STATUS_STYLES = {
 };
 
 function RequestRow({ request, isMyTurnToRespond, onRespond, responding }) {
-  const otherParty =
+  const otherPartyName =
     request.brand && request.influencer
       ? request.__viewerRole === "brand"
-        ? request.influencer
-        : request.brand
-      : null;
-
-  const otherPartyName = otherParty?.name || "Unknown";
+        ? request.influencer?.name
+        : request.brand?.name
+      : "Unknown";
 
   return (
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 shadow-[var(--shadow-card)] flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -30,18 +30,11 @@ function RequestRow({ request, isMyTurnToRespond, onRespond, responding }) {
         <p className="font-bold text-[var(--color-text)]">{otherPartyName}</p>
         <p className="text-xs text-[var(--color-text-light)] mt-1">
           {request.opportunity?.title || "Direct outreach"}
-          {request.opportunity?.rewardValue
-            ? ` · ${request.opportunity.rewardValue}`
-            : ""}
+          {request.opportunity?.rewardValue ? ` · ${request.opportunity.rewardValue}` : ""}
         </p>
         <p className="text-xs text-[var(--color-text-light)] mt-1">
-          {request.initiatedBy === "brand"
-            ? "Brand reached out"
-            : "Influencer applied"}{" "}
-          ·{" "}
-          {new Date(
-            request.requestedAt || request.createdAt,
-          ).toLocaleDateString()}
+          {request.initiatedBy === "brand" ? "Brand reached out" : "Influencer applied"} ·{" "}
+          {new Date(request.requestedAt || request.createdAt).toLocaleDateString()}
         </p>
       </div>
 
@@ -54,15 +47,6 @@ function RequestRow({ request, isMyTurnToRespond, onRespond, responding }) {
           {request.status === "rejected" && <X size={13} />}
           {request.status}
         </span>
-
-        {otherParty?._id && (
-          <Link
-            to={`/messages?with=${otherParty._id}`}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text)] text-xs font-semibold hover:bg-[var(--color-background)] transition"
-          >
-            <MessageCircle size={13} /> Message
-          </Link>
-        )}
 
         {isMyTurnToRespond && request.status === "pending" && (
           <div className="flex gap-2">
@@ -99,10 +83,7 @@ export default function CollaborationRequests() {
 
   const fetchRequests = async () => {
     try {
-      const res = await axios.get(
-        `${API_URL}/collaboration-requests`,
-        authHeader(),
-      );
+      const res = await axios.get(`${API_URL}/collaboration-requests`, authHeader());
       setRequests(res.data.requests || []);
     } catch (error) {
       console.error(error);
@@ -118,11 +99,7 @@ export default function CollaborationRequests() {
   const handleRespond = async (id, status) => {
     setRespondingId(id);
     try {
-      await axios.put(
-        `${API_URL}/collaboration-requests/${id}`,
-        { status },
-        authHeader(),
-      );
+      await axios.put(`${API_URL}/collaboration-requests/${id}`, { status }, authHeader());
       await fetchRequests();
     } catch (error) {
       console.error(error);
@@ -133,14 +110,13 @@ export default function CollaborationRequests() {
   };
 
   const isBrand = user?.role === "brand";
-  const isInfluencer = user?.role === "influencer";
 
-  const content = (
+  const body = (
     <>
+      {isBrand && <BrandNav />}
+
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          Collaboration Requests
-        </h1>
+        <h1 className="text-2xl font-bold text-[var(--color-text)]">Collaboration Requests</h1>
         {!isBrand && (
           <Link
             to="/opportunities"
@@ -164,6 +140,7 @@ export default function CollaborationRequests() {
       ) : (
         <div className="flex flex-col gap-4">
           {requests.map((r) => {
+            // The viewer can respond if they did NOT initiate the request.
             const isMyTurnToRespond = r.initiatedBy !== user?.role;
             return (
               <RequestRow
@@ -180,9 +157,14 @@ export default function CollaborationRequests() {
     </>
   );
 
-  if (isInfluencer) {
-    return <InfluencerDashboardLayout>{content}</InfluencerDashboardLayout>;
+  if (isBrand) {
+    return (
+      <>
+        <Navbar />
+        <Section className="pt-32">{body}</Section>
+      </>
+    );
   }
 
-  return <BrandDashboardLayout>{content}</BrandDashboardLayout>;
-} 
+  return <InfluencerDashboardLayout>{body}</InfluencerDashboardLayout>;
+}
