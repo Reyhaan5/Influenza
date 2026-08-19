@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Megaphone, Users } from "lucide-react";
 
-import Navbar from "../components/layout/Navbar";
-import Section from "../components/common/Section";
+import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
+import Heading from "../components/ui/Heading";
 import StatCard from "../components/dashboard/influencer/StatCard";
-import BrandNav from "../components/dashboard/brand/BrandNav";
 import BrandProfileCard from "../components/dashboard/brand/BrandProfileCard";
 import ProfileCompletionBanner from "../components/dashboard/brand/ProfileCompletionBanner";
 import CompanyInfoCard from "../components/dashboard/brand/CompanyInfoCard";
@@ -155,8 +154,6 @@ export default function BrandDashboard() {
       productImageFile: null,
     });
 
-    // Scroll the form into view so it's obvious editing started —
-    // helpful since the form sits lower on the page than the product list.
     document.getElementById("product-form-section")?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -182,7 +179,6 @@ export default function BrandDashboard() {
       }
 
       if (editingProductId) {
-        // Update existing product
         const res = await axios.put(
           `${API_URL}/brand/products/${editingProductId}`,
           formData,
@@ -202,7 +198,6 @@ export default function BrandDashboard() {
         setSelectedProductId(updatedProduct._id);
         setEditingProductId(null);
       } else {
-        // Create new product
         const res = await axios.post(`${API_URL}/brand/products`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -241,7 +236,6 @@ export default function BrandDashboard() {
         return updated;
       });
 
-      // If the product being edited was just deleted, exit edit mode too.
       if (editingProductId === productId) {
         handleCancelEdit();
       }
@@ -255,14 +249,9 @@ export default function BrandDashboard() {
 
   if (loading) {
     return (
-      <>
-        <Navbar />
-        <Section className="pt-32">
-          <h2 className="text-xl font-semibold text-center">
-            Loading Profile...
-          </h2>
-        </Section>
-      </>
+      <BrandDashboardLayout>
+        <h2 className="text-xl font-semibold text-center">Loading Profile...</h2>
+      </BrandDashboardLayout>
     );
   }
 
@@ -273,89 +262,62 @@ export default function BrandDashboard() {
     : null;
 
   return (
-    <>
-      <Navbar />
+    <BrandDashboardLayout>
+      <Heading level={1} className="mb-8">Brand Dashboard</Heading>
 
-      <Section className="pt-32">
-        <BrandNav />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <h1 className="text-3xl font-bold text-[var(--color-text)] mb-8">
-          Brand Dashboard
-        </h1>
+        <div className="lg:col-span-1 flex flex-col gap-6">
+          <BrandProfileCard
+            companyName={companyDetails.companyName || "Your Company"}
+            industry={companyDetails.industry || "Industry"}
+            campaignsRun={stats.activeCampaigns}
+            creatorsPartnered={stats.collaborations}
+            verified={false}
+            products={products}
+            selectedProductId={selectedProductId}
+            onSelectProduct={setSelectedProductId}
+            onEditProduct={handleEditProduct}
+            onRemoveProduct={handleRemoveProduct}
+            removing={removingProduct}
+          />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-          {/* LEFT PANEL */}
-
-          <div className="lg:col-span-1 flex flex-col gap-6">
-
-            <BrandProfileCard
-              companyName={companyDetails.companyName || "Your Company"}
-              industry={companyDetails.industry || "Industry"}
-              campaignsRun={stats.activeCampaigns}
-              creatorsPartnered={stats.collaborations}
-              verified={false}
-              products={products}
-              selectedProductId={selectedProductId}
-              onSelectProduct={setSelectedProductId}
-              onEditProduct={handleEditProduct}
-              onRemoveProduct={handleRemoveProduct}
-              removing={removingProduct}
-            />
-
-            <ProfileCompletionBanner pct={70} productImage={selectedProductImage} />
-
-          </div>
-
-          {/* RIGHT PANEL */}
-
-          <div className="lg:col-span-2 flex flex-col gap-6">
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-              <StatCard
-                icon={Megaphone}
-                label="Active Campaigns"
-                value={stats.activeCampaigns}
-              />
-
-              <StatCard
-                icon={Users}
-                label="Collaborations"
-                value={stats.collaborations}
-              />
-
-            </div>
-
-            {companyFormVisible ? (
-              <CompanyInfoCard
-                details={companyDetails}
-                onChange={handleCompanyChange}
-                onSave={handleSaveCompany}
-                saving={savingCompany}
-              />
-            ) : (
-              <CompanySavedBar
-                companyName={companyDetails.companyName}
-                onEdit={() => setCompanyFormVisible(true)}
-              />
-            )}
-
-            <div id="product-form-section">
-              <ProductInfoCard
-                details={productForm}
-                onChange={handleProductChange}
-                onSave={handleSaveProduct}
-                saving={savingProduct}
-                isEditing={!!editingProductId}
-                onCancelEdit={handleCancelEdit}
-              />
-            </div>
-
-          </div>
-
+          <ProfileCompletionBanner pct={70} productImage={selectedProductImage} />
         </div>
-      </Section>
-    </>
+
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <StatCard icon={Megaphone} label="Active Campaigns" value={stats.activeCampaigns} />
+            <StatCard icon={Users} label="Collaborations" value={stats.collaborations} />
+          </div>
+
+          {companyFormVisible ? (
+            <CompanyInfoCard
+              details={companyDetails}
+              onChange={handleCompanyChange}
+              onSave={handleSaveCompany}
+              saving={savingCompany}
+            />
+          ) : (
+            <CompanySavedBar
+              companyName={companyDetails.companyName}
+              onEdit={() => setCompanyFormVisible(true)}
+            />
+          )}
+
+          <div id="product-form-section">
+            <ProductInfoCard
+              details={productForm}
+              onChange={handleProductChange}
+              onSave={handleSaveProduct}
+              saving={savingProduct}
+              isEditing={!!editingProductId}
+              onCancelEdit={handleCancelEdit}
+            />
+          </div>
+        </div>
+
+      </div>
+    </BrandDashboardLayout>
   );
 }
