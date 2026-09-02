@@ -7,8 +7,7 @@ import Navbar from "../components/layout/Navbar";
 import Section from "../components/common/Section";
 import ReceiptPrinter from "../components/pricing/ReceiptPrinter";
 import GlowingSearchBar from "../components/common/GlowingSearchBar";
-
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../config/api";
 
 export default function PricingCalculator() {
   const [prefill, setPrefill] = useState(undefined);
