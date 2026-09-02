@@ -1,4 +1,4 @@
-﻿import mongoose from "mongoose";
+import mongoose from "mongoose";
 
 const socialAccountSchema = new mongoose.Schema(
   {
@@ -45,7 +45,7 @@ const influencerProfileSchema = new mongoose.Schema(
       birthday: { type: Date },
       gender: { type: String, default: "" },
       ethnicity: { type: String, default: "" },
-      petOwner: { type: String, enum: ["Yes", "No"], default: "No" },
+      petOwner: { type: String, enum: ["Yes", "No", "I have a cat", "I have a dog", "I have another pet"], default: "No" },
     },
 
     address: {
@@ -86,6 +86,7 @@ const influencerProfileSchema = new mongoose.Schema(
       interestedBrands: { type: [String], default: [] },
       audienceGender: { type: String, default: "" },
       audienceAgeRange: { type: String, default: "" },
+      audience: { type: [String], default: [] },
       followersLocations: { type: [String], default: [] }, // country codes
     },
 

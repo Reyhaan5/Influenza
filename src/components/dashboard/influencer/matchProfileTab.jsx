@@ -60,16 +60,49 @@ export default function MatchProfileTab({ profile, onUpdated }) {
     invitationsActive: profile?.matchProfile?.invitationsActive ?? true,
     collaborationFormats: profile?.matchProfile?.collaborationFormats || ["Instagram Reels", "Instagram Stories", "Instagram Post"],
     paymentType: profile?.matchProfile?.paymentType || "gifted",
-    minAskingPrice: profile?.matchProfile?.minAskingPrice || "",
-    maxAskingPrice: profile?.matchProfile?.maxAskingPrice || "",
+    minAskingPrice: profile?.matchProfile?.minAskingPrice ?? "",
+    maxAskingPrice: profile?.matchProfile?.maxAskingPrice ?? "",
     bio: profile?.matchProfile?.bio || "",
-    accountNiche: profile?.matchProfile?.accountNiche || "Lifestyle",
+    accountNiche:
+      (Array.isArray(profile?.matchProfile?.niche) && profile.matchProfile.niche[0]) ||
+      profile?.matchProfile?.accountNiche ||
+      "Lifestyle",
     topics: profile?.matchProfile?.topics || [],
-    leadTimeDays: profile?.matchProfile?.leadTimeDays || "",
+    leadTimeDays: profile?.matchProfile?.leadTimeDays ?? "",
     preferredCompanies: profile?.matchProfile?.preferredCompanies || ["Software"],
     audience: profile?.matchProfile?.audience || ["Men (25-44)"],
-    followersLocation: profile?.matchProfile?.followersLocation || ["United States 🇺🇸"],
+    followersLocations:
+      profile?.matchProfile?.followersLocations ||
+      profile?.matchProfile?.followersLocation ||
+      ["United States 🇺🇸"],
   });
+
+  // Sync state if profile prop updates after mounting
+  React.useEffect(() => {
+    if (profile?.matchProfile) {
+      setData({
+        campaignActive: profile.matchProfile.campaignActive ?? true,
+        invitationsActive: profile.matchProfile.invitationsActive ?? true,
+        collaborationFormats: profile.matchProfile.collaborationFormats || ["Instagram Reels", "Instagram Stories", "Instagram Post"],
+        paymentType: profile.matchProfile.paymentType || "gifted",
+        minAskingPrice: profile.matchProfile.minAskingPrice ?? "",
+        maxAskingPrice: profile.matchProfile.maxAskingPrice ?? "",
+        bio: profile.matchProfile.bio || "",
+        accountNiche:
+          (Array.isArray(profile.matchProfile.niche) && profile.matchProfile.niche[0]) ||
+          profile.matchProfile.accountNiche ||
+          "Lifestyle",
+        topics: profile.matchProfile.topics || [],
+        leadTimeDays: profile.matchProfile.leadTimeDays ?? "",
+        preferredCompanies: profile.matchProfile.preferredCompanies || ["Software"],
+        audience: profile.matchProfile.audience || ["Men (25-44)"],
+        followersLocations:
+          profile.matchProfile.followersLocations ||
+          profile.matchProfile.followersLocation ||
+          ["United States 🇺🇸"],
+      });
+    }
+  }, [profile]);
 
   const [savingKey, setSavingKey] = useState(null);
 
@@ -90,7 +123,18 @@ export default function MatchProfileTab({ profile, onUpdated }) {
     setSavingKey(key);
     try {
       const payload = {};
-      fields.forEach((f) => (payload[f] = data[f]));
+      fields.forEach((f) => {
+        if (f === "accountNiche") {
+          payload.niche = [data.accountNiche];
+          payload.accountNiche = data.accountNiche;
+        } else if (f === "followersLocation" || f === "followersLocations") {
+          payload.followersLocations = Array.isArray(data.followersLocations)
+            ? data.followersLocations
+            : [data.followersLocations];
+        } else {
+          payload[f] = data[f];
+        }
+      });
       const res = await axios.put(`${API_URL}/influencer/match-profile`, payload, authHeader());
       if (onUpdated) onUpdated(res.data);
     } catch (err) {
