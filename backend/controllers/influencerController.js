@@ -1,4 +1,4 @@
-﻿import InfluencerProfile from "../models/InfluencerProfile.js";
+import InfluencerProfile from "../models/InfluencerProfile.js";
 import Opportunity from "../models/Opportunity.js";
 import CollaborationRequest from "../models/CollaborationRequest.js";
 
@@ -25,7 +25,7 @@ export const getMyProfile = async (req, res) => {
 // their own dedicated endpoints below, and stats/challenges are computed elsewhere.
 export const updateMyProfile = async (req, res) => {
   try {
-    const allowedUpdates = ["handle", "categories"];
+    const allowedUpdates = ["handle", "categories", "personalInfo", "address", "notifications"];
     const updates = {};
     for (const key of allowedUpdates) {
       if (req.body[key] !== undefined) updates[key] = req.body[key];
@@ -51,12 +51,22 @@ export const updateMyProfile = async (req, res) => {
       updates.categories = cleaned;
     }
 
+    if (updates.personalInfo !== undefined && updates.personalInfo.birthday === "") {
+      delete updates.personalInfo.birthday;
+    }
+
+    if (updates.address !== undefined) {
+      if (updates.address.phone && !updates.address.phoneNumber) {
+        updates.address.phoneNumber = updates.address.phone;
+      }
+    }
+
     // Force profile approval to true when updating profile
     updates.approved = true;
 
     const profile = await InfluencerProfile.findOneAndUpdate(
       { user: req.user._id },
-      updates,
+      { $set: updates },
       { new: true, runValidators: true }
     );
 
@@ -84,12 +94,16 @@ export const updateMatchProfile = async (req, res) => {
       "minAskingPrice",
       "maxAskingPrice",
       "bio",
-      "accountNiche",
+      "passions",
       "topics",
+      "niche",
       "leadTimeDays",
       "preferredCompanies",
+      "interestedBrands",
+      "audienceGender",
+      "audienceAgeRange",
+      "followersLocations",
       "audience",
-      "followersLocation",
     ];
 
     const set = {};
@@ -97,6 +111,39 @@ export const updateMatchProfile = async (req, res) => {
       if (req.body[key] !== undefined) {
         set[`matchProfile.${key}`] = req.body[key];
       }
+    }
+
+    // Normalizations for aliases and array structures:
+    if (req.body.accountNiche !== undefined) {
+      const nicheVal = Array.isArray(req.body.accountNiche)
+        ? req.body.accountNiche
+        : [req.body.accountNiche].filter(Boolean);
+      set["matchProfile.niche"] = nicheVal;
+    } else if (req.body.niche !== undefined) {
+      set["matchProfile.niche"] = Array.isArray(req.body.niche)
+        ? req.body.niche
+        : [req.body.niche].filter(Boolean);
+    }
+
+    if (req.body.followersLocation !== undefined && req.body.followersLocations === undefined) {
+      const locVal = Array.isArray(req.body.followersLocation)
+        ? req.body.followersLocation
+        : [req.body.followersLocation].filter(Boolean);
+      set["matchProfile.followersLocations"] = locVal;
+    } else if (req.body.followersLocations !== undefined) {
+      set["matchProfile.followersLocations"] = Array.isArray(req.body.followersLocations)
+        ? req.body.followersLocations
+        : [req.body.followersLocations].filter(Boolean);
+    }
+
+    if (req.body.minAskingPrice !== undefined) {
+      set["matchProfile.minAskingPrice"] = req.body.minAskingPrice === "" ? null : Number(req.body.minAskingPrice);
+    }
+    if (req.body.maxAskingPrice !== undefined) {
+      set["matchProfile.maxAskingPrice"] = req.body.maxAskingPrice === "" ? null : Number(req.body.maxAskingPrice);
+    }
+    if (req.body.leadTimeDays !== undefined) {
+      set["matchProfile.leadTimeDays"] = req.body.leadTimeDays === "" ? null : Number(req.body.leadTimeDays);
     }
 
     if (Object.keys(set).length === 0) {
