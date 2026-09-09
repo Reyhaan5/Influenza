@@ -1,10 +1,11 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, LayoutDashboard, LogOut, Mail } from "lucide-react";
 import { megaMenu } from "../../constants/navMenu";
 import { ShiftingDropDown } from "../ui/ShiftingDropDown";
 import { useAuth } from "../../context/AuthContext";
 import Avatar from "../dashboard/influencer/Avatar";
+import FlowButton from "../common/FlowButton";
 
 function AnimatedNavLink({ href, isRoute, children }) {
   const content = (
@@ -131,12 +132,11 @@ function Navbar() {
                 >
                   Sign In
                 </Link>
-                <Link
+                <FlowButton
                   to="/signup"
-                  className="px-5 py-2.5 text-base font-semibold text-white bg-[var(--color-primary)] rounded-full hover:bg-[var(--color-primary-hover)] transition-colors shadow-sm"
-                >
-                  Get Started
-                </Link>
+                  text="Get Started"
+                  className="px-5 py-2.5 text-base"
+                />
               </>
             )}
           </div>
@@ -246,13 +246,12 @@ function Navbar() {
               >
                 Sign In
               </Link>
-              <Link
+              <FlowButton
                 to="/signup"
                 onClick={() => setIsOpen(false)}
-                className="w-full text-center px-5 py-2.5 text-base font-semibold text-white bg-[var(--color-primary)] rounded-full hover:bg-[var(--color-primary-hover)] transition-colors shadow-sm"
-              >
-                Get Started
-              </Link>
+                text="Get Started"
+                className="w-full justify-center px-5 py-2.5 text-base"
+              />
             </div>
           )}
         </div>

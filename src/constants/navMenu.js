@@ -1,5 +1,4 @@
-﻿import { industries } from "./industries";
-import { howItWorksSteps } from "./howItWorks";
+import { industries } from "./industries";
 
 export const megaMenu = [
   {

@@ -1,11 +1,23 @@
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
+import User from "../models/User.js";
 import { getIO } from "../socket/index.js";
 
 export const getOrCreateConversation = async (req, res) => {
   try {
     const { otherUserId } = req.body;
     if (!otherUserId) return res.status(400).json({ message: "otherUserId is required." });
+
+    // Prevent self-messaging
+    if (String(otherUserId) === String(req.user._id)) {
+      return res.status(400).json({ message: "You cannot start a conversation with yourself." });
+    }
+
+    // Verify other user exists
+    const otherUser = await User.findById(otherUserId).select("_id");
+    if (!otherUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
 
     let conversation = await Conversation.findOne({
       participants: { $all: [req.user._id, otherUserId], $size: 2 },

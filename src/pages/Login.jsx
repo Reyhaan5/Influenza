@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Mail, Lock } from "lucide-react";
-import { FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
 import { useAuth } from "../context/AuthContext";
 
 import { API_URL } from "../config/api";

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
 import { Send, Trash2 } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
@@ -12,7 +12,7 @@ import InfluencerDashboardLayout from "../components/dashboard/influencer/Influe
 
 export default function Messages() {
   const { user } = useAuth();
-  const { socket, connected } = useSocket();
+  const { socket, connected, error: socketError } = useSocket();
   const [searchParams] = useSearchParams();
 
   const [conversations, setConversations] = useState([]);
@@ -21,6 +21,11 @@ export default function Messages() {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+
+  // BUG-1: auto-scroll ref
+  const messagesEndRef = useRef(null);
+  // BUG-4: counter for optimistic message IDs
+  const tempIdRef = useRef(0);
 
   const authHeader = () => ({
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -33,14 +38,14 @@ export default function Messages() {
   }, []);
 
   // On load: open ?with=<userId> conversation, else the most recent one
+  const withParam = searchParams.get("with");
   useEffect(() => {
-    const otherUserId = searchParams.get("with");
     (async () => {
       const convos = await fetchConversations();
-      if (otherUserId) {
+      if (withParam) {
         const res = await axios.post(
           `${API_URL}/messages/conversations`,
-          { otherUserId },
+          { otherUserId: withParam },
           authHeader()
         );
         setActiveId(res.data.conversation._id);
@@ -49,13 +54,13 @@ export default function Messages() {
             ? prev
             : [res.data.conversation, ...prev]
         );
-      } else if (convos.length > 0) {
+      } else if (convos.length > 0 && !activeId) {
         setActiveId(convos[0]._id);
       }
       setLoading(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [withParam]);
 
   // Load history + join room whenever active conversation changes
   useEffect(() => {
@@ -70,12 +75,33 @@ export default function Messages() {
     return () => socket?.emit("leaveConversation", activeId);
   }, [activeId, socket]);
 
+  // BUG-2: Re-join room on socket reconnect (e.g. after WiFi blip)
+  useEffect(() => {
+    if (!socket || !activeId) return;
+    const handleReconnect = () => {
+      socket.emit("joinConversation", activeId);
+      socket.emit("markRead", { conversationId: activeId });
+    };
+    socket.on("connect", handleReconnect);
+    return () => socket.off("connect", handleReconnect);
+  }, [socket, activeId]);
+
   // Real-time listeners
   useEffect(() => {
     if (!socket) return;
 
     const onNewMessage = (msg) => {
-      if (msg.conversation === activeId) setMessages((prev) => [...prev, msg]);
+      if (msg.conversation === activeId) {
+        setMessages((prev) => {
+          // BUG-4: Remove optimistic message if server confirms it
+          const senderMatch = (msg.sender?._id || msg.sender) === user.id;
+          if (senderMatch) {
+            const withoutOptimistic = prev.filter((m) => !m._optimistic || m.text !== msg.text);
+            return [...withoutOptimistic, msg];
+          }
+          return [...prev, msg];
+        });
+      }
       setConversations((prev) =>
         prev.map((c) =>
           c._id === msg.conversation
@@ -120,14 +146,34 @@ export default function Messages() {
       socket.off("conversationUpdated", onConversationUpdated);
       socket.off("conversationDeleted", onConversationDeleted);
     };
-  }, [socket, activeId]);
+  }, [socket, activeId, user.id]);
 
+  // BUG-4: Optimistic send — show the message immediately in the UI
   const handleSend = (e) => {
     e.preventDefault();
-    if (!text.trim() || !activeId || !socket) return;
-    socket.emit("sendMessage", { conversationId: activeId, text: text.trim() });
+    const trimmed = text.trim();
+    if (!trimmed || !activeId || !socket) return;
+
+    // Optimistic message — shown instantly, replaced when server confirms
+    tempIdRef.current += 1;
+    const optimisticMsg = {
+      _id: `_temp_${tempIdRef.current}`,
+      _optimistic: true,
+      conversation: activeId,
+      sender: user.id,
+      text: trimmed,
+      createdAt: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, optimisticMsg]);
     setText("");
+
+    socket.emit("sendMessage", { conversationId: activeId, text: trimmed });
   };
+
+  // BUG-1: Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const otherParticipant = (c) => c.participants.find((p) => p._id !== user.id) || c.participants[0];
 
@@ -222,12 +268,14 @@ export default function Messages() {
                         mine
                           ? "self-end bg-[var(--color-primary)] text-white rounded-br-sm"
                           : "self-start bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] rounded-bl-sm"
-                      }`}
+                      } ${m._optimistic ? "opacity-60" : ""}`}
                     >
                       {m.text}
                     </div>
                   );
                 })}
+                {/* BUG-1: scroll sentinel */}
+                <div ref={messagesEndRef} />
               </div>
 
               <form
@@ -237,9 +285,19 @@ export default function Messages() {
                 <input
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  placeholder={connected ? "Type a message..." : "Connecting..."}
+                  placeholder={
+                    socketError
+                      ? `Connection error: ${socketError}`
+                      : connected
+                        ? "Type a message..."
+                        : "Connecting..."
+                  }
                   disabled={!connected}
-                  className="flex-1 border border-[var(--color-border)] rounded-xl px-4 py-2.5 text-sm bg-[var(--color-background)]"
+                  className={`flex-1 border rounded-xl px-4 py-2.5 text-sm bg-[var(--color-background)] ${
+                    socketError
+                      ? "border-[var(--color-danger)]/50 placeholder:text-[var(--color-danger)]"
+                      : "border-[var(--color-border)]"
+                  }`}
                 />
                 <button
                   type="submit"

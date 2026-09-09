@@ -1,4 +1,4 @@
-﻿import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Home from "../pages/Home";
 import Login from "../pages/Login";
@@ -17,6 +17,7 @@ import Messages from "../pages/Messages";
 import BrowseCategories from "../pages/BrowseCategories";
 import CategoryResults from "../pages/CategoryResults";
 import ContentGallery from "../pages/ContentGallery";
+import NotFound from "../components/ui/NotFound";
 
 function AppRoutes() {
   return (
@@ -114,6 +115,9 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
+
+        {/* Catch-all — 404 */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

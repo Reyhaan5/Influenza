@@ -2,7 +2,6 @@ import { ApifyClient } from "apify-client";
 
 export async function scrapeInstagram(username) {
     try {
-        console.log("TOKEN INSIDE FUNCTION:", process.env.APIFY_TOKEN);
 
         const client = new ApifyClient({
             token: process.env.APIFY_TOKEN,
