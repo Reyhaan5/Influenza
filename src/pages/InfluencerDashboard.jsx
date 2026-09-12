@@ -120,11 +120,17 @@ export default function InfluencerDashboard() {
   };
 
   const handleRemoveAccount = async (platform) => {
+    if (!window.confirm("Are you sure you want to disconnect this Instagram account? All retrieved follower analytics and rate card links will be cleared.")) {
+      return;
+    }
     try {
-      const res = await axios.delete(`${API_URL}/influencer/social-accounts/${platform}`, authHeader());
-      setProfile(res.data);
+      const res = await axios.post(`${API_URL}/influencer/disconnect-instagram`, {}, authHeader());
+      if (res.data?.profile) {
+        setProfile(res.data.profile);
+      }
+      fetchProfile();
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to remove account.");
+      alert(err.response?.data?.message || "Failed to disconnect account.");
     }
   };
 
@@ -343,7 +349,11 @@ export default function InfluencerDashboard() {
             onEditCategories={() => setShowCategoryModal(true)}
           />
         </div>
-        <ConnectBanner />
+        <ConnectBanner
+          profile={profile}
+          onConnect={() => setShowAddModal(true)}
+          onEditProfile={() => setShowEditProfileModal(true)}
+        />
       </div>
 
       {/* Quick Stats */}

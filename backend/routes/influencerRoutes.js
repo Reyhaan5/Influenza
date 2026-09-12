@@ -5,6 +5,7 @@ import {
   updateMatchProfile,
   addSocialAccount,
   removeSocialAccount,
+  disconnectInstagramAccount,
   getOpenOpportunities,
 } from "../controllers/influencerController.js";
 import { getDashboardStats } from "../controllers/dashboardController.js";
@@ -30,6 +31,7 @@ router.get("/dashboard", protect, requireRole("influencer"), getDashboardStats);
 
 router.post("/social-accounts", protect, requireRole("influencer"), addSocialAccount);
 router.delete("/social-accounts/:platform", protect, requireRole("influencer"), removeSocialAccount);
+router.post("/disconnect-instagram", protect, requireRole("influencer"), disconnectInstagramAccount);
 
 router.post("/rate-cards", protect, requireRole("influencer"), saveRateCard);
 router.post("/rate-card", protect, requireRole("influencer"), saveRateCard);
