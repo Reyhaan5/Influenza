@@ -12,12 +12,15 @@ export function getIO() {
   return io;
 }
 
-  // ...rest unchanged
-
 export function initSocket(httpServer) {
+  const allowedOrigins = [
+    process.env.CLIENT_URL,
+    "http://localhost:5173",
+  ].filter(Boolean);
+
   io = new Server(httpServer, {
     cors: {
-      origin: process.env.CLIENT_URL || "http://localhost:5173",
+      origin: allowedOrigins,
       credentials: true,
     },
   });

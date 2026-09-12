@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import http from "http";
+import rateLimit from "express-rate-limit";
+import mongoSanitize from "express-mongo-sanitize";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import influencerRoutes from "./routes/influencerRoutes.js";
@@ -31,20 +33,46 @@ connectDB(); // connect to MongoDB Atlas (see config/db.js)
 
 const app = express();
 
-// Lets your React app (running on localhost:5173) call this server
-// (running on localhost:5000) without the browser blocking it.
-app.use(cors());
+// ---------- Security Middleware ----------
 
-// Lets Express understand JSON bodies sent from axios/fetch,
-// e.g. req.body.email in your controllers.
+// CORS — only allow requests from the frontend origin
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+].filter(Boolean);
+
+app.use(cors({ origin: allowedOrigins, credentials: true }));
+
+// Global rate limiter — 100 requests per 15 minutes per IP
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests, please try again later." },
+});
+app.use(globalLimiter);
+
+// Stricter rate limiter for auth routes — 10 requests per 15 minutes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: "Too many login attempts, please try again later." },
+});
+
+// Parse JSON bodies
 app.use(express.json());
 
-// Serves uploaded product images statically, e.g.
-// http://localhost:5000/uploads/<filename>
+// Sanitize user input — prevents NoSQL injection via $gt, $ne, etc.
+app.use(mongoSanitize());
+
+// Serves uploaded product images statically
 app.use("/uploads", express.static("uploads"));
 
-// Every URL starting with /api/auth goes to authRoutes.js
-app.use("/api/auth", authRoutes);
+// ---------- Routes ----------
+
+// Auth routes with stricter rate limiting
+app.use("/api/auth", authLimiter, authRoutes);
 // Every URL starting with /api/influencer goes to influencerRoutes.js
 app.use("/api/influencer", influencerRoutes);
 app.use("/api/public", publicRoutes);

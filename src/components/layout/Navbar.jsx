@@ -1,10 +1,12 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, LayoutDashboard, LogOut, Mail } from "lucide-react";
 import { megaMenu } from "../../constants/navMenu";
 import { ShiftingDropDown } from "../ui/ShiftingDropDown";
 import { useAuth } from "../../context/AuthContext";
 import Avatar from "../dashboard/influencer/Avatar";
+import FlowButton from "../common/FlowButton";
+import BrandLogo from "../common/BrandLogo";
 
 function AnimatedNavLink({ href, isRoute, children }) {
   const content = (
@@ -111,9 +113,7 @@ function Navbar() {
         }`}
       >
         <div className="flex items-center justify-between gap-8 sm:gap-12">
-          <Link to="/" className="text-2xl font-extrabold tracking-tight text-[var(--color-primary)] flex-shrink-0">
-            Influenza
-          </Link>
+          <BrandLogo to="/" size="text-2xl" iconSize="h-7 w-7" />
 
           <nav className="hidden lg:flex items-center gap-4">
             <ShiftingDropDown tabs={megaMenu} />
@@ -131,12 +131,11 @@ function Navbar() {
                 >
                   Sign In
                 </Link>
-                <Link
+                <FlowButton
                   to="/signup"
-                  className="px-5 py-2.5 text-base font-semibold text-white bg-[var(--color-primary)] rounded-full hover:bg-[var(--color-primary-hover)] transition-colors shadow-sm"
-                >
-                  Get Started
-                </Link>
+                  text="Get Started"
+                  className="px-5 py-2.5 text-base"
+                />
               </>
             )}
           </div>
@@ -246,13 +245,12 @@ function Navbar() {
               >
                 Sign In
               </Link>
-              <Link
+              <FlowButton
                 to="/signup"
                 onClick={() => setIsOpen(false)}
-                className="w-full text-center px-5 py-2.5 text-base font-semibold text-white bg-[var(--color-primary)] rounded-full hover:bg-[var(--color-primary-hover)] transition-colors shadow-sm"
-              >
-                Get Started
-              </Link>
+                text="Get Started"
+                className="w-full justify-center px-5 py-2.5 text-base"
+              />
             </div>
           )}
         </div>

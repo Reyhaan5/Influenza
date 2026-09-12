@@ -96,7 +96,7 @@ const STORAGE_KEY = "influenza_last_rate_card";
 export function saveLastEntry(entry) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...entry, savedAt: Date.now() }));
-  } catch (e) {
+  } catch {
     // localStorage unavailable — fail silently, feature just won't remember
   }
 }
@@ -105,7 +105,7 @@ export function loadLastEntry() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : null;
-  } catch (e) {
+  } catch {
     return null;
   }
 }

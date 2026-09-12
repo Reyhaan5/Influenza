@@ -1,4 +1,4 @@
-﻿import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Home from "../pages/Home";
 import Login from "../pages/Login";
@@ -10,13 +10,13 @@ import ProtectedRoute from "./ProtectedRoute";
 import BrandCampaigns from "../pages/BrandCampaigns";
 import BrandSearch from "../pages/BrandSearch";
 import BrandCollaborations from "../pages/BrandCollaborations";
-import InsiderRateCalculator from "../pages/InsiderRateCalculator";
 import CollaborationRequests from "../pages/CollaborationRequests";
 import BrowseOpportunities from "../pages/BrowseOpportunities";
 import Messages from "../pages/Messages";
 import BrowseCategories from "../pages/BrowseCategories";
 import CategoryResults from "../pages/CategoryResults";
 import ContentGallery from "../pages/ContentGallery";
+import NotFound from "../components/ui/NotFound";
 
 function AppRoutes() {
   return (
@@ -45,14 +45,6 @@ function AppRoutes() {
           element={
             <ProtectedRoute allowedRole="influencer">
               <InfluencerAccount />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/insider-rate"
-          element={
-            <ProtectedRoute allowedRole="influencer">
-              <InsiderRateCalculator />
             </ProtectedRoute>
           }
         />
@@ -114,6 +106,9 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
+
+        {/* Catch-all — 404 */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

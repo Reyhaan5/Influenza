@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { useAuth } from "./AuthContext";
 import { API_ORIGIN } from "../config/api";
@@ -7,34 +7,46 @@ const SocketContext = createContext(null);
 
 export function SocketProvider({ children }) {
   const { user } = useAuth();
-  const socketRef = useRef(null);
+  const [socket, setSocket] = useState(null);
   const [connected, setConnected] = useState(false);
-  const [, forceUpdate] = useState(0);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!user || !token) {
-      socketRef.current?.disconnect();
-      socketRef.current = null;
+      setSocket((prev) => {
+        prev?.disconnect();
+        return null;
+      });
       setConnected(false);
+      setError(null);
       return;
     }
 
-    const socket = io(API_ORIGIN, { auth: { token }, withCredentials: true });
-    socket.on("connect", () => setConnected(true));
-    socket.on("disconnect", () => setConnected(false));
+    const s = io(API_ORIGIN, { auth: { token }, withCredentials: true });
 
-    socketRef.current = socket;
-    forceUpdate((n) => n + 1); // re-render so consumers get the new socket instance
+    s.on("connect", () => {
+      setConnected(true);
+      setError(null);
+    });
+
+    s.on("disconnect", () => setConnected(false));
+
+    s.on("connect_error", (err) => {
+      setConnected(false);
+      setError(err.message || "Unable to connect to chat server");
+    });
+
+    setSocket(s);
 
     return () => {
-      socket.disconnect();
-      socketRef.current = null;
+      s.disconnect();
+      setSocket(null);
     };
   }, [user]);
 
   return (
-    <SocketContext.Provider value={{ socket: socketRef.current, connected }}>
+    <SocketContext.Provider value={{ socket, connected, error }}>
       {children}
     </SocketContext.Provider>
   );

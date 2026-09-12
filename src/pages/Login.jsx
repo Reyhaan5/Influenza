@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Mail, Lock } from "lucide-react";
-import { FaXTwitter, FaLinkedinIn } from "react-icons/fa6";
 import { useAuth } from "../context/AuthContext";
+import BrandLogo from "../components/common/BrandLogo";
 
 import { API_URL } from "../config/api";
 
@@ -295,9 +295,8 @@ export default function InfluenzeAuth() {
 
       {/* Mobile: simple stacked card */}
       <div className="md:hidden w-full max-w-sm bg-[var(--color-surface)] rounded-[28px] shadow-2xl p-7">
-        <div className="flex items-center justify-center gap-2 mb-5">
-          <span className="w-2.5 h-2.5 rounded-full bg-[var(--color-primary)] animate-pulse" />
-          <span className="text-[var(--color-primary-hover)] font-black text-lg tracking-tight">Influenza</span>
+        <div className="flex items-center justify-center mb-5">
+          <BrandLogo to="/" size="text-xl" iconSize="w-6 h-6" />
         </div>
 
         <AuthFields

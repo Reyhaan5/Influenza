@@ -1,9 +1,10 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
 function HeroBadge() {
   return (
-    <div
+    <motion.div
       className="
         inline-flex
         items-center
@@ -16,6 +17,8 @@ function HeroBadge() {
         py-2
         shadow-sm
       "
+      animate={{ y: [0, -4, 0] }}
+      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
     >
       <Sparkles
         size={16}
@@ -25,7 +28,7 @@ function HeroBadge() {
       <span className="text-sm font-semibold text-[var(--color-primary-hover)]">
         Campaign Intelligence Platform
       </span>
-    </div>
+    </motion.div>
   );
 }
 

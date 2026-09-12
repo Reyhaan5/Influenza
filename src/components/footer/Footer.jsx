@@ -1,47 +1,20 @@
-import { Mail, MapPin, ArrowRight } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
+import BrandLogo from "../common/BrandLogo";
 
 function Footer() {
   return (
-    <footer className="relative mt-32 overflow-hidden border-t border-[var(--color-accent)] bg-gradient-to-b from-[var(--color-surface)] via-[var(--color-background)] to-[var(--color-background)]">
+    <footer className="relative overflow-hidden border-t border-[var(--color-accent)] bg-gradient-to-b from-[var(--color-surface)] via-[var(--color-background)] to-[var(--color-background)]">
       {/* Background Glow */}
       <div className="absolute -left-40 top-20 h-80 w-80 rounded-full bg-[var(--color-primary)]/10 blur-[120px]" />
       <div className="absolute right-0 bottom-0 h-72 w-72 rounded-full bg-[var(--color-primary-hover)]/10 blur-[120px]" />
 
       <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-10">
-        {/* CTA */}
-        <div className="rounded-[36px] border border-[var(--color-accent)] bg-[var(--color-surface)]/70 p-12 text-center shadow-xl backdrop-blur-xl">
-          <span className="inline-flex rounded-full bg-[var(--color-primary)]/10 px-4 py-2 text-sm font-semibold text-[var(--color-primary)]">
-            Built for Modern Marketing Teams
-          </span>
-
-          <h2 className="mt-6 text-4xl font-bold text-[var(--color-text)]">
-            Ready to launch your next campaign?
-          </h2>
-
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-[var(--color-text-light)]">
-            Discover creators, collaborate with influencers, manage campaigns
-            and measure performance from one intelligent workspace.
-          </p>
-
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <button className="flex items-center gap-2 rounded-xl bg-[var(--color-primary)] px-7 py-4 font-semibold text-white transition hover:scale-105 hover:shadow-xl">
-              Get Started
-              <ArrowRight size={18} />
-            </button>
-
-            <button className="rounded-xl border border-[var(--color-accent)] bg-[var(--color-surface)] px-7 py-4 font-semibold text-[var(--color-text)] transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]">
-              Book a Demo
-            </button>
-          </div>
-        </div>
 
         {/* Main Footer */}
-        <div className="mt-24 grid gap-14 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-14 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <h2 className="text-4xl font-bold text-[var(--color-primary)]">
-              Influenza
-            </h2>
+            <BrandLogo to="/" size="text-3xl sm:text-4xl" iconSize="h-9 w-9" />
 
             <p className="mt-6 max-w-md leading-8 text-[var(--color-text-light)]">
               The modern workspace for brands to discover, evaluate and

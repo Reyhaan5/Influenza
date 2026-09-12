@@ -3,11 +3,38 @@
 @import "./theme/colors.css";
 @import "./theme/typography.css";
 
-@theme {
+@theme inline {
   --font-sans: var(--font-family-primary);
   --text-xs: var(--font-size-xs);
   --text-sm: var(--font-size-sm);
   --text-md: var(--font-size-md);
+  --color-destructive-foreground: var(--destructive-foreground);
+}
+
+.font-coiny {
+  font-family: 'Coiny', cursive, sans-serif;
+}
+
+.font-prompt {
+  font-family: 'Prompt', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+:root {
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+}
+
+.dark {
+  --card: oklch(0.145 0 0);
+  --popover: oklch(0.145 0 0);
+  --primary: oklch(0.65 0.13 35);
+  --primary-foreground: oklch(0.145 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
 }
 
 html,
