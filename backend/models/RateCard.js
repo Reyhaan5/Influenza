@@ -14,6 +14,18 @@ const rateCardSchema = new mongoose.Schema(
       reel: Number,
       story: Number,
     },
+    packages: [
+      {
+        id: String,
+        title: String,
+        contentType: { type: String, default: "Reel" },
+        count: { type: Number, default: 1 },
+        duration: { type: Number, default: 3 },
+        durationUnit: { type: String, default: "Minutes" },
+        price: { type: Number, default: 50 },
+        description: { type: String, default: "" },
+      },
+    ],
   },
   { timestamps: true }
 );

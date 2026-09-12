@@ -1,7 +1,11 @@
 // backend/routes/publicRoutes.js
 import express from "express";
 import { lookupInstagramHandle, proxyInstagramImage } from "../controllers/instagramController.js";
-import { getCreatorsByCategory } from "../controllers/publicCreatorsController.js";
+import {
+  getCreatorsByCategory,
+  getCreatorDiscovery,
+  getPublicCreatorProfile,
+} from "../controllers/publicCreatorsController.js";
 import { getPublicGallery } from "../controllers/galleryController.js";
 import { calculateInfluRateHandler, getCreatorInfluRateHandler } from "../controllers/influRateController.js";
 
@@ -11,6 +15,8 @@ const router = express.Router();
 router.get("/instagram-lookup", lookupInstagramHandle);
 router.get("/proxy-image", proxyInstagramImage);
 router.get("/creators-by-category", getCreatorsByCategory);
+router.get("/creator-discovery", getCreatorDiscovery);
+router.get("/creators/:id", getPublicCreatorProfile);
 router.get("/gallery", getPublicGallery);
 
 // InfluRate Calculator API
@@ -18,4 +24,5 @@ router.post("/influrate/calculate", calculateInfluRateHandler);
 router.get("/influrate/creator/:id", getCreatorInfluRateHandler);
 
 export default router;
+
 

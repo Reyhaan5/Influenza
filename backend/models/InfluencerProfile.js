@@ -27,24 +27,22 @@ const influencerProfileSchema = new mongoose.Schema(
     categories: {
       type: [String],
       default: [],
-      validate: {
-        validator: function (arr) {
-          return Array.isArray(arr) && arr.length <= 3;
-        },
-        message: "You can select up to 3 categories.",
-      },
     },
 
     // ===========================
-    // Account Settings tab
+    // Account Settings & Onboarding
     // ===========================
     personalInfo: {
       firstName: { type: String, default: "" },
       lastName: { type: String, default: "" },
+      title: { type: String, default: "" },
       avatar: { type: String, default: "" },
+      coverPhoto: { type: String, default: "" },
+      coverPhotos: { type: [String], default: [] },
       birthday: { type: Date },
       gender: { type: String, default: "" },
       ethnicity: { type: String, default: "" },
+      languages: { type: [String], default: ["English"] },
       petOwner: { type: String, enum: ["Yes", "No", "I have a cat", "I have a dog", "I have another pet"], default: "No" },
     },
 
@@ -89,6 +87,36 @@ const influencerProfileSchema = new mongoose.Schema(
       audience: { type: [String], default: [] },
       followersLocations: { type: [String], default: [] }, // country codes
     },
+
+    // ===========================
+    // Payout & Payment Details (Step 3)
+    // ===========================
+    payoutInfo: {
+      method: { type: String, enum: ["bank", "upi", "paypal", "stripe"], default: "bank" },
+      accountHolderName: { type: String, default: "" },
+      bankName: { type: String, default: "" },
+      accountNumber: { type: String, default: "" },
+      ifscOrRouting: { type: String, default: "" },
+      upiId: { type: String, default: "" },
+      paypalEmail: { type: String, default: "" },
+      currency: { type: String, default: "USD" },
+      isConfigured: { type: Boolean, default: false },
+    },
+
+    packages: [
+      {
+        id: String,
+        title: String,
+        contentType: { type: String, default: "Reel" },
+        count: { type: Number, default: 1 },
+        duration: { type: Number, default: 3 },
+        durationUnit: { type: String, default: "Minutes" },
+        price: { type: Number, default: 50 },
+        description: { type: String, default: "" },
+      },
+    ],
+
+    isProfileComplete: { type: Boolean, default: false },
 
     // NOTE: collaborationsCompleted, rating, challenges, and milestones are
     // NOT stored here — they're computed live from CollaborationRequest,

@@ -32,7 +32,10 @@ router.post("/social-accounts", protect, requireRole("influencer"), addSocialAcc
 router.delete("/social-accounts/:platform", protect, requireRole("influencer"), removeSocialAccount);
 
 router.post("/rate-cards", protect, requireRole("influencer"), saveRateCard);
+router.post("/rate-card", protect, requireRole("influencer"), saveRateCard);
+router.put("/rate-card", protect, requireRole("influencer"), saveRateCard);
 router.get("/rate-cards", protect, requireRole("influencer"), getMyRateCards);
+router.get("/rate-card", protect, requireRole("influencer"), getMyRateCards);
 
 router.get("/insider-rate", protect, requireRole("influencer"), getInsiderRate);
 

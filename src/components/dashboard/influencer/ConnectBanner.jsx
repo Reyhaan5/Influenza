@@ -9,8 +9,8 @@ export default function ConnectBanner() {
           <Video size={20} />
         </div>
         <p className="text-sm text-[var(--color-text)] leading-relaxed">
-          Connect your <span className="font-bold text-[var(--color-primary-hover)]">TikTok</span> account to
-          increase your asking price by up to <span className="font-bold">$250</span>.
+          Connect your <span className="font-bold text-[var(--color-primary-hover)]">Instagram</span> account to
+          increase your asking price and get discovered by brands.
         </p>
       </div>
       <button className="self-start mt-4 flex items-center gap-1.5 text-sm font-bold text-[var(--color-primary-hover)] hover:underline">

@@ -19,6 +19,10 @@
   font-family: 'Prompt', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+.font-handwriting {
+  font-family: 'Caveat', 'Kalam', cursive, sans-serif;
+}
+
 :root {
   --destructive-foreground: oklch(0.577 0.245 27.325);
 }

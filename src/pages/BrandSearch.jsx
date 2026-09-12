@@ -5,8 +5,7 @@ import { Search as SearchIcon } from "lucide-react";
 import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 import CreatorSearchCard from "../components/dashboard/brand/CreatorSearchCard";
 
-import { API_URL } from "../config/api";
-const PLATFORMS = ["", "Instagram", "YouTube", "Twitter"];
+const PLATFORMS = ["Instagram"];
 
 export default function BrandSearch() {
   const [query, setQuery] = useState("");

@@ -10,7 +10,7 @@ export const faqs = [
       id: 2,
       question: "Which social media platforms are supported?",
       answer:
-        "Influenza is designed to support Instagram first, with support for YouTube, TikTok, LinkedIn, and other major creator platforms planned as the platform grows.",
+        "Influenza is dedicated exclusively to Instagram, providing verified profile discovery, live follower insights, and custom Reels, Stories, and Post rate cards.",
     },
   
     {

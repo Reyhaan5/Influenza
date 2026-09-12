@@ -3,7 +3,7 @@ import axios from "axios";
 import { Upload, Trash2, Star } from "lucide-react";
 import { API_URL, API_ORIGIN } from "../../../config/api";
 
-const PLATFORMS = ["Instagram", "YouTube", "Twitter"];
+const PLATFORMS = ["Instagram"];
 const MAX_HIGHLIGHTED = 10;
 
 export default function GalleryManager() {
