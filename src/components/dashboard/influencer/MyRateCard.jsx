@@ -3,6 +3,8 @@ import axios from "axios";
 import { RefreshCcw, Clock } from "lucide-react";
 import Avatar from "./Avatar";
 import ReceiptPrinter from "../../pricing/ReceiptPrinter";
+import GlowingSearchBar from "../../common/GlowingSearchBar";
+import InfluRateCard from "./InfluRateCard";
 
 import { API_URL } from "../../../config/api";
 
@@ -32,6 +34,13 @@ export default function MyRateCard({ profile }) {
   const [loadingCard, setLoadingCard] = useState(true);
   const [showEditor, setShowEditor] = useState(false);
 
+  // Instagram lookup state — the ONLY source of handle/followers/avgLikes/
+  // avgComments now. No "connect your account" step required.
+  const [prefill, setPrefill] = useState(undefined);
+  const [searching, setSearching] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [printerKey, setPrinterKey] = useState(0);
+
   const authHeader = () => ({
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
@@ -51,25 +60,58 @@ export default function MyRateCard({ profile }) {
     fetchLatestCard();
   }, []);
 
-  const primaryAccount = profile.socialAccounts?.[0];
   const symbol = latestCard?.marketId === "global" ? "$" : "₹";
 
-  const initialAnswers = primaryAccount
-    ? {
-        handle: primaryAccount.handle,
-        followers: String(primaryAccount.followers),
-        avgLikes: "",
-        avgComments: "",
-        nicheId: "",
-        marketId: "",
+  // The header always reflects whatever handle was last searched,
+  // falling back to the account's own handle if nothing's been searched yet.
+  const displayHandle = prefill?.handle || profile.handle;
+
+  const handleSearch = async (query) => {
+    const handle = query.trim();
+    if (!handle) return;
+
+    setSearching(true);
+    setNotice("");
+
+    try {
+      const res = await axios.get(`${API_URL}/public/instagram-lookup`, {
+        params: { handle },
+      });
+      const data = res.data;
+
+      if (data.found) {
+        setPrefill({
+          handle: data.handle,
+          followers: String(data.followers),
+          avgLikes: String(data.avgLikes),
+          avgComments: String(data.avgComments),
+        });
+        setNotice(`Pulled live stats for ${data.handle}.`);
+      } else {
+        const formattedHandle = handle.startsWith("@") ? handle : `@${handle}`;
+        setPrefill({ handle: formattedHandle });
+        setNotice("Couldn't fetch this Instagram account. You can enter the remaining details manually.");
       }
-    : undefined;
+    } catch (err) {
+      console.error("Instagram lookup error:", err);
+      const formattedHandle = handle.startsWith("@") ? handle : `@${handle}`;
+      setPrefill({ handle: formattedHandle });
+      setNotice("Instagram lookup failed. You can enter your stats manually.");
+    } finally {
+      setSearching(false);
+      // Remount ReceiptPrinter so it recomputes which step to start on
+      // now that handle/followers/avgLikes/avgComments are filled in.
+      setPrinterKey((k) => k + 1);
+    }
+  };
 
   const handleComplete = async (finalAnswers) => {
     try {
       await axios.post(`${API_URL}/influencer/rate-cards`, finalAnswers, authHeader());
       await fetchLatestCard();
       setShowEditor(false);
+      setPrefill(undefined);
+      setNotice("");
     } catch (err) {
       console.error("Couldn't save rate card:", err);
     }
@@ -80,10 +122,10 @@ export default function MyRateCard({ profile }) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <Avatar name={(profile.handle || "?").replace("@", "")} size={48} />
+          <Avatar name={(displayHandle || "?").replace("@", "")} size={48} />
           <div>
             <p className="font-bold text-[var(--color-text)]">
-              {profile.handle}
+              {displayHandle}
             </p>
             <p className="text-xs text-[var(--color-text-light)]">Rate card</p>
           </div>
@@ -109,7 +151,7 @@ export default function MyRateCard({ profile }) {
           </div>
         ) : (
           <p className="text-sm text-[var(--color-text-light)]">
-            You haven't printed a rate card yet. Fill in your numbers below to get one.
+            Search your Instagram handle below to generate your rate card.
           </p>
         )}
       </div>
@@ -126,8 +168,40 @@ export default function MyRateCard({ profile }) {
       )}
 
       {(showEditor || !latestCard) && !loadingCard && (
-        <div className="mt-6">
-          <ReceiptPrinter initialAnswers={initialAnswers} onComplete={handleComplete} />
+        <div className="mt-6 flex flex-col gap-5">
+          <GlowingSearchBar
+            placeholder="Search @yourhandle..."
+            onSearch={handleSearch}
+          />
+
+          {searching && (
+            <p className="text-center text-sm text-[var(--color-text-light)]">
+              Fetching Instagram data...
+            </p>
+          )}
+
+          {notice && !searching && (
+            <p className="text-center text-sm text-[var(--color-text-light)]">
+              {notice}
+            </p>
+          )}
+
+          {/* Shows Overall Rating + Rate Card as soon as a search resolves
+              with real stats (not just a bare handle fallback). */}
+          {prefill?.followers && (
+            <InfluRateCard
+              handle={prefill.handle}
+              followers={Number(prefill.followers)}
+              avgLikes={Number(prefill.avgLikes)}
+              avgComments={Number(prefill.avgComments)}
+            />
+          )}
+
+          <ReceiptPrinter
+            key={printerKey}
+            initialAnswers={prefill}
+            onComplete={handleComplete}
+          />
         </div>
       )}
     </div>

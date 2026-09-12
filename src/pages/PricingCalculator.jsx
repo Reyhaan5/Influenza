@@ -27,8 +27,7 @@ import Section from "../components/common/Section";
 import Footer from "../components/footer/Footer";
 import { QualityPill } from "../components/ui/QualityBadge";
 import { calculateInfluRate } from "../utils/influRateCalculator";
-
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../config/api";
 
 // Compact number formatting (e.g. 67.8M, 150k, 1.7k)
 function formatCompact(num) {

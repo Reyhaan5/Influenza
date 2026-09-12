@@ -88,3 +88,37 @@ export const getMe = async (req, res) => {
   // req.user is attached by authMiddleware.js before this ever runs
   res.json(req.user);
 };
+
+// PUT /api/auth/update-password (protected)
+export const updatePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword, repeatPassword } = req.body;
+
+    if (!oldPassword || !newPassword || !repeatPassword) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: "New password must be at least 6 characters." });
+    }
+    if (newPassword !== repeatPassword) {
+      return res.status(400).json({ message: "New passwords do not match." });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const isMatch = await user.comparePassword(oldPassword);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Old password is incorrect." });
+    }
+
+    user.password = newPassword; // pre-save hook in User.js hashes it
+    await user.save();
+
+    res.json({ message: "Password updated successfully." });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
