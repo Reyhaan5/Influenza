@@ -16,6 +16,9 @@ import Messages from "../pages/Messages";
 import BrowseCategories from "../pages/BrowseCategories";
 import CategoryResults from "../pages/CategoryResults";
 import ContentGallery from "../pages/ContentGallery";
+import CreatorDiscovery from "../pages/CreatorDiscovery";
+import CreatorProfile from "../pages/CreatorProfile";
+import CreatorOnboarding from "../pages/CreatorOnboarding";
 import NotFound from "../components/ui/NotFound";
 
 function AppRoutes() {
@@ -30,7 +33,18 @@ function AppRoutes() {
         {/* Public — no login required */}
         <Route path="/categories" element={<BrowseCategories />} />
         <Route path="/categories/:category" element={<CategoryResults />} />
+        <Route path="/creator-discovery" element={<CreatorDiscovery />} />
+        <Route path="/creators/:id" element={<CreatorProfile />} />
         <Route path="/content-gallery" element={<ContentGallery />} />
+
+        <Route
+          path="/creator-onboarding"
+          element={
+            <ProtectedRoute allowedRole="influencer">
+              <CreatorOnboarding />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/influencer-dashboard"

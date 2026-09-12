@@ -24,17 +24,15 @@ function SocialRow() {
   return (
     <div className="flex items-center justify-center gap-3 mt-5">
       {[
-        { key: "google", node: <img src="/icons/google.svg" alt="Google" className="w-4 h-4" /> },
-        { key: "facebook", node: <img src="/icons/facebook.svg" alt="Facebook" className="w-4 h-4" /> },
-        { key: "twitter", node: <img src="/icons/twitter.svg" alt="Twitter" className="w-4 h-4" /> },
-        { key: "linkedin", node: <img src="/icons/linkedin.svg" alt="LinkedIn" className="w-4 h-4" /> },
+        { key: "google", label: "Continue with Google", node: <img src="/icons/google.svg" alt="Google" className="w-4 h-4" /> },
       ].map((s) => (
         <button
           key={s.key}
           type="button"
-          className="w-9 h-9 rounded-full border border-[var(--color-border)] flex items-center justify-center hover:border-[var(--color-primary)] hover:-translate-y-0.5 transition-all"
+          className="px-4 py-2 rounded-xl border border-[var(--color-border)] flex items-center gap-2 hover:border-black hover:-translate-y-0.5 transition-all text-xs font-bold text-gray-700 bg-white shadow-sm"
         >
           {s.node}
+          <span>{s.label}</span>
         </button>
       ))}
     </div>
@@ -208,7 +206,11 @@ export default function InfluenzeAuth() {
 
       const { token, user } = res.data;
       login(token, user);
-      navigate(user.role === "brand" ? "/brand-dashboard" : "/influencer-dashboard");
+      if (isSignup && user.role === "influencer") {
+        navigate("/creator-onboarding");
+      } else {
+        navigate(user.role === "brand" ? "/brand-dashboard" : "/influencer-dashboard");
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong. Try again.");
     } finally {

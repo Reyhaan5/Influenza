@@ -1,16 +1,13 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 
-const PLATFORMS = ["Instagram", "YouTube", "Twitter"];
-
 export default function AddSocialAccountModal({ onClose, onSubmit }) {
-  const [platform, setPlatform] = useState("Instagram");
   const [handle, setHandle] = useState("");
   const [followers, setFollowers] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ platform, handle, followers: Number(followers) || 0 });
+    onSubmit({ platform: "Instagram", handle, followers: Number(followers) || 0 });
   };
 
   return (
@@ -20,18 +17,13 @@ export default function AddSocialAccountModal({ onClose, onSubmit }) {
           <X size={18} />
         </button>
 
-        <h3 className="font-bold text-lg text-[var(--color-text)] mb-4">Add Social Account</h3>
+        <h3 className="font-bold text-lg text-[var(--color-text)] mb-4">Add Instagram Account</h3>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <select
-            value={platform}
-            onChange={(e) => setPlatform(e.target.value)}
-            className="border border-[var(--color-border)] rounded-xl px-3 py-2.5 text-sm"
-          >
-            {PLATFORMS.map((p) => (
-              <option key={p} value={p}>{p}</option>
-            ))}
-          </select>
+          <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-800">
+            <img src="/Instagram.svg" alt="Instagram" className="w-4 h-4 object-contain" />
+            <span>Platform: Instagram</span>
+          </div>
 
           <input
             required

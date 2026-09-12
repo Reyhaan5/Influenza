@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import axios from "axios";
 import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
 import Heading from "../components/ui/Heading";
@@ -65,12 +65,14 @@ export default function InfluencerAccount() {
       {/* Top Header Row with Page Title and Preview Action */}
       <div className="flex items-center justify-between mb-6">
         <Heading level={1}>Your Profile</Heading>
-        <button 
-          type="button" 
-          className="bg-black hover:bg-black/80 text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-colors shadow-sm"
+        <Link
+          to={`/creators/${profile?.user?._id || profile?._id || user?._id || ""}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-black hover:bg-black/80 text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-colors shadow-sm inline-flex items-center gap-1.5"
         >
-          Preview
-        </button>
+          Preview Profile
+        </Link>
       </div>
 
       {/* Navigation Tabs Bar */}

@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import Avatar from "../dashboard/influencer/Avatar";
 
@@ -11,9 +11,13 @@ export default function PublicCreatorCard({ profile }) {
   return (
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 shadow-[var(--shadow-card)] flex flex-col gap-3">
       <div className="flex items-center gap-3">
-        <Avatar name={(profile.handle || profile.user?.name || "?").replace("@", "")} size={44} />
+        <Link to={`/creators/${profile.user?._id || profile._id || profile.handle}`} className="hover:opacity-80 transition">
+          <Avatar name={(profile.handle || profile.user?.name || "?").replace("@", "")} size={44} />
+        </Link>
         <div>
-          <p className="font-bold text-[var(--color-text)]">{profile.handle}</p>
+          <Link to={`/creators/${profile.user?._id || profile._id || profile.handle}`} className="font-bold text-[var(--color-text)] hover:text-[var(--color-primary-hover)] transition">
+            {profile.handle}
+          </Link>
           {profile.user?.name && (
             <p className="text-xs text-[var(--color-text-light)]">{profile.user.name}</p>
           )}
@@ -39,12 +43,20 @@ export default function PublicCreatorCard({ profile }) {
         </p>
       )}
 
-      <Link
-        to="/signup"
-        className="mt-1 text-center text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white transition"
-      >
-        Sign up to collaborate
-      </Link>
+      <div className="flex items-center gap-2 mt-1">
+        <Link
+          to={`/creators/${profile.user?._id || profile._id || profile.handle}`}
+          className="flex-1 text-center text-xs font-semibold px-3 py-2 rounded-xl bg-black text-white hover:bg-black/80 transition"
+        >
+          View Profile
+        </Link>
+        <Link
+          to="/signup"
+          className="text-center text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white transition"
+        >
+          Collaborate
+        </Link>
+      </div>
     </div>
   );
 }

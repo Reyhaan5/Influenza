@@ -1,4 +1,4 @@
-﻿// Full influencer niche taxonomy. Used by:
+// Full influencer niche taxonomy. Used by:
 // - the public /categories browse + /categories/:category results pages
 // - the influencer-side "pick up to 3" category modal
 export const CATEGORY_GROUPS = [
@@ -14,8 +14,7 @@ export const CATEGORY_GROUPS = [
       "Korean Skincare", "Latina Beauty", "Makeup", "Male Beauty", "Male Makeup", "Male Skincare", 
       "Men Grooming", "Mexican Beauty", "Micro Beauty", "Mumbai Beauty", "Natural Beauty",
       "New York City Beauty", "Nigerian Beauty", "Plastic Surgery", "Plus Size Makeup",
-      "Queer Makeup", "Redhead Makeup", "Self Care", "Skincare", "Skincare Micro Influencers",
-      "Tattoo", "TikTok Beauty", "YouTube Beauty", "YouTube Skincare",
+      "Queer Makeup", "Redhead Makeup", "Self Care", "Skincare", "Skincare Micro Influencers", "Tattoo",
     ],
   },
   {

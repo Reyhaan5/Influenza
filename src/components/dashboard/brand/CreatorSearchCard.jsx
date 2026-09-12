@@ -12,9 +12,13 @@ export default function CreatorSearchCard({ profile, requestStatus, sending, onS
   return (
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 shadow-[var(--shadow-card)] flex flex-col gap-3">
       <div className="flex items-center gap-3">
-        <Avatar name={profile.handle?.replace("@", "") || profile.user?.name} size={44} />
+        <Link to={`/creators/${profile.user?._id || profile._id}`} className="hover:opacity-80 transition">
+          <Avatar name={profile.handle?.replace("@", "") || profile.user?.name} size={44} />
+        </Link>
         <div>
-          <p className="font-bold text-[var(--color-text)]">{profile.handle}</p>
+          <Link to={`/creators/${profile.user?._id || profile._id}`} className="font-bold text-[var(--color-text)] hover:text-[var(--color-primary-hover)] transition">
+            {profile.handle}
+          </Link>
           <p className="text-xs text-[var(--color-text-light)]">{profile.user?.name}</p>
         </div>
       </div>
@@ -37,6 +41,13 @@ export default function CreatorSearchCard({ profile, requestStatus, sending, onS
       )}
 
       <div className="flex items-center gap-2 flex-wrap">
+        <Link
+          to={`/creators/${profile.user?._id || profile._id}`}
+          className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-black text-white hover:bg-black/80 transition"
+        >
+          View Profile
+        </Link>
+
         {requestStatus ? (
           <span className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl bg-[var(--color-background)] text-[var(--color-text-light)]">
             {requestStatus === "pending" && <Clock size={14} />}
