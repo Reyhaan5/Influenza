@@ -2,7 +2,7 @@ import InfluencerProfile from "../models/InfluencerProfile.js";
 import Opportunity from "../models/Opportunity.js";
 import CollaborationRequest from "../models/CollaborationRequest.js";
 
-const MAX_CATEGORIES = 3;
+const MAX_CATEGORIES = 10;
 
 // GET /api/influencer/profile (protected)
 export const getMyProfile = async (req, res) => {
@@ -25,7 +25,16 @@ export const getMyProfile = async (req, res) => {
 // their own dedicated endpoints below, and stats/challenges are computed elsewhere.
 export const updateMyProfile = async (req, res) => {
   try {
-    const allowedUpdates = ["handle", "categories", "personalInfo", "address", "notifications"];
+    const allowedUpdates = [
+      "handle",
+      "categories",
+      "personalInfo",
+      "address",
+      "notifications",
+      "payoutInfo",
+      "packages",
+      "isProfileComplete",
+    ];
     const updates = {};
     for (const key of allowedUpdates) {
       if (req.body[key] !== undefined) updates[key] = req.body[key];

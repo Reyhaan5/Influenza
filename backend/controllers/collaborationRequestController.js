@@ -44,6 +44,30 @@ export const createRequest = async (req, res) => {
       if (!opportunity) {
         return res.status(400).json({ message: "opportunityId is required to apply." });
       }
+
+      // Mandatory profile completeness verification
+      const prof = await InfluencerProfile.findOne({ user: req.user._id });
+      const missing = [];
+      if (!prof) {
+        missing.push("Profile Setup");
+      } else {
+        if (!prof.socialAccounts || prof.socialAccounts.length === 0) missing.push("Connected Instagram Account");
+        if (!prof.categories || prof.categories.length === 0) missing.push("Categories / Niches");
+        if (!prof.personalInfo?.coverPhoto) missing.push("Cover Photo");
+        if (!prof.personalInfo?.avatar && !req.user.avatar) missing.push("Profile Avatar");
+        if (!prof.personalInfo?.title && !prof.personalInfo?.firstName) missing.push("Title / Name");
+        if (!prof.address?.city && !prof.address?.state) missing.push("Location");
+        if (!prof.matchProfile?.bio) missing.push("Bio / Description");
+      }
+
+      if (missing.length > 0) {
+        return res.status(403).json({
+          message: `Please complete your creator profile before applying to campaigns. Missing: ${missing.join(", ")}.`,
+          incompleteProfile: true,
+          missingFields: missing,
+        });
+      }
+
       brandId = opportunity.brand;
       targetInfluencerId = req.user._id;
     } else {
