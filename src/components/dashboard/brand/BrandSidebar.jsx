@@ -11,6 +11,7 @@ import {
   ChevronsRight,
 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
+import { BrandIcon, BrandText } from "../../common/BrandLogo";
 
 const NAV_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, to: "/brand-dashboard", end: true },
@@ -38,17 +39,11 @@ export default function BrandSidebar() {
     >
       {/* Brand */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-[var(--color-border)]">
-        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-[var(--color-primary)] text-white font-black text-sm">
-          IZ
-        </div>
+        <BrandIcon size="h-8 w-8" />
         {open && (
           <div className="min-w-0">
-            <p className="font-extrabold text-[var(--color-primary)] leading-tight truncate">
-              Influenza
-            </p>
-            <p className="text-xs text-[var(--color-text-light)] truncate">
-              {user?.name || "Brand"}
-            </p>
+            <BrandText size="text-lg" />
+            <p className="text-[11px] text-[var(--color-text-light)] font-medium truncate">Brand Workspace</p>
           </div>
         )}
       </div>

@@ -1,4 +1,5 @@
 import { Mail, MapPin } from "lucide-react";
+import BrandLogo from "../common/BrandLogo";
 
 function Footer() {
   return (
@@ -13,9 +14,7 @@ function Footer() {
         <div className="grid gap-14 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <h2 className="text-4xl font-bold text-[var(--color-primary)]">
-              Influenza
-            </h2>
+            <BrandLogo to="/" size="text-3xl sm:text-4xl" iconSize="h-9 w-9" />
 
             <p className="mt-6 max-w-md leading-8 text-[var(--color-text-light)]">
               The modern workspace for brands to discover, evaluate and

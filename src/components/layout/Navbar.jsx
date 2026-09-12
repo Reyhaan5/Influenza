@@ -6,6 +6,7 @@ import { ShiftingDropDown } from "../ui/ShiftingDropDown";
 import { useAuth } from "../../context/AuthContext";
 import Avatar from "../dashboard/influencer/Avatar";
 import FlowButton from "../common/FlowButton";
+import BrandLogo from "../common/BrandLogo";
 
 function AnimatedNavLink({ href, isRoute, children }) {
   const content = (
@@ -112,9 +113,7 @@ function Navbar() {
         }`}
       >
         <div className="flex items-center justify-between gap-8 sm:gap-12">
-          <Link to="/" className="text-2xl font-extrabold tracking-tight text-[var(--color-primary)] flex-shrink-0">
-            Influenza
-          </Link>
+          <BrandLogo to="/" size="text-2xl" iconSize="h-7 w-7" />
 
           <nav className="hidden lg:flex items-center gap-4">
             <ShiftingDropDown tabs={megaMenu} />
