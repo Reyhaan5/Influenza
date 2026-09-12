@@ -5,7 +5,7 @@ import Section from "../common/Section";
 import FlowButton from "../common/FlowButton";
 import { howItWorksSteps } from "../../constants/howItWorks";
 
-const Pin = ({ color = "#1E9DF1", className = "" }) => (
+const Pin = ({ color = "var(--color-primary)", className = "" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="28"
@@ -52,7 +52,7 @@ function HowItWorks() {
   useEffect(() => {
     updatePath();
     window.addEventListener("resize", updatePath);
-    const timer = setTimeout(updatePath, 200);
+    const timer = setTimeout(updatePath, 250);
     return () => {
       window.removeEventListener("resize", updatePath);
       clearTimeout(timer);
@@ -61,16 +61,25 @@ function HowItWorks() {
 
   return (
     <Section id="how-it-works" className="!py-12">
-      <div
-        className="relative overflow-hidden rounded-[36px] bg-[#0A0E14] border border-white/10 shadow-2xl px-6 py-16 md:px-12 md:py-24"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(to bottom, transparent, transparent 39px, rgba(255,255,255,0.04) 39px, rgba(255,255,255,0.04) 40px)",
-        }}
-      >
+      <style>{`
+        @keyframes dashAnimation {
+          from {
+            stroke-dashoffset: 0;
+          }
+          to {
+            stroke-dashoffset: -100;
+          }
+        }
+        .animated-connector-path {
+          stroke-dasharray: 8 8;
+          animation: dashAnimation 4s linear infinite;
+        }
+      `}</style>
+
+      <div className="relative overflow-hidden rounded-[36px] bg-[var(--color-surface)] border border-[var(--color-border)] shadow-[var(--shadow-card)] px-6 py-16 md:px-12 md:py-24 transition-colors">
         {/* Glow ambient lights */}
-        <div className="pointer-events-none absolute -left-20 top-1/4 h-80 w-80 rounded-full bg-[var(--color-primary)]/10 blur-[120px]" />
-        <div className="pointer-events-none absolute -right-20 bottom-1/4 h-80 w-80 rounded-full bg-[var(--color-primary)]/10 blur-[120px]" />
+        <div className="pointer-events-none absolute -left-20 top-1/4 h-80 w-80 rounded-full bg-[var(--color-primary)]/5 blur-[100px]" />
+        <div className="pointer-events-none absolute -right-20 bottom-1/4 h-80 w-80 rounded-full bg-[var(--color-primary)]/5 blur-[100px]" />
 
         {/* Section Heading */}
         <div className="relative z-20 text-center max-w-3xl mx-auto mb-16 md:mb-20">
@@ -79,9 +88,9 @@ function HowItWorks() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white backdrop-blur-sm shadow-sm"
+            className="inline-flex items-center gap-2 rounded-full bg-[var(--color-primary)]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[var(--color-primary)] backdrop-blur-sm border border-[var(--color-primary)]/20"
           >
-            <Sparkles size={14} className="text-[var(--color-primary)]" />
+            <Sparkles size={14} />
             Streamlined Workflow
           </motion.div>
 
@@ -90,7 +99,7 @@ function HowItWorks() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="mt-5 text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl"
+            className="mt-5 text-3xl font-extrabold tracking-tight text-[var(--color-text)] sm:text-4xl lg:text-5xl"
           >
             How <span className="text-[var(--color-primary)]">Influenza</span> Works
           </motion.h2>
@@ -100,7 +109,7 @@ function HowItWorks() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-4 text-base sm:text-lg text-neutral-400 leading-relaxed"
+            className="mt-4 text-base sm:text-lg text-[var(--color-text-light)] leading-relaxed"
           >
             A 5-step intelligent workflow engineered for modern marketing teams to discover,
             evaluate, and collaborate with verified creators.
@@ -109,15 +118,22 @@ function HowItWorks() {
 
         {/* Zigzag Timeline Container */}
         <div ref={containerRef} className="relative max-w-4xl mx-auto py-6">
-          {/* Dynamic Curved Dashed Connector Line */}
+          {/* Dynamic Curved Animated Dashed Connector Line */}
           {pathD && (
             <svg className="pointer-events-none absolute inset-0 h-full w-full z-10 overflow-visible">
+              <defs>
+                <linearGradient id="connectorGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.4" />
+                  <stop offset="50%" stopColor="var(--color-primary)" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0.4" />
+                </linearGradient>
+              </defs>
               <path
                 d={pathD}
                 fill="none"
-                stroke="rgba(255, 255, 255, 0.22)"
-                strokeWidth="2"
-                strokeDasharray="6 6"
+                stroke="url(#connectorGradient)"
+                strokeWidth="2.5"
+                className="animated-connector-path"
               />
             </svg>
           )}
@@ -144,35 +160,33 @@ function HowItWorks() {
                     {/* Pin element anchored at top center */}
                     <div
                       ref={(el) => (pinRefs.current[idx] = el)}
-                      className="relative z-30 mx-auto -mb-3.5 flex h-9 w-9 items-center justify-center cursor-pointer"
+                      className="relative z-30 mx-auto -mb-3.5 flex h-9 w-9 items-center justify-center cursor-pointer transition-transform hover:scale-110"
                     >
-                      <Pin color={step.color} className="drop-shadow-lg" />
+                      <Pin color={step.color || "var(--color-primary)"} className="drop-shadow-md" />
                     </div>
 
                     {/* Outer Card Body */}
                     <div
-                      className="rounded-[26px] p-6 sm:p-7 border transition-all duration-300 shadow-2xl"
+                      className="rounded-[26px] p-6 sm:p-7 border bg-[var(--color-surface)] transition-all duration-300 shadow-lg hover:shadow-xl"
                       style={{
-                        backgroundColor: "#11161D",
-                        borderColor: `${step.color}40`,
-                        boxShadow: `0 14px 35px -10px rgba(0,0,0,0.6), 0 0 24px -6px ${step.color}25`,
+                        borderColor: step.color ? `${step.color}50` : "var(--color-border)",
                       }}
                     >
                       {/* Step Number */}
                       <span
                         className="text-3xl sm:text-4xl font-extrabold tracking-tight"
-                        style={{ color: step.color }}
+                        style={{ color: step.color || "var(--color-primary)" }}
                       >
                         {step.number}
                       </span>
 
                       {/* Title */}
-                      <h3 className="mt-3 text-xl font-bold text-white tracking-tight">
+                      <h3 className="mt-3 text-xl font-bold text-[var(--color-text)] tracking-tight">
                         {step.title}
                       </h3>
 
                       {/* Description */}
-                      <p className="mt-2.5 text-sm leading-relaxed text-neutral-400">
+                      <p className="mt-2.5 text-sm leading-relaxed text-[var(--color-text-light)]">
                         {step.description}
                       </p>
                     </div>
@@ -183,7 +197,7 @@ function HowItWorks() {
           </div>
         </div>
 
-        {/* Bottom CTA Card */}
+        {/* Bottom CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -191,7 +205,7 @@ function HowItWorks() {
           transition={{ duration: 0.6 }}
           className="relative z-20 mt-16 text-center max-w-xl mx-auto"
         >
-          <p className="text-sm text-neutral-400 mb-5">
+          <p className="text-sm text-[var(--color-text-light)] mb-5">
             Ready to launch your campaign with top creators?
           </p>
           <FlowButton

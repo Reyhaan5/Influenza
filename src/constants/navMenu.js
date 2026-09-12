@@ -31,7 +31,7 @@ export const megaMenu = [
       {
         heading: "By Industry",
         items: industries.slice(0, 4).map((industry) => ({
-          emoji: industry.icon,
+          icon: industry.icon,
           title: industry.title,
           description: `Reach ${industry.title.toLowerCase()} audiences with matched creators`,
           href: "#",
@@ -131,8 +131,8 @@ export const megaMenu = [
           },
           {
             imageSrc: "/icons/wallet.svg",
-            title: "Rate Card Calculator",
-            description: "See fair, data-backed pricing for a creator",
+            title: "InfluRate™ Calculator",
+            description: "Instant 0–100 credibility rating & fair ₹ pricing",
             href: "/pricing-calculator",
             isRoute: true,
           },
@@ -237,8 +237,8 @@ export const megaMenu = [
           },
           {
             imageSrc: "/icons/wallet.svg",
-            title: "Rate Card Calculator",
-            description: "Get a fair, data-backed price for your next post",
+            title: "InfluRate™ Calculator",
+            description: "Instant 0–100 credibility rating & fair ₹ pricing",
             href: "/pricing-calculator",
             isRoute: true,
           },

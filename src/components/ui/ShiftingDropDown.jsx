@@ -187,9 +187,9 @@ const MenuItem = ({ imageSrc, icon: Icon, emoji, title, description, href = "#",
         />
       ) : Icon ? (
         <Icon size={20} className="mt-0.5 flex-shrink-0 text-[var(--color-primary)]" />
-      ) : (
+      ) : emoji ? (
         <span className="mt-0.5 text-lg flex-shrink-0">{emoji}</span>
-      )}
+      ) : null}
 
       <span>
         <span className="block text-sm font-semibold text-[var(--color-text)]">

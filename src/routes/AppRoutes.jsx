@@ -10,7 +10,6 @@ import ProtectedRoute from "./ProtectedRoute";
 import BrandCampaigns from "../pages/BrandCampaigns";
 import BrandSearch from "../pages/BrandSearch";
 import BrandCollaborations from "../pages/BrandCollaborations";
-import InsiderRateCalculator from "../pages/InsiderRateCalculator";
 import CollaborationRequests from "../pages/CollaborationRequests";
 import BrowseOpportunities from "../pages/BrowseOpportunities";
 import Messages from "../pages/Messages";
@@ -46,14 +45,6 @@ function AppRoutes() {
           element={
             <ProtectedRoute allowedRole="influencer">
               <InfluencerAccount />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/insider-rate"
-          element={
-            <ProtectedRoute allowedRole="influencer">
-              <InsiderRateCalculator />
             </ProtectedRoute>
           }
         />
