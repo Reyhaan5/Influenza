@@ -1,7 +1,18 @@
 import React, { useState } from "react";
 import axios from "axios";
+import {
+  Unlink,
+  CheckCircle2,
+  AlertTriangle,
+  ExternalLink,
+  Plus,
+  RefreshCw,
+  Trash2,
+  Sparkles,
+} from "lucide-react";
 import { API_URL } from "../../../config/api";
 import Avatar from "./Avatar";
+import AddSocialAccountModal from "./AddSocialAccountModal";
 
 const ETHNICITY_OPTIONS = [
   "Asian",
@@ -66,10 +77,73 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
   });
 
   const [savingSection, setSavingSection] = useState(null);
+  const [disconnecting, setDisconnecting] = useState(false);
+  const [disconnectNotice, setDisconnectNotice] = useState("");
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const authHeader = () => ({
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
+
+  const instagramAccount =
+    profile?.socialAccounts?.find((s) => s.platform?.toLowerCase() === "instagram") ||
+    (profile?.handle && profile.handle !== "@creator" && !profile.handle.includes("@creator")
+      ? {
+          platform: "Instagram",
+          handle: profile.handle,
+          followers: profile.followers || profile.stats?.followers || 0,
+        }
+      : null);
+
+  const isInstagramConnected = Boolean(
+    instagramAccount?.handle &&
+      instagramAccount.handle.trim() !== "" &&
+      instagramAccount.handle !== "@creator"
+  );
+
+  const cleanHandle = (instagramAccount?.handle || "").replace(/^@+/, "").trim();
+
+  const handleDisconnectInstagram = async () => {
+    const confirmDisconnect = window.confirm(
+      `Are you sure you want to disconnect your Instagram account (@${cleanHandle})?\n\nThis will immediately remove your connected handle, follower metrics, live performance analytics, and clear any linked rate card calculations.`
+    );
+    if (!confirmDisconnect) return;
+
+    setDisconnecting(true);
+    try {
+      const res = await axios.post(
+        `${API_URL}/influencer/disconnect-instagram`,
+        {},
+        authHeader()
+      );
+      if (onUpdated) {
+        onUpdated(res.data.profile);
+      }
+      setDisconnectNotice("Instagram account disconnected and all retrieved profile data cleared successfully.");
+      setTimeout(() => setDisconnectNotice(""), 6000);
+    } catch (err) {
+      console.error("Disconnect error:", err);
+      alert(err.response?.data?.message || "Failed to disconnect Instagram account.");
+    } finally {
+      setDisconnecting(false);
+    }
+  };
+
+  const handleAddAccountSubmit = async (accountData) => {
+    try {
+      const res = await axios.post(
+        `${API_URL}/influencer/social-accounts`,
+        accountData,
+        authHeader()
+      );
+      if (onUpdated) onUpdated(res.data);
+      setShowAddModal(false);
+      setDisconnectNotice("Instagram account connected successfully!");
+      setTimeout(() => setDisconnectNotice(""), 4000);
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to connect Instagram account.");
+    }
+  };
 
   const saveSection = async (sectionKey, payload) => {
     setSavingSection(sectionKey);
@@ -107,8 +181,109 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
   };
 
   return (
-    <div className="flex flex-col gap-10">
-      {/* Personal Information Section */}
+    <div className="flex flex-col gap-10 animate-fadeIn">
+      {/* 1. Connected Instagram Account & Data Sync (Top Section) */}
+      <div className="grid md:grid-cols-[1fr_2.5fr] gap-6 items-start">
+        <div>
+          <h3 className="font-bold text-[var(--color-text)] text-base">
+            Connected Instagram Account
+          </h3>
+          <p className="mt-1 text-xs text-[var(--color-text-light)] leading-relaxed">
+            Manage your verified social profile connection. Disconnecting will instantly wipe all retrieved analytics, metrics, and reset your commercial rate card.
+          </p>
+        </div>
+
+        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-6 sm:p-7 shadow-[var(--shadow-card)] space-y-6">
+          {disconnectNotice && (
+            <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2 shadow-sm animate-fadeIn">
+              <CheckCircle2 size={16} className="text-emerald-600 flex-shrink-0" />
+              <span>{disconnectNotice}</span>
+            </div>
+          )}
+
+          {isInstagramConnected ? (
+            <div className="space-y-4">
+              <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center text-white shadow-sm flex-shrink-0">
+                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.79-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-extrabold text-sm text-gray-950">
+                        @{cleanHandle}
+                      </h4>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                        Connected &amp; Synced
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {instagramAccount.followers
+                        ? Number(instagramAccount.followers).toLocaleString()
+                        : "Active"}{" "}
+                      Followers
+                    </p>
+                  </div>
+                </div>
+
+                <a
+                  href={`https://instagram.com/${cleanHandle}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-gray-100 border border-gray-200 text-xs font-bold text-gray-800 shadow-sm transition"
+                >
+                  <span>View on Instagram</span>
+                  <ExternalLink size={12} />
+                </a>
+              </div>
+
+              {/* Robust Disconnect Action Area */}
+              <div className="pt-3 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <AlertTriangle size={14} className="text-amber-500 flex-shrink-0" />
+                  <span>
+                    Disconnecting will remove all live engagement metrics, rate card suggestions, and public profile sync.
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleDisconnectInstagram}
+                  disabled={disconnecting}
+                  className="flex-shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-bold transition shadow-sm disabled:opacity-50"
+                >
+                  <Unlink size={14} />
+                  {disconnecting ? "Disconnecting & Wiping..." : "Disconnect Instagram Account"}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-6 px-4 rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/60 space-y-3">
+              <div className="w-10 h-10 rounded-2xl bg-gray-200 text-gray-500 flex items-center justify-center mx-auto">
+                <Unlink size={20} />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-sm text-gray-900">No Instagram Account Connected</h4>
+                <p className="text-xs text-gray-500 mt-0.5 max-w-sm mx-auto">
+                  Connect your Instagram to automatically calculate what you should charge and get discovered by brand campaigns.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddModal(true)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition"
+              >
+                <Plus size={14} /> Connect Instagram Account
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 2. Personal Information Section */}
       <div className="grid md:grid-cols-[1fr_2.5fr] gap-6 items-start">
         <div>
           <h3 className="font-bold text-[var(--color-text)] text-base">Personal information</h3>
@@ -117,16 +292,13 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
           </p>
         </div>
 
-        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 shadow-[var(--shadow-card)] flex flex-col gap-6">
+        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-6 sm:p-7 shadow-[var(--shadow-card)] flex flex-col gap-6">
           {/* Avatar Header */}
           <div className="flex items-center gap-4 border-b border-[var(--color-border)] pb-6">
             <Avatar name={user?.name} size={56} />
-            <button
-              type="button"
-              className="border border-[var(--color-border)] hover:bg-[var(--color-background)] px-4 py-2 rounded-xl text-xs font-semibold text-[var(--color-text)] transition-colors"
-            >
-              Change avatar
-            </button>
+            <span className="text-xs text-[var(--color-text-light)] font-semibold">
+              Profile Avatar (Managed via Creator Setup / Edit Profile)
+            </span>
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
@@ -224,7 +396,7 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
         </div>
       </div>
 
-      {/* Address Section */}
+      {/* 3. Address Section */}
       <div className="grid md:grid-cols-[1fr_2.5fr] gap-6 items-start">
         <div>
           <h3 className="font-bold text-[var(--color-text)] text-base">Address</h3>
@@ -233,7 +405,7 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
           </p>
         </div>
 
-        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 shadow-[var(--shadow-card)] flex flex-col gap-6">
+        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-6 sm:p-7 shadow-[var(--shadow-card)] flex flex-col gap-6">
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-[var(--color-text)] mb-1.5">Address Line 1</label>
@@ -336,7 +508,7 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
         </div>
       </div>
 
-      {/* Notifications Section */}
+      {/* 4. Notifications Section */}
       <div className="grid md:grid-cols-[1fr_2.5fr] gap-6 items-start">
         <div>
           <h3 className="font-bold text-[var(--color-text)] text-base">Notifications</h3>
@@ -345,7 +517,7 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
           </p>
         </div>
 
-        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 shadow-[var(--shadow-card)] flex flex-col gap-5">
+        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-6 sm:p-7 shadow-[var(--shadow-card)] flex flex-col gap-5">
           {[
             { key: "dailyDigest", label: "Daily digest", desc: "You can disable your daily digest if you are getting too many emails and prefer just using the dashboard." },
             { key: "marketing", label: "Marketing", desc: "General marketing emails like newsletter and other info." },
@@ -380,7 +552,7 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
         </div>
       </div>
 
-      {/* Update Password Section */}
+      {/* 5. Update Password Section */}
       <div className="grid md:grid-cols-[1fr_2.5fr] gap-6 items-start">
         <div>
           <h3 className="font-bold text-[var(--color-text)] text-base">Update password</h3>
@@ -389,7 +561,7 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
           </p>
         </div>
 
-        <form onSubmit={handlePasswordUpdate} className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 shadow-[var(--shadow-card)] flex flex-col gap-4">
+        <form onSubmit={handlePasswordUpdate} className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-6 sm:p-7 shadow-[var(--shadow-card)] flex flex-col gap-4">
           <div>
             <label className="block text-xs font-semibold text-[var(--color-text)] mb-1.5">Old password</label>
             <input
@@ -434,6 +606,13 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
           </div>
         </form>
       </div>
+
+      {showAddModal && (
+        <AddSocialAccountModal
+          onClose={() => setShowAddModal(false)}
+          onSubmit={handleAddAccountSubmit}
+        />
+      )}
     </div>
   );
 }

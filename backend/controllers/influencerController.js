@@ -1,6 +1,7 @@
 import InfluencerProfile from "../models/InfluencerProfile.js";
 import Opportunity from "../models/Opportunity.js";
 import CollaborationRequest from "../models/CollaborationRequest.js";
+import RateCard from "../models/RateCard.js";
 
 const MAX_CATEGORIES = 10;
 
@@ -209,7 +210,9 @@ export const removeSocialAccount = async (req, res) => {
 
     const profile = await InfluencerProfile.findOneAndUpdate(
       { user: req.user._id },
-      { $pull: { socialAccounts: { platform } } },
+      {
+        $pull: { socialAccounts: { platform: new RegExp(`^${platform}$`, "i") } },
+      },
       { new: true }
     );
 
@@ -219,6 +222,39 @@ export const removeSocialAccount = async (req, res) => {
 
     res.json(profile);
   } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// POST /api/influencer/disconnect-instagram (protected)
+// Fully and cleanly disconnects Instagram, wipes all Apify retrieved data, resets handle, and clears rate card
+export const disconnectInstagramAccount = async (req, res) => {
+  try {
+    const profile = await InfluencerProfile.findOne({ user: req.user._id });
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found." });
+    }
+
+    // 1. Wipe all social accounts
+    profile.socialAccounts = [];
+
+    // 2. Reset handle to a clean default
+    const defaultHandle = req.user?.name
+      ? `@${req.user.name.toLowerCase().replace(/[^a-z0-9_]/g, "")}`
+      : "@creator";
+    profile.handle = defaultHandle;
+
+    await profile.save();
+
+    // 3. Wipe any generated RateCard data associated with that account
+    await RateCard.deleteMany({ influencer: req.user._id });
+
+    res.json({
+      message: "Instagram account disconnected and all retrieved profile data cleared successfully.",
+      profile,
+    });
+  } catch (error) {
+    console.error("Error disconnecting Instagram:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

@@ -1,209 +1,153 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { RefreshCcw, Clock } from "lucide-react";
+import { Link } from "react-router-dom";
+import { DollarSign, TrendingUp, Sparkles, CheckCircle2, ArrowRight, ShieldCheck, Layers } from "lucide-react";
 import Avatar from "./Avatar";
-import ReceiptPrinter from "../../pricing/ReceiptPrinter";
-import GlowingSearchBar from "../../common/GlowingSearchBar";
-import InfluRateCard from "./InfluRateCard";
-
 import { API_URL } from "../../../config/api";
 
-function StatTile({ label, value, symbol }) {
+function StatTile({ label, value, note }) {
   return (
-    <div className="flex-1 min-w-[6rem] rounded-xl bg-[var(--color-background)] px-4 py-3 text-center">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-light)]">
+    <div className="flex-1 min-w-[7rem] rounded-2xl bg-[var(--color-background)] border border-[var(--color-border)] px-4 py-3.5 text-center">
+      <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-light)]">
         {label}
       </p>
-      <p className="mt-1 text-lg font-bold text-[var(--color-text)]">
-        {symbol}
-        {value?.toLocaleString?.() ?? "—"}
+      <p className="mt-1 text-xl font-black text-[var(--color-text)]">
+        ${value?.toLocaleString?.() ?? "—"}
       </p>
+      {note && (
+        <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">{note}</p>
+      )}
     </div>
   );
 }
 
-function timeAgo(dateStr) {
-  const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24));
-  if (days <= 0) return "today";
-  if (days === 1) return "1 day ago";
-  return `${days} days ago`;
-}
-
 export default function MyRateCard({ profile }) {
-  const [latestCard, setLatestCard] = useState(null);
-  const [loadingCard, setLoadingCard] = useState(true);
-  const [showEditor, setShowEditor] = useState(false);
-
-  // Instagram lookup state — the ONLY source of handle/followers/avgLikes/
-  // avgComments now. No "connect your account" step required.
-  const [prefill, setPrefill] = useState(undefined);
-  const [searching, setSearching] = useState(false);
-  const [notice, setNotice] = useState("");
-  const [printerKey, setPrinterKey] = useState(0);
+  const [rateData, setRateData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const authHeader = () => ({
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
 
-  const fetchLatestCard = async () => {
+  const fetchRateData = async () => {
     try {
-      const res = await axios.get(`${API_URL}/influencer/rate-cards`, authHeader());
-      setLatestCard(res.data?.[0] || null);
+      const res = await axios.get(`${API_URL}/influencer/insider-rate`, authHeader());
+      setRateData(res.data);
     } catch (err) {
-      console.error("Couldn't load rate card history:", err);
+      console.error("Couldn't load insider rate card:", err);
     } finally {
-      setLoadingCard(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchLatestCard();
+    fetchRateData();
   }, []);
 
-  const symbol = latestCard?.marketId === "global" ? "$" : "₹";
+  const instagramAccount =
+    profile?.socialAccounts?.find((s) => s.platform?.toLowerCase() === "instagram") ||
+    (profile?.handle
+      ? {
+          handle: profile.handle,
+          followers: profile.followers || profile.stats?.followers || 0,
+        }
+      : null);
 
-  // The header always reflects whatever handle was last searched,
-  // falling back to the account's own handle if nothing's been searched yet.
-  const displayHandle = prefill?.handle || profile.handle;
+  const cleanHandle = (instagramAccount?.handle || rateData?.handle || profile?.handle || "creator")
+    .replace(/^@+/, "")
+    .trim();
 
-  const handleSearch = async (query) => {
-    const handle = query.trim();
-    if (!handle) return;
+  const followersCount =
+    instagramAccount?.followers ||
+    rateData?.followers ||
+    profile?.followers ||
+    0;
 
-    setSearching(true);
-    setNotice("");
-
-    try {
-      const res = await axios.get(`${API_URL}/public/instagram-lookup`, {
-        params: { handle },
-      });
-      const data = res.data;
-
-      if (data.found) {
-        setPrefill({
-          handle: data.handle,
-          followers: String(data.followers),
-          avgLikes: String(data.avgLikes),
-          avgComments: String(data.avgComments),
-        });
-        setNotice(`Pulled live stats for ${data.handle}.`);
-      } else {
-        const formattedHandle = handle.startsWith("@") ? handle : `@${handle}`;
-        setPrefill({ handle: formattedHandle });
-        setNotice("Couldn't fetch this Instagram account. You can enter the remaining details manually.");
-      }
-    } catch (err) {
-      console.error("Instagram lookup error:", err);
-      const formattedHandle = handle.startsWith("@") ? handle : `@${handle}`;
-      setPrefill({ handle: formattedHandle });
-      setNotice("Instagram lookup failed. You can enter your stats manually.");
-    } finally {
-      setSearching(false);
-      // Remount ReceiptPrinter so it recomputes which step to start on
-      // now that handle/followers/avgLikes/avgComments are filled in.
-      setPrinterKey((k) => k + 1);
-    }
-  };
-
-  const handleComplete = async (finalAnswers) => {
-    try {
-      await axios.post(`${API_URL}/influencer/rate-cards`, finalAnswers, authHeader());
-      await fetchLatestCard();
-      setShowEditor(false);
-      setPrefill(undefined);
-      setNotice("");
-    } catch (err) {
-      console.error("Couldn't save rate card:", err);
-    }
+  const rates = rateData?.recommendedRates || {
+    post: profile?.packages?.find((p) => p.contentType === "Post")?.price || 50,
+    reel: profile?.packages?.find((p) => p.contentType === "Reel")?.price || 65,
+    story: profile?.packages?.find((p) => p.contentType === "Story")?.price || 35,
+    bundleReels3: 165,
+    monthlyRetainer: 480,
   };
 
   return (
-    <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-lg)] p-6 shadow-[var(--shadow-card)]">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Avatar name={(displayHandle || "?").replace("@", "")} size={48} />
+    <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-6 sm:p-7 shadow-[var(--shadow-card)] space-y-6">
+      {/* Header: Connected Handle & Status */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <Avatar name={cleanHandle} size={48} />
           <div>
-            <p className="font-bold text-[var(--color-text)]">
-              {displayHandle}
+            <div className="flex items-center gap-2">
+              <h3 className="font-extrabold text-base text-[var(--color-text)]">
+                @{cleanHandle}
+              </h3>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">
+                Connected
+              </span>
+            </div>
+            <p className="text-xs text-[var(--color-text-light)] mt-0.5">
+              {followersCount > 0 ? followersCount.toLocaleString() : "Active"} Followers ·{" "}
+              <strong className="text-gray-900">{rateData?.tier || "Creator Tier"}</strong>
             </p>
-            <p className="text-xs text-[var(--color-text-light)]">Rate card</p>
           </div>
         </div>
 
-        {latestCard && (
-          <span className="flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-light)]">
-            <Clock size={13} />
-            Updated {timeAgo(latestCard.createdAt)}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {rateData?.multiplier && rateData.multiplier > 1 && (
+            <span className="inline-flex items-center gap-1 text-xs font-extrabold px-3 py-1.5 rounded-full bg-purple-50 border border-purple-200 text-purple-800">
+              <TrendingUp size={13} />
+              +{Math.round((rateData.multiplier - 1) * 100)}% Track Record Bonus
+            </span>
+          )}
+          <Link
+            to="/insider-rate"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black hover:bg-gray-800 text-white text-xs font-bold transition shadow-sm"
+          >
+            <span>Full Valuation Breakdown</span>
+            <ArrowRight size={13} />
+          </Link>
+        </div>
       </div>
 
-      {/* Stat row / empty state */}
-      <div className="mt-5">
-        {loadingCard ? (
-          <p className="text-sm text-[var(--color-text-light)]">Loading your rate card...</p>
-        ) : latestCard ? (
-          <div className="flex gap-3">
-            <StatTile label="Post" value={latestCard.rates?.post} symbol={symbol} />
-            <StatTile label="Reel" value={latestCard.rates?.reel} symbol={symbol} />
-            <StatTile label="Story" value={latestCard.rates?.story} symbol={symbol} />
-          </div>
-        ) : (
-          <p className="text-sm text-[var(--color-text-light)]">
-            Search your Instagram handle below to generate your rate card.
-          </p>
-        )}
+      {/* Deliverable Stat Tiles */}
+      <div className="pt-1">
+        <div className="flex flex-wrap gap-3">
+          <StatTile
+            label="Feed Post"
+            value={rates.post}
+            note={`Keep $${Math.round(rates.post * 0.85)}`}
+          />
+          <StatTile
+            label="Instagram Reel"
+            value={rates.reel}
+            note={`Keep $${Math.round(rates.reel * 0.85)}`}
+          />
+          <StatTile
+            label="Story (2 Frames)"
+            value={rates.story}
+            note={`Keep $${Math.round(rates.story * 0.85)}`}
+          />
+          <StatTile
+            label="3x Reels Bundle"
+            value={rates.bundleReels3}
+            note={`Keep $${Math.round(rates.bundleReels3 * 0.85)}`}
+          />
+        </div>
       </div>
 
-      {/* Toggle editor */}
-      {latestCard && !showEditor && (
-        <button
-          onClick={() => setShowEditor(true)}
-          className="mt-5 flex items-center gap-1.5 text-sm font-bold text-[var(--color-primary-hover)] hover:underline"
+      {/* Bottom Summary Bar */}
+      <div className="pt-4 border-t border-[var(--color-border)] flex flex-wrap items-center justify-between text-xs text-[var(--color-text-light)] gap-2">
+        <span>
+          Recommended commercial rates generated directly from your <strong>@{cleanHandle}</strong> Instagram analytics.
+        </span>
+        <Link
+          to="/insider-rate"
+          className="font-bold text-[var(--color-primary-hover)] hover:underline"
         >
-          <RefreshCcw size={14} />
-          Reprint with new numbers
-        </button>
-      )}
-
-      {(showEditor || !latestCard) && !loadingCard && (
-        <div className="mt-6 flex flex-col gap-5">
-          <GlowingSearchBar
-            placeholder="Search @yourhandle..."
-            onSearch={handleSearch}
-          />
-
-          {searching && (
-            <p className="text-center text-sm text-[var(--color-text-light)]">
-              Fetching Instagram data...
-            </p>
-          )}
-
-          {notice && !searching && (
-            <p className="text-center text-sm text-[var(--color-text-light)]">
-              {notice}
-            </p>
-          )}
-
-          {/* Shows Overall Rating + Rate Card as soon as a search resolves
-              with real stats (not just a bare handle fallback). */}
-          {prefill?.followers && (
-            <InfluRateCard
-              handle={prefill.handle}
-              followers={Number(prefill.followers)}
-              avgLikes={Number(prefill.avgLikes)}
-              avgComments={Number(prefill.avgComments)}
-            />
-          )}
-
-          <ReceiptPrinter
-            key={printerKey}
-            initialAnswers={prefill}
-            onComplete={handleComplete}
-          />
-        </div>
-      )}
+          Manage &amp; Apply Rates →
+        </Link>
+      </div>
     </div>
   );
 }

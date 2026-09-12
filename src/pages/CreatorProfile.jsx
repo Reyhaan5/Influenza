@@ -437,7 +437,7 @@ export default function CreatorProfile() {
 
                         <div className="text-right flex-shrink-0">
                           <span className="text-base font-extrabold text-gray-950">
-                            ${pkg.price}
+                            ${Number(pkg.price || 0).toLocaleString()}
                           </span>
                         </div>
                       </div>
@@ -707,7 +707,7 @@ export default function CreatorProfile() {
             <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm">
               <div className="flex items-baseline justify-between mb-4">
                 <span className="text-3xl font-extrabold text-gray-950">
-                  ${selectedPackage.price}
+                  ${Number(selectedPackage.price || 0).toLocaleString()}
                 </span>
                 <span className="text-xs font-semibold text-gray-400">USD</span>
               </div>
@@ -721,7 +721,7 @@ export default function CreatorProfile() {
                 >
                   {packages.map((pkg) => (
                     <option key={pkg.id} value={pkg.id}>
-                      {pkg.name} (${pkg.price})
+                      {pkg.name} (${Number(pkg.price || 0).toLocaleString()})
                     </option>
                   ))}
                 </select>

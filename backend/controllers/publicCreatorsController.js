@@ -414,20 +414,33 @@ export const getPublicCreatorProfile = async (req, res) => {
     // Build pricing packages based on custom configured packages, RateCard or matchProfile
     const customPkgs = rateCard?.packages?.length > 0 ? rateCard.packages : (profile.packages?.length > 0 ? profile.packages : null);
 
-    const basePost = rateCard?.rates?.post || profile.matchProfile?.minAskingPrice || 119;
-    const baseReel = rateCard?.rates?.reel || Math.round(basePost * 1.1) || 130;
+    // Sanitize base prices so they don't produce astronomical multi-million figures if raw INR was stored
+    let basePost = Number(rateCard?.rates?.post || profile.matchProfile?.minAskingPrice || 119);
+    if (basePost > 5000) {
+      basePost = Math.min(2500, Math.max(45, Math.round(basePost / 85)));
+    }
+    let baseReel = Number(rateCard?.rates?.reel || Math.round(basePost * 1.2) || 130);
+    if (baseReel > 5000) {
+      baseReel = Math.min(3000, Math.max(55, Math.round(baseReel / 85)));
+    }
 
     let packages = [];
     if (customPkgs && customPkgs.length > 0) {
-      packages = customPkgs.map((cp, idx) => ({
-        id: cp.id || `custom-pkg-${idx}`,
-        name: cp.title || `${cp.count || 1} ${cp.contentType || "Reel"} (${cp.duration || 30} ${cp.durationUnit || "Seconds"})`,
-        price: Number(cp.price) || baseReel,
-        type: String(cp.contentType || "video").toLowerCase(),
-        duration: `${cp.duration || 30} ${cp.durationUnit || "Seconds"}`,
-        description: cp.description || `${cp.count || 1}x ${cp.contentType || "Reel"} tailored for brand engagement and conversions.`,
-        fullDetails: cp.description || `Includes high-definition production, vertical format (9:16), 1 round of revisions, and full organic usage rights.`,
-      }));
+      packages = customPkgs.map((cp, idx) => {
+        let pkgPrice = Number(cp.price) || baseReel;
+        if (pkgPrice > 5000) {
+          pkgPrice = Math.min(3000, Math.max(45, Math.round(pkgPrice / 85)));
+        }
+        return {
+          id: cp.id || `custom-pkg-${idx}`,
+          name: cp.title || `${cp.count || 1} ${cp.contentType || "Reel"} (${cp.duration || 30} ${cp.durationUnit || "Seconds"})`,
+          price: pkgPrice,
+          type: String(cp.contentType || "video").toLowerCase(),
+          duration: `${cp.duration || 30} ${cp.durationUnit || "Seconds"}`,
+          description: cp.description || `${cp.count || 1}x ${cp.contentType || "Reel"} tailored for brand engagement and conversions.`,
+          fullDetails: cp.description || `Includes high-definition production, vertical format (9:16), 1 round of revisions, and full organic usage rights.`,
+        };
+      });
     } else {
       packages = [
         {
