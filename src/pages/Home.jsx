@@ -2,11 +2,7 @@ import Navbar from "../components/layout/Navbar";
 import Hero from "../components/hero/Hero";
 import CreatorShowcaseSection from "../components/showcase/CreatorShowcaseSection";
 import TrustStrip from "../components/trust/TrustStrip";
-import StatsCounter from "../components/stats/StatsCounter";
 import HowItWorks from "../components/howItWorks/HowItWorks";
-import LiveExperience from "../components/product/LiveExperience";
-import Testimonials from "../components/testimonials/Testimonials";
-import FAQ from "../components/FAQ/FAQ";
 import CTASection from "../components/cta/CTASection";
 import Footer from "../components/footer/Footer";
 
@@ -17,15 +13,11 @@ function Home() {
       <Hero />
       <CreatorShowcaseSection />
       <TrustStrip />
-      <StatsCounter />
       <HowItWorks />
-      <LiveExperience />
-      <Testimonials />
-      <FAQ />
       <CTASection />
       <Footer />
     </>
   );
 }
 
-export default Home;
+export default Home;

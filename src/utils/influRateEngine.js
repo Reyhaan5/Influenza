@@ -6,12 +6,13 @@
 // Placeholder per-follower Reel rates (₹) per tier — adjust to your
 // real pricing once finalized, the formula shape stays the same.
 export const CREATOR_TIERS = [
-  { id: "nano",      label: "Nano",      min: 0,        max: 10000,    reelRatePerFollower: 0.90 },
-  { id: "micro",     label: "Micro",     min: 10000,    max: 50000,    reelRatePerFollower: 0.65 },
-  { id: "mid",       label: "Mid",       min: 50000,    max: 250000,   reelRatePerFollower: 0.48 },
-  { id: "macro",     label: "Macro",     min: 250000,   max: 1000000,  reelRatePerFollower: 0.36 },
-  { id: "mega",      label: "Mega",      min: 1000000,  max: 10000000, reelRatePerFollower: 0.26 },
-  { id: "celebrity", label: "Celebrity", min: 10000000, max: Infinity, reelRatePerFollower: 0.18 },
+  { id: "starter",   label: "Starter",   min: 0,        max: 1000,     reelRatePerFollower: 1.20 },
+  { id: "nano",      label: "Nano",      min: 1000,     max: 10000,    reelRatePerFollower: 0.35 },
+  { id: "micro",     label: "Micro",     min: 10000,    max: 50000,    reelRatePerFollower: 0.28 },
+  { id: "mid",       label: "Mid",       min: 50000,    max: 250000,   reelRatePerFollower: 0.22 },
+  { id: "macro",     label: "Macro",     min: 250000,   max: 1000000,  reelRatePerFollower: 0.16 },
+  { id: "mega",      label: "Mega",      min: 1000000,  max: 10000000, reelRatePerFollower: 0.12 },
+  { id: "celebrity", label: "Celebrity", min: 10000000, max: Infinity, reelRatePerFollower: 0.08 },
 ];
 
 // Only the niche values given so far — extend this map as needed.

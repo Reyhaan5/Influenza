@@ -3,19 +3,24 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import {
   TrendingUp,
-  ShieldCheck,
   CheckCircle2,
   Sparkles,
   ArrowRight,
-  Layers,
-  Award,
-  DollarSign,
+  RefreshCw,
   ExternalLink,
+  Layers,
   Save,
-  Clock,
+  Info,
+  Flame,
   Star,
+  ShieldCheck,
+  Building2,
+  Video,
+  Image as ImageIcon,
+  Clock,
 } from "lucide-react";
 import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
+import Avatar from "../components/dashboard/influencer/Avatar";
 import { API_URL } from "../config/api";
 
 export default function InsiderRateCalculator() {
@@ -23,8 +28,10 @@ export default function InsiderRateCalculator() {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [applying, setApplying] = useState(false);
-  const [appliedFeedback, setAppliedFeedback] = useState("");
+  const [feedback, setFeedback] = useState({ type: "", message: "" });
+  const [lastRefreshed, setLastRefreshed] = useState(null);
 
   const authHeader = () => ({
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -38,10 +45,12 @@ export default function InsiderRateCalculator() {
     }
 
     try {
+      setError("");
       const res = await axios.get(`${API_URL}/influencer/insider-rate`, authHeader());
       setData(res.data);
+      setLastRefreshed(new Date());
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong loading your rate calculation.");
+      setError(err.response?.data?.message || "Unable to compute market rate benchmark.");
     } finally {
       setLoading(false);
     }
@@ -50,6 +59,30 @@ export default function InsiderRateCalculator() {
   useEffect(() => {
     fetchData();
   }, [navigate]);
+
+  const handleRefreshStats = async () => {
+    if (refreshing) return;
+    setRefreshing(true);
+    setFeedback({ type: "", message: "" });
+    try {
+      const res = await axios.post(`${API_URL}/influencer/refresh-instagram-stats`, {}, authHeader());
+      setData(res.data);
+      setLastRefreshed(new Date());
+      setFeedback({
+        type: "success",
+        message: "Live Instagram metrics and market rate benchmark successfully updated!",
+      });
+      setTimeout(() => setFeedback({ type: "", message: "" }), 5000);
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        message: err.response?.data?.message || "Failed to refresh live Instagram stats.",
+      });
+      setTimeout(() => setFeedback({ type: "", message: "" }), 5000);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleApplyToPackages = async () => {
     if (!data?.recommendedRates) return;
@@ -65,7 +98,7 @@ export default function InsiderRateCalculator() {
           duration: 30,
           durationUnit: "Seconds",
           price: recommended.reel,
-          description: "High-hook vertical UGC reel tailored for brand engagement and reach.",
+          description: "High-hook vertical UGC reel tailored for brand engagement and organic reach.",
         },
         {
           id: "pkg-post",
@@ -75,7 +108,7 @@ export default function InsiderRateCalculator() {
           duration: 3,
           durationUnit: "Photos",
           price: recommended.post,
-          description: "High-aesthetic staging and carousel images for your grid and ads.",
+          description: "High-aesthetic staging and carousel product visuals for your feed.",
         },
         {
           id: "pkg-story",
@@ -95,7 +128,7 @@ export default function InsiderRateCalculator() {
           duration: 30,
           durationUnit: "Seconds",
           price: recommended.bundleReels3,
-          description: "Multi-deliverable content bundle with cohesive hooks and 15% package savings.",
+          description: "Multi-deliverable content bundle with cohesive hooks across 3 reels.",
         },
       ];
 
@@ -118,296 +151,299 @@ export default function InsiderRateCalculator() {
         authHeader()
       );
 
-      setAppliedFeedback("Recommended rates applied to your active pricing packages!");
-      setTimeout(() => setAppliedFeedback(""), 4000);
+      setFeedback({
+        type: "success",
+        message: "Market benchmark rates applied to your public profile packages successfully!",
+      });
+      setTimeout(() => setFeedback({ type: "", message: "" }), 5000);
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.message || "Failed to update packages.");
+      setFeedback({
+        type: "error",
+        message: err.response?.data?.message || "Failed to apply packages.",
+      });
     } finally {
       setApplying(false);
     }
   };
 
+  const rates = data?.recommendedRates || {
+    post: 100,
+    reel: 200,
+    story: 100,
+    bundleReels3: 500,
+  };
+
+  const cleanHandle = (data?.handle || "creator").replace(/^@+/, "").trim();
+
   return (
     <InfluencerDashboardLayout>
-      <div className="max-w-4xl space-y-8 animate-fadeIn">
-        {/* Page Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="max-w-6xl mx-auto space-y-6 pb-12">
+        {/* Top Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-gray-200">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20 text-pink-700 text-xs font-black uppercase tracking-wider mb-2">
-              <Sparkles size={13} className="text-pink-600" />
-              Real-Time Valuation Intelligence
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[var(--color-text)] tracking-tight">
-              What You Should Charge
+            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+              Market Rate Benchmark
             </h1>
-            <p className="mt-1.5 text-xs sm:text-sm text-[var(--color-text-light)] max-w-2xl leading-relaxed">
-              Calculated automatically using your connected Instagram audience, category benchmarks, and track record.
+            <p className="text-xs text-gray-500 mt-1">
+              Live commercial pricing benchmark computed directly from your connected Instagram metrics, category demand, and deal track record.
             </p>
           </div>
 
-          <Link
-            to="/influencer-dashboard"
-            className="self-start sm:self-center px-4 py-2 rounded-xl border border-[var(--color-border)] text-xs font-bold text-[var(--color-text)] hover:bg-[var(--color-background)] transition shadow-sm"
-          >
-            ← Back to Dashboard
-          </Link>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              onClick={handleRefreshStats}
+              disabled={refreshing || loading}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold shadow-xs transition active:scale-95 disabled:opacity-50 cursor-pointer"
+            >
+              <RefreshCw size={13} className={refreshing ? "animate-spin text-purple-600" : "text-gray-500"} />
+              <span>{refreshing ? "Syncing..." : "Sync Analytics"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleApplyToPackages}
+              disabled={applying || loading}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold shadow-xs transition active:scale-95 disabled:opacity-50 cursor-pointer"
+            >
+              <Save size={13} />
+              <span>{applying ? "Applying..." : "Apply Rates to Packages"}</span>
+            </button>
+          </div>
         </div>
 
-        {loading && (
-          <div className="p-12 text-center text-sm font-semibold text-[var(--color-text-light)]">
-            Analyzing your Instagram profile and calculating fair market rates...
-          </div>
-        )}
-
-        {error && (
-          <div className="text-sm text-[var(--color-danger)] bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 rounded-2xl p-4">
-            {error}
-          </div>
-        )}
-
-        {data && (
-          <div className="space-y-6">
-            {/* Connected Instagram Profile Card */}
-            <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-6 shadow-[var(--shadow-card)] flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center text-white shadow-md flex-shrink-0">
-                  <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.79-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                  </svg>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-extrabold text-[var(--color-text)]">
-                      @{data.handle}
-                    </h3>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">
-                      Connected
-                    </span>
-                  </div>
-                  <p className="text-xs text-[var(--color-text-light)] mt-0.5">
-                    {data.followers > 0 ? data.followers.toLocaleString() : "Active"} Followers ·{" "}
-                    <strong className="text-gray-900">{data.tier}</strong>
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <a
-                  href={`https://instagram.com/${data.handle}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-xs font-bold text-gray-800 transition shadow-sm"
-                >
-                  <span>Instagram Profile</span>
-                  <ExternalLink size={13} />
-                </a>
-              </div>
-            </div>
-
-            {appliedFeedback && (
-              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2 shadow-sm animate-fadeIn">
-                <CheckCircle2 size={18} className="text-emerald-600 flex-shrink-0" />
-                <span>{appliedFeedback}</span>
-              </div>
-            )}
-
-            {/* WHAT YOU SHOULD CHARGE: Core Pricing Grid */}
-            <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-6 sm:p-7 shadow-[var(--shadow-card)] space-y-6">
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-lg font-black text-[var(--color-text)] flex items-center gap-2">
-                    <DollarSign size={20} className="text-emerald-600" />
-                    Recommended Market Rates (What You Should Charge)
-                  </h2>
-                  <p className="text-xs text-[var(--color-text-light)] mt-1">
-                    These rates match current brand budgets for your creator tier, engagement rate, and verified deliverables.
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleApplyToPackages}
-                  disabled={applying}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-black hover:bg-gray-800 text-white text-xs font-bold shadow-md transition disabled:opacity-50"
-                >
-                  <Save size={14} />
-                  {applying ? "Applying..." : "Apply to My Pricing Packages"}
-                </button>
-              </div>
-
-              {/* Deliverable Rate Cards */}
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {/* 1. Instagram Reel */}
-                <div className="p-5 rounded-2xl border border-pink-200 bg-pink-50/30 flex flex-col justify-between gap-4 shadow-sm relative overflow-hidden">
-                  <span className="absolute top-3 right-3 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-pink-100 text-pink-700">
-                    Highest Demand
-                  </span>
-                  <div>
-                    <h4 className="font-extrabold text-sm text-gray-900">1x Instagram Reel</h4>
-                    <p className="text-xs text-gray-500 mt-0.5">30-60s vertical UGC format</p>
-                    <div className="mt-4 flex items-baseline gap-1">
-                      <span className="text-3xl font-black text-gray-950">
-                        ${data.recommendedRates.reel}
-                      </span>
-                      <span className="text-xs font-bold text-gray-500">/ Reel</span>
-                    </div>
-                  </div>
-                  <div className="pt-3 border-t border-pink-100 text-[11px] font-semibold text-gray-600 flex justify-between">
-                    <span>You keep (85%):</span>
-                    <strong className="text-emerald-700">
-                      ${Math.round(data.recommendedRates.reel * 0.85)}
-                    </strong>
-                  </div>
-                </div>
-
-                {/* 2. Feed Post / Carousel */}
-                <div className="p-5 rounded-2xl border border-gray-200 bg-white flex flex-col justify-between gap-4 shadow-sm">
-                  <div>
-                    <h4 className="font-extrabold text-sm text-gray-900">1x Feed Post / Carousel</h4>
-                    <p className="text-xs text-gray-500 mt-0.5">Grid photo staging or carousel</p>
-                    <div className="mt-4 flex items-baseline gap-1">
-                      <span className="text-3xl font-black text-gray-950">
-                        ${data.recommendedRates.post}
-                      </span>
-                      <span className="text-xs font-bold text-gray-500">/ Post</span>
-                    </div>
-                  </div>
-                  <div className="pt-3 border-t border-gray-100 text-[11px] font-semibold text-gray-600 flex justify-between">
-                    <span>You keep (85%):</span>
-                    <strong className="text-emerald-700">
-                      ${Math.round(data.recommendedRates.post * 0.85)}
-                    </strong>
-                  </div>
-                </div>
-
-                {/* 3. Instagram Story */}
-                <div className="p-5 rounded-2xl border border-gray-200 bg-white flex flex-col justify-between gap-4 shadow-sm">
-                  <div>
-                    <h4 className="font-extrabold text-sm text-gray-900">2x Story Frames</h4>
-                    <p className="text-xs text-gray-500 mt-0.5">24h casual promo with link sticker</p>
-                    <div className="mt-4 flex items-baseline gap-1">
-                      <span className="text-3xl font-black text-gray-950">
-                        ${data.recommendedRates.story}
-                      </span>
-                      <span className="text-xs font-bold text-gray-500">/ Story</span>
-                    </div>
-                  </div>
-                  <div className="pt-3 border-t border-gray-100 text-[11px] font-semibold text-gray-600 flex justify-between">
-                    <span>You keep (85%):</span>
-                    <strong className="text-emerald-700">
-                      ${Math.round(data.recommendedRates.story * 0.85)}
-                    </strong>
-                  </div>
-                </div>
-
-                {/* 4. 3-Reel Campaign Bundle */}
-                <div className="p-5 rounded-2xl border border-purple-200 bg-purple-50/30 flex flex-col justify-between gap-4 shadow-sm">
-                  <div>
-                    <h4 className="font-extrabold text-sm text-gray-900">3x Reels Campaign Bundle</h4>
-                    <p className="text-xs text-gray-500 mt-0.5">Multi-video campaign with 15% discount</p>
-                    <div className="mt-4 flex items-baseline gap-1">
-                      <span className="text-3xl font-black text-gray-950">
-                        ${data.recommendedRates.bundleReels3}
-                      </span>
-                      <span className="text-xs font-bold text-gray-500">/ Bundle</span>
-                    </div>
-                  </div>
-                  <div className="pt-3 border-t border-purple-100 text-[11px] font-semibold text-gray-600 flex justify-between">
-                    <span>You keep (85%):</span>
-                    <strong className="text-emerald-700">
-                      ${Math.round(data.recommendedRates.bundleReels3 * 0.85)}
-                    </strong>
-                  </div>
-                </div>
-
-                {/* 5. Monthly Brand Retainer */}
-                <div className="p-5 rounded-2xl border border-emerald-200 bg-emerald-50/30 flex flex-col justify-between gap-4 shadow-sm lg:col-span-2">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                      <h4 className="font-extrabold text-sm text-gray-900">Monthly Brand Retainer</h4>
-                      <p className="text-xs text-gray-500 mt-0.5">
-                        4 Reels + 8 Story Frames per month (Continuous brand sponsorship)
-                      </p>
-                    </div>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-black text-emerald-800">
-                        ${data.recommendedRates.monthlyRetainer}
-                      </span>
-                      <span className="text-xs font-bold text-gray-500">/ Month</span>
-                    </div>
-                  </div>
-                  <div className="pt-3 border-t border-emerald-100 text-[11px] font-semibold text-gray-600 flex justify-between">
-                    <span>Recurring monthly creator earning:</span>
-                    <strong className="text-emerald-700">
-                      ${Math.round(data.recommendedRates.monthlyRetainer * 0.85)}/mo
-                    </strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* PERFORMANCE MULTIPLIER & TRACK RECORD */}
-            <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-6 sm:p-7 shadow-[var(--shadow-card)] space-y-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <TrendingUp size={18} className="text-purple-600" />
-                  <h3 className="font-extrabold text-base text-[var(--color-text)]">
-                    Track Record &amp; Performance Multiplier
-                  </h3>
-                </div>
-                <span className="px-3 py-1 rounded-full text-xs font-black bg-purple-100 text-purple-800">
-                  {Math.round((data.multiplier - 1) * 100) > 0
-                    ? `+${Math.round((data.multiplier - 1) * 100)}% Premium Bonus`
-                    : "Standard Market Baseline"}
-                </span>
-              </div>
-
-              <div className="grid sm:grid-cols-3 gap-3">
-                <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100 text-center">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                    Completed Deals
-                  </p>
-                  <p className="text-xl font-black text-gray-900 mt-1">
-                    {data.stats.collaborationsCompleted}
-                  </p>
-                </div>
-                <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100 text-center">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                    Client Rating
-                  </p>
-                  <p className="text-xl font-black text-gray-900 mt-1">
-                    {data.stats.reviewsCount > 0 ? `${data.stats.rating}★` : "5.0★"}
-                  </p>
-                </div>
-                <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100 text-center">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                    Response Time
-                  </p>
-                  <p className="text-xl font-black text-gray-900 mt-1">
-                    {data.stats.responseTimeHours}h
-                  </p>
-                </div>
-              </div>
-
-              {data.breakdown && data.breakdown.length > 0 && (
-                <div className="space-y-2 pt-2">
-                  <p className="text-xs font-bold text-gray-700">What's driving your rate bonus:</p>
-                  <div className="space-y-1.5">
-                    {data.breakdown.map((item, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center justify-between text-xs p-3 rounded-xl bg-gray-50 border border-gray-100"
-                      >
-                        <span className="font-semibold text-gray-800">{item.label}</span>
-                        <span className="font-black text-purple-700">{item.impact}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+        {/* Feedback Alert */}
+        {feedback.message && (
+          <div
+            className={`p-4 rounded-2xl border text-xs font-semibold flex items-center justify-between gap-3 shadow-xs ${
+              feedback.type === "success"
+                ? "bg-emerald-50 border-emerald-200 text-emerald-900"
+                : "bg-red-50 border-red-200 text-red-900"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              {feedback.type === "success" ? (
+                <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+              ) : (
+                <Info size={16} className="text-red-600 shrink-0" />
               )}
+              <span>{feedback.message}</span>
             </div>
+            <button
+              onClick={() => setFeedback({ type: "", message: "" })}
+              className="text-gray-400 hover:text-gray-600 text-xs cursor-pointer"
+            >
+              ✕
+            </button>
           </div>
+        )}
+
+        {loading ? (
+          <div className="p-16 text-center rounded-2xl bg-white border border-gray-200">
+            <div className="w-8 h-8 mx-auto mb-3 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin" />
+            <p className="text-xs font-bold text-gray-900">Computing market rate benchmark...</p>
+          </div>
+        ) : error ? (
+          <div className="p-6 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-xs">
+            <p className="font-bold">Unable to compute rate benchmark</p>
+            <p className="mt-1">{error}</p>
+          </div>
+        ) : (
+          <>
+            {/* Connected Account & Profile Intelligence Card */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xs space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <Avatar name={cleanHandle} size={48} />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h2 className="font-bold text-base text-gray-900">
+                        @{cleanHandle}
+                      </h2>
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                        <CheckCircle2 size={11} />
+                        Connected Profile
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Last synced: {lastRefreshed ? lastRefreshed.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "Recently"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`https://instagram.com/${cleanHandle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition"
+                  >
+                    <span>View on Instagram</span>
+                    <ExternalLink size={12} />
+                  </a>
+                </div>
+              </div>
+
+              {/* 4 Stat Tiles */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-4 border-t border-gray-100">
+                <div className="p-3.5 rounded-xl bg-gray-50/70 border border-gray-200/80">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                    Followers
+                  </p>
+                  <p className="text-lg font-extrabold text-gray-900 mt-0.5">
+                    {data.followers > 0 ? Number(data.followers).toLocaleString("en-IN") : "0"}
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-gray-50/70 border border-gray-200/80">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                    Creator Tier
+                  </p>
+                  <p className="text-lg font-extrabold text-gray-900 mt-0.5">
+                    {data.tier || "Nano Creator"}
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-gray-50/70 border border-gray-200/80">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                    Category
+                  </p>
+                  <p className="text-lg font-extrabold text-gray-900 truncate mt-0.5">
+                    {data.categories?.[0] || "General UGC"}
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-gray-50/70 border border-gray-200/80">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                    Track Record Bonus
+                  </p>
+                  <p className="text-lg font-extrabold text-emerald-700 mt-0.5">
+                    {Math.round((data.multiplier - 1) * 100) > 0
+                      ? `+${Math.round((data.multiplier - 1) * 100)}%`
+                      : "Baseline (1.0x)"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Recommended Deliverables Section */}
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-base font-bold text-gray-900 tracking-tight">
+                  Recommended Market Deliverables
+                </h2>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Suggested baseline pricing for single and bundled commercial deliverables.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* 1. Feed Post */}
+                <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-zinc-300 transition">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                        Feed Post
+                      </span>
+                      <ImageIcon size={14} className="text-gray-400" />
+                    </div>
+                    <h3 className="font-bold text-sm text-gray-900 mt-1">1x Feed Post</h3>
+                    <p className="text-xs text-gray-500 mt-1">
+                      High-aesthetic staged photo or carousel on your feed with brand tags.
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-gray-100">
+                    <p className="text-2xl font-extrabold text-gray-900 tracking-tight">
+                      ₹{rates.post.toLocaleString("en-IN")}
+                    </p>
+                    <p className="text-[11px] text-gray-400 mt-0.5">Recommended single rate</p>
+                  </div>
+                </div>
+
+                {/* 2. Instagram Reel */}
+                <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-zinc-300 transition">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-purple-600">
+                        Top Demand
+                      </span>
+                      <Video size={14} className="text-purple-600" />
+                    </div>
+                    <h3 className="font-bold text-sm text-gray-900 mt-1">1x Instagram Reel</h3>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Vertical 30-60s UGC video with hook, demo, and brand call-to-action.
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-gray-100">
+                    <p className="text-2xl font-extrabold text-gray-900 tracking-tight">
+                      ₹{rates.reel.toLocaleString("en-IN")}
+                    </p>
+                    <p className="text-[11px] text-gray-400 mt-0.5">Recommended single rate</p>
+                  </div>
+                </div>
+
+                {/* 3. Story */}
+                <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-zinc-300 transition">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                        Story Frames
+                      </span>
+                      <Clock size={14} className="text-gray-400" />
+                    </div>
+                    <h3 className="font-bold text-sm text-gray-900 mt-1">2x Story Frames</h3>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Casual stories with swipe-up sticker and direct tag for conversions.
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-gray-100">
+                    <p className="text-2xl font-extrabold text-gray-900 tracking-tight">
+                      ₹{rates.story.toLocaleString("en-IN")}
+                    </p>
+                    <p className="text-[11px] text-gray-400 mt-0.5">Recommended 2 frames</p>
+                  </div>
+                </div>
+
+                {/* 4. Bundle */}
+                <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-zinc-300 transition">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-pink-600">
+                        Package Deal
+                      </span>
+                      <Layers size={14} className="text-pink-600" />
+                    </div>
+                    <h3 className="font-bold text-sm text-gray-900 mt-1">3x Reels Bundle</h3>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Campaign bundle with cohesive narrative across 3 vertical video assets.
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-gray-100">
+                    <p className="text-2xl font-extrabold text-gray-900 tracking-tight">
+                      ₹{rates.bundleReels3.toLocaleString("en-IN")}
+                    </p>
+                    <p className="text-[11px] text-gray-400 mt-0.5">Bundle package</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Methodology & Calculation Transparency Card */}
+            <div className="bg-gray-50/80 border border-gray-200 rounded-2xl p-5 shadow-xs text-xs space-y-2">
+              <div className="flex items-center gap-2 font-bold text-gray-900">
+                <ShieldCheck size={16} className="text-gray-700" />
+                <span>Transparent Market Benchmark Methodology</span>
+              </div>
+              <p className="text-gray-600 leading-relaxed">
+                Rates scale continuously based on active followers, engagement, and verified collaboration completion. All displayed pricing represents direct creator compensation with zero assumed platform deductions.
+              </p>
+            </div>
+          </>
         )}
       </div>
     </InfluencerDashboardLayout>

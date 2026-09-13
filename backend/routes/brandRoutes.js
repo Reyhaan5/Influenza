@@ -3,6 +3,18 @@ import {
   getBrandProfile,
   saveCompanyInfo,
   getBrandDashboardStats,
+  getMyBrands,
+  createBrand,
+  updateBrand,
+  deleteBrand,
+  getTeamMembers,
+  inviteTeamMember,
+  deleteTeamMember,
+  getSavedCreators,
+  toggleSaveCreator,
+  getSavedCreatorIds,
+  getCreativeLibrary,
+  uploadFile,
 } from "../controllers/brandController.js";
 import {
   createProduct,
@@ -28,26 +40,52 @@ import upload from "../middleware/upload.js";
 const router = express.Router();
 
 /*
-GET PROFILE
+GET PROFILE & STATS
 */
 router.get("/profile", protect, getBrandProfile);
-
-/*
-DASHBOARD STATS (active campaigns, collaborations — real counts)
-*/
 router.get("/dashboard", protect, getBrandDashboardStats);
-
-/*
-SAVE COMPANY INFO ONLY
-*/
 router.put("/profile/company", protect, saveCompanyInfo);
 
 /*
-PRODUCTS — a brand can add multiple
+FILE UPLOADS
 */
-router.post("/products", protect, upload.single("productImage"), createProduct);
+router.post("/upload", protect, upload.single("file"), uploadFile);
+router.post("/upload-multiple", protect, upload.array("files", 6), uploadFile);
+
+/*
+BRANDS — a user can manage multiple brands / sub-brands
+*/
+router.get("/brands", protect, getMyBrands);
+router.post("/brands", protect, upload.single("logo"), createBrand);
+router.put("/brands/:id", protect, upload.single("logo"), updateBrand);
+router.delete("/brands/:id", protect, deleteBrand);
+
+/*
+ORGANIZATION / TEAM MEMBERS
+*/
+router.get("/team", protect, getTeamMembers);
+router.post("/team/invite", protect, inviteTeamMember);
+router.delete("/team/:id", protect, deleteTeamMember);
+
+/*
+SAVED CREATORS / FAVORITES
+*/
+router.get("/saved-creators", protect, getSavedCreators);
+router.get("/saved-creators/ids", protect, getSavedCreatorIds);
+router.post("/saved-creators/:creatorId", protect, toggleSaveCreator);
+router.delete("/saved-creators/:creatorId", protect, toggleSaveCreator);
+
+/*
+CREATIVE LIBRARY
+*/
+router.get("/creatives", protect, getCreativeLibrary);
+
+/*
+PRODUCTS — associated with brands
+*/
 router.get("/products", protect, getMyProducts);
-router.put("/products/:id", protect, upload.single("productImage"), updateProduct);
+router.post("/products", protect, upload.array("productImages", 6), createProduct);
+router.put("/products/:id", protect, upload.array("productImages", 6), updateProduct);
 router.delete("/products/:id", protect, deleteProduct);
 
 /*

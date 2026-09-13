@@ -1,11 +1,11 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
-import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles, Building2, User } from "lucide-react";
 import Section from "../common/Section";
-import FlowButton from "../common/FlowButton";
-import { howItWorksSteps } from "../../constants/howItWorks";
+import ArrowFillButton from "../common/ArrowFillButton";
+import { brandSteps, creatorSteps } from "../../constants/howItWorks";
 
-const Pin = ({ color = "var(--color-primary)", className = "" }) => (
+const Pin = ({ color = "#8D64ED", className = "" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="28"
@@ -19,7 +19,10 @@ const Pin = ({ color = "var(--color-primary)", className = "" }) => (
   </svg>
 );
 
-function HowItWorks() {
+export default function HowItWorks() {
+  const [activeRole, setActiveRole] = useState("brand"); // "brand" | "creator"
+  const currentSteps = activeRole === "brand" ? brandSteps : creatorSteps;
+
   const containerRef = useRef(null);
   const pinRefs = useRef([]);
   const [pathD, setPathD] = useState("");
@@ -50,173 +53,238 @@ function HowItWorks() {
   }, []);
 
   useEffect(() => {
-    updatePath();
+    // Reset pins array length
+    pinRefs.current = pinRefs.current.slice(0, currentSteps.length);
+    const timer = setTimeout(updatePath, 150);
     window.addEventListener("resize", updatePath);
-    const timer = setTimeout(updatePath, 250);
     return () => {
       window.removeEventListener("resize", updatePath);
       clearTimeout(timer);
     };
-  }, [updatePath]);
+  }, [activeRole, currentSteps.length, updatePath]);
 
   return (
-    <Section id="how-it-works" className="!py-12">
-      <style>{`
-        @keyframes dashAnimation {
-          from {
-            stroke-dashoffset: 0;
-          }
-          to {
-            stroke-dashoffset: -100;
-          }
-        }
-        .animated-connector-path {
-          stroke-dasharray: 8 8;
-          animation: dashAnimation 4s linear infinite;
-        }
-      `}</style>
-
-      <div className="relative overflow-hidden rounded-[36px] bg-[var(--color-surface)] border border-[var(--color-border)] shadow-[var(--shadow-card)] px-6 py-16 md:px-12 md:py-24 transition-colors">
-        {/* Glow ambient lights */}
-        <div className="pointer-events-none absolute -left-20 top-1/4 h-80 w-80 rounded-full bg-[var(--color-primary)]/5 blur-[100px]" />
-        <div className="pointer-events-none absolute -right-20 bottom-1/4 h-80 w-80 rounded-full bg-[var(--color-primary)]/5 blur-[100px]" />
+    <Section id="how-it-works" className="!py-16 sm:!py-20">
+      <div
+        className="relative overflow-hidden rounded-[36px] bg-white border border-zinc-200/90 shadow-xl shadow-zinc-900/5 px-6 py-14 sm:px-10 sm:py-18"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(to bottom, transparent, transparent 39px, rgba(0,0,0,0.03) 39px, rgba(0,0,0,0.03) 40px)",
+        }}
+      >
+        {/* Soft ambient background glows */}
+        <div className="pointer-events-none absolute -left-20 top-1/4 h-80 w-80 rounded-full bg-pink-100/40 blur-[100px] -z-10" />
+        <div className="pointer-events-none absolute -right-20 bottom-1/4 h-80 w-80 rounded-full bg-purple-100/40 blur-[100px] -z-10" />
 
         {/* Section Heading */}
-        <div className="relative z-20 text-center max-w-3xl mx-auto mb-16 md:mb-20">
+        <div className="relative z-20 text-center max-w-3xl mx-auto mb-12 sm:mb-14">
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--color-primary)]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[var(--color-primary)] backdrop-blur-sm border border-[var(--color-primary)]/20"
+            className="inline-flex items-center gap-2 rounded-full bg-pink-50 border border-pink-200/80 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#FF1475] shadow-xs"
           >
-            <Sparkles size={14} />
-            Streamlined Workflow
+            <Sparkles size={13} className="text-[#FF1475]" />
+            Streamlined 4-Step Workflow
           </motion.div>
 
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="mt-5 text-3xl font-extrabold tracking-tight text-[var(--color-text)] sm:text-4xl lg:text-5xl"
+            transition={{ delay: 0.1 }}
+            className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-zinc-950"
           >
-            How <span className="text-[var(--color-primary)]">Influenza</span> Works
+            How <span className="bg-gradient-to-r from-[#FF1475] to-purple-600 bg-clip-text text-transparent">Influenza</span> Works
           </motion.h2>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-4 text-base sm:text-lg text-[var(--color-text-light)] leading-relaxed"
+            transition={{ delay: 0.15 }}
+            className="mt-3.5 text-sm sm:text-base text-zinc-600 font-medium max-w-2xl mx-auto leading-relaxed"
           >
-            A 5-step intelligent workflow engineered for modern marketing teams to discover,
-            evaluate, and collaborate with verified creators.
+            Discover verified talent, structure transparent deliverables in ₹, collaborate effortlessly, and track performance from a unified workspace.
           </motion.p>
+
+          {/* Interactive Role Switcher Pill */}
+          <div className="mt-8 inline-flex items-center p-1.5 bg-zinc-100/85 rounded-2xl border border-zinc-200 shadow-inner">
+            <button
+              type="button"
+              onClick={() => setActiveRole("brand")}
+              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                activeRole === "brand"
+                  ? "bg-zinc-950 text-white shadow-sm"
+                  : "text-zinc-600 hover:text-zinc-950"
+              }`}
+            >
+              <Building2 size={16} />
+              <span>For Brands</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveRole("creator")}
+              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                activeRole === "creator"
+                  ? "bg-[#FF1475] text-white shadow-sm shadow-pink-500/25"
+                  : "text-zinc-600 hover:text-zinc-950"
+              }`}
+            >
+              <User size={16} />
+              <span>For Creators</span>
+            </button>
+          </div>
         </div>
 
-        {/* Zigzag Timeline Container */}
-        <div ref={containerRef} className="relative max-w-4xl mx-auto py-6">
-          {/* Dynamic Curved Animated Dashed Connector Line */}
+        {/* Pinned Zigzag Timeline with dynamic Arrow & connector line */}
+        <div ref={containerRef} className="relative max-w-4xl mx-auto py-4">
+          {/* Dynamic Curved Dashed Connector Line with Arrow head */}
           {pathD && (
             <svg className="pointer-events-none absolute inset-0 h-full w-full z-10 overflow-visible">
               <defs>
-                <linearGradient id="connectorGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.4" />
-                  <stop offset="50%" stopColor="var(--color-primary)" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0.4" />
-                </linearGradient>
+                <marker
+                  id="timeline-arrow"
+                  viewBox="0 0 10 10"
+                  refX="6"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto-start-reverse"
+                >
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#FF1475" />
+                </marker>
               </defs>
               <path
                 d={pathD}
                 fill="none"
-                stroke="url(#connectorGradient)"
+                stroke="rgba(0, 0, 0, 0.22)"
                 strokeWidth="2.5"
-                className="animated-connector-path"
+                strokeDasharray="6 6"
+                markerEnd="url(#timeline-arrow)"
               />
             </svg>
           )}
 
           {/* Stepped Cards List */}
-          <div className="relative z-20 flex flex-col space-y-8 md:space-y-6">
-            {howItWorksSteps.map((step, idx) => {
-              const isEven = idx % 2 === 1; // 0: Left, 1: Right, 2: Left, 3: Right, 4: Left
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeRole}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3 }}
+              className="relative z-20 flex flex-col space-y-7 md:space-y-6"
+            >
+              {currentSteps.map((step, idx) => {
+                const isEven = idx % 2 === 1; // 0: Left, 1: Right, 2: Left, 3: Right
+                const IconComponent = step.icon;
 
-              return (
-                <div
-                  key={step.id}
-                  className={`flex w-full ${
-                    isEven ? "justify-end md:pr-10" : "justify-start md:pl-10"
-                  }`}
-                >
-                  <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-40px" }}
-                    transition={{ duration: 0.5, delay: idx * 0.1 }}
-                    className={`relative w-full max-w-[340px] sm:max-w-[380px] transition-transform duration-300 hover:z-40 hover:scale-105 ${step.rotate} hover:rotate-0`}
+                return (
+                  <div
+                    key={step.id}
+                    className={`flex w-full ${
+                      isEven ? "justify-end md:pr-10" : "justify-start md:pl-10"
+                    }`}
                   >
-                    {/* Pin element anchored at top center */}
-                    <div
-                      ref={(el) => (pinRefs.current[idx] = el)}
-                      className="relative z-30 mx-auto -mb-3.5 flex h-9 w-9 items-center justify-center cursor-pointer transition-transform hover:scale-110"
+                    <motion.div
+                      initial={{ opacity: 0, y: 25 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-30px" }}
+                      transition={{ duration: 0.45, delay: idx * 0.08 }}
+                      className={`relative w-full max-w-[340px] sm:max-w-[390px] transition-transform duration-300 hover:z-40 hover:scale-105 ${step.rotate} hover:rotate-0`}
                     >
-                      <Pin color={step.color || "var(--color-primary)"} className="drop-shadow-md" />
-                    </div>
-
-                    {/* Outer Card Body */}
-                    <div
-                      className="rounded-[26px] p-6 sm:p-7 border bg-[var(--color-surface)] transition-all duration-300 shadow-lg hover:shadow-xl"
-                      style={{
-                        borderColor: step.color ? `${step.color}50` : "var(--color-border)",
-                      }}
-                    >
-                      {/* Step Number */}
-                      <span
-                        className="text-3xl sm:text-4xl font-extrabold tracking-tight"
-                        style={{ color: step.color || "var(--color-primary)" }}
+                      {/* Pin element anchored at top center */}
+                      <div
+                        ref={(el) => (pinRefs.current[idx] = el)}
+                        className="relative z-30 mx-auto -mb-3.5 flex h-9 w-9 items-center justify-center cursor-pointer"
                       >
-                        {step.number}
-                      </span>
+                        <Pin color={step.color} className="drop-shadow-md" />
+                      </div>
 
-                      {/* Title */}
-                      <h3 className="mt-3 text-xl font-bold text-[var(--color-text)] tracking-tight">
-                        {step.title}
-                      </h3>
+                      {/* Outer Card Body */}
+                      <div
+                        className="rounded-[26px] p-6 sm:p-7 border bg-white backdrop-blur-md transition-all duration-300 shadow-xl group"
+                        style={{
+                          backgroundColor: "#ffffff",
+                          borderColor: `${step.color}50`,
+                          boxShadow: `0 14px 30px -10px rgba(0,0,0,0.08), 0 0 20px -4px ${step.color}20`,
+                        }}
+                      >
+                        {/* Header Row: Step Number & Tag */}
+                        <div className="flex items-center justify-between gap-2">
+                          <span
+                            className="text-3xl sm:text-4xl font-black tracking-tight"
+                            style={{ color: step.color }}
+                          >
+                            {step.number}
+                          </span>
 
-                      {/* Description */}
-                      <p className="mt-2.5 text-sm leading-relaxed text-[var(--color-text-light)]">
-                        {step.description}
-                      </p>
-                    </div>
-                  </motion.div>
-                </div>
-              );
-            })}
-          </div>
+                          <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-600 bg-zinc-50 border border-zinc-200 px-2.5 py-1 rounded-full shadow-2xs">
+                            {step.tag}
+                          </span>
+                        </div>
+
+                        {/* Icon & Title */}
+                        <div className="mt-3 flex items-center gap-3">
+                          <div
+                            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                            style={{
+                              backgroundColor: `${step.color}15`,
+                              color: step.color,
+                            }}
+                          >
+                            <IconComponent size={20} />
+                          </div>
+
+                          <h3 className="text-lg font-black text-zinc-950 tracking-tight">
+                            {step.title}
+                          </h3>
+                        </div>
+
+                        {/* Description */}
+                        <p className="mt-3 text-xs sm:text-sm leading-relaxed text-zinc-600 font-medium">
+                          {step.description}
+                        </p>
+                      </div>
+                    </motion.div>
+                  </div>
+                );
+              })}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
-        {/* Bottom CTA */}
+        {/* Bottom CTA Bar */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="relative z-20 mt-16 text-center max-w-xl mx-auto"
+          transition={{ duration: 0.5 }}
+          className="relative z-20 mt-14 pt-8 border-t border-zinc-200/70 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left max-w-4xl mx-auto"
         >
-          <p className="text-sm text-[var(--color-text-light)] mb-5">
-            Ready to launch your campaign with top creators?
-          </p>
-          <FlowButton
-            to="/signup"
-            text="Get Started Free"
-            className="px-8 py-3.5 text-sm font-semibold"
+          <div>
+            <h4 className="text-sm sm:text-base font-black text-zinc-950">
+              {activeRole === "brand" ? "Ready to launch your brand campaign?" : "Ready to start receiving brand deals?"}
+            </h4>
+            <p className="text-xs text-zinc-500 mt-0.5 font-medium">
+              {activeRole === "brand" ? "Connect with verified UGC & social media creators in minutes." : "Set your custom rates in ₹ and showcase your content publicly."}
+            </p>
+          </div>
+
+          <ArrowFillButton
+            to={activeRole === "brand" ? "/signup?role=brand" : "/signup?role=influencer"}
+            btnText={activeRole === "brand" ? "Start Hiring" : "Join as Creator"}
+            size="md"
+            bgColor="#FF1475"
+            textColor="#ffffff"
+            fillBgColor="#ffffff"
+            fillTextColor="#FF1475"
+            className="shadow-lg shadow-pink-500/20"
           />
         </motion.div>
       </div>
     </Section>
   );
-}
-
-export default HowItWorks;
+}

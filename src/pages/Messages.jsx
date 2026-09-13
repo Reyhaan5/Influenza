@@ -9,6 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
 import { API_URL } from "../config/api";
 import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
+import BrandChats from "./BrandChats";
 
 export default function Messages() {
   const { user } = useAuth();
@@ -315,12 +316,7 @@ export default function Messages() {
   );
 
   if (user?.role === "brand") {
-    return (
-      <>
-        <Navbar />
-        <Section className="pt-32">{body}</Section>
-      </>
-    );
+    return <BrandChats />;
   }
 
   return <InfluencerDashboardLayout>{body}</InfluencerDashboardLayout>;

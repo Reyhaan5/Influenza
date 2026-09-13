@@ -25,8 +25,8 @@ export default function ProfileCard({
   const personalInfo = p.personalInfo || {};
   const address = p.address || {};
   const fullName = [personalInfo.firstName, personalInfo.lastName].filter(Boolean).join(" ");
-  const displayName = fullName || handle?.replace("@", "") || "Creator";
-  const title = personalInfo.title || "UGC & Lifestyle Creator";
+  const displayName = fullName || p.user?.name || (handle && !handle.startsWith("@") ? handle : "Creator");
+  const title = personalInfo.title || (categories.length > 0 ? `${categories[0]} Creator` : "Creator");
   const coverPhotos =
     Array.isArray(personalInfo.coverPhotos) && personalInfo.coverPhotos.length > 0
       ? personalInfo.coverPhotos
@@ -41,9 +41,9 @@ export default function ProfileCard({
   const bio = p.matchProfile?.bio || personalInfo.description;
 
   return (
-    <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl overflow-hidden shadow-[var(--shadow-card)] flex flex-col">
+    <div className="bg-white border border-zinc-200/90 rounded-3xl overflow-hidden shadow-sm flex flex-col">
       {/* Top Cover Banner */}
-      <div className="relative h-36 sm:h-44 w-full bg-gradient-to-r from-gray-900 to-gray-800 overflow-hidden">
+      <div className="relative h-36 sm:h-44 w-full bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 overflow-hidden">
         {coverPhotos.length > 0 ? (
           <div
             className={`grid h-full w-full gap-0.5 ${
@@ -55,7 +55,7 @@ export default function ProfileCard({
             }`}
           >
             {coverPhotos.slice(0, 3).map((photo, idx) => (
-              <div key={idx} className="relative h-full w-full overflow-hidden bg-gray-900">
+              <div key={idx} className="relative h-full w-full overflow-hidden bg-zinc-900">
                 <img
                   src={photo}
                   alt={`Cover Banner ${idx + 1}`}
@@ -65,7 +65,7 @@ export default function ProfileCard({
             ))}
           </div>
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs font-bold">
+          <div className="w-full h-full flex items-center justify-center text-zinc-500 text-xs font-bold">
             <span>Add 700x700 cover photos in profile setup</span>
           </div>
         )}
@@ -75,7 +75,7 @@ export default function ProfileCard({
             to={`/creators/${p.user?._id || p._id || ""}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-black/70 hover:bg-black text-white text-xs font-bold px-3 py-1.5 rounded-xl backdrop-blur-sm transition flex items-center gap-1.5 shadow"
+            className="bg-black/80 hover:bg-black text-white text-xs font-bold px-3 py-1.5 rounded-xl backdrop-blur-sm transition flex items-center gap-1.5 shadow-sm border border-zinc-700/50"
           >
             <ExternalLink size={12} /> Preview Public Profile
           </Link>
@@ -88,7 +88,7 @@ export default function ProfileCard({
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex flex-wrap items-center gap-4 sm:gap-5">
             {/* ONLY the avatar floats over the cover banner */}
-            <div className="-mt-12 sm:-mt-14 relative rounded-full ring-4 ring-white bg-white shadow-lg flex-shrink-0 z-10">
+            <div className="-mt-12 sm:-mt-14 relative rounded-full ring-4 ring-white bg-white shadow-md flex-shrink-0 z-10">
               <Avatar name={displayName} avatarUrl={avatarUrl} size={88} />
               {approved && (
                 <span className="absolute bottom-0 right-0 bg-blue-500 rounded-full p-1 border-2 border-white flex items-center justify-center shadow">
@@ -99,44 +99,35 @@ export default function ProfileCard({
 
             {/* Typography stays safely on the white card surface */}
             <div className="pt-2 sm:pt-3">
-              <h2 className="font-extrabold text-xl sm:text-2xl text-[var(--color-text)] flex items-center gap-2">
+              <h2 className="font-extrabold text-xl sm:text-2xl text-zinc-950 flex items-center gap-2">
                 {displayName}
                 <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
                   Active
                 </span>
               </h2>
-              <p className="text-xs font-semibold text-[var(--color-text-light)] mt-0.5">{title}</p>
+              <p className="text-xs font-semibold text-zinc-500 mt-0.5">{title}</p>
               {locationStr && (
-                <div className="flex items-center gap-1.5 text-xs font-bold text-gray-600 mt-1.5">
-                  <MapPin size={13} className="text-red-500 flex-shrink-0" />
+                <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-600 mt-1.5">
+                  <MapPin size={13} className="text-zinc-900 flex-shrink-0" />
                   <span>{locationStr}</span>
                 </div>
               )}
             </div>
           </div>
 
-          {onEditProfile ? (
-            <button
-              type="button"
-              onClick={onEditProfile}
-              className="mt-2 flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black hover:bg-gray-800 text-white text-xs font-bold transition shadow-sm"
-            >
-              <Edit2 size={13} /> Edit Profile &amp; Details
-            </button>
-          ) : (
-            <Link
-              to="/creator-onboarding"
-              className="mt-2 flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black hover:bg-gray-800 text-white text-xs font-bold transition shadow-sm"
-            >
-              <Edit2 size={13} /> Edit Profile &amp; Pricing
-            </Link>
-          )}
+          <Link
+            to="/account"
+            className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
+          >
+            <Edit2 size={13} />
+            <span>Edit Profile &amp; Details</span>
+          </Link>
         </div>
 
-        {/* Sleek Segmented Progress Bar (10 capsules, matching reference) */}
-        <div className="p-4 rounded-2xl bg-gray-50/90 border border-gray-200/80">
+        {/* Sleek Segmented Progress Bar */}
+        <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-200">
           <div className="flex items-center justify-between text-xs font-bold mb-2">
-            <span className="text-gray-800">Profile Completeness</span>
+            <span className="text-zinc-900">Profile Completeness</span>
           </div>
           <SegmentedProgressBar
             profile={profile}
@@ -149,8 +140,8 @@ export default function ProfileCard({
         {/* Bio Snippet */}
         {bio && (
           <div className="space-y-1">
-            <span className="text-xs font-bold text-[var(--color-text)]">About</span>
-            <p className="text-xs text-[var(--color-text-light)] leading-relaxed line-clamp-3">
+            <span className="text-xs font-bold text-zinc-900">About</span>
+            <p className="text-xs text-zinc-600 leading-relaxed line-clamp-3">
               {bio}
             </p>
           </div>
@@ -159,13 +150,13 @@ export default function ProfileCard({
         {/* Niches / Categories */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[var(--color-text)]">Categories &amp; Niches</span>
-            <button
-              onClick={onEditCategories}
-              className="text-xs font-bold text-[var(--color-primary-hover)] hover:underline"
+            <span className="text-xs font-bold text-zinc-900">Categories &amp; Niches</span>
+            <Link
+              to="/account?tab=match-profile"
+              className="text-xs font-bold text-zinc-900 hover:underline"
             >
-              {categories.length > 0 ? "Edit" : "+ Add categories"}
-            </button>
+              {categories.length > 0 ? "Edit in Account →" : "+ Add categories"}
+            </Link>
           </div>
 
           {categories.length > 0 ? (
@@ -173,15 +164,15 @@ export default function ProfileCard({
               {categories.map((cat) => (
                 <span
                   key={cat}
-                  className="text-xs font-bold px-3 py-1 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary-hover)]"
+                  className="text-xs font-bold px-3 py-1 rounded-xl bg-zinc-100 border border-zinc-200 text-zinc-900"
                 >
                   {cat}
                 </span>
               ))}
             </div>
           ) : (
-            <p className="text-xs text-[var(--color-text-light)]">
-              Add your niches so brands can find you on Creator Discovery.
+            <p className="text-xs text-zinc-500">
+              Add your niches in Account Settings so brands can discover you.
             </p>
           )}
         </div>
@@ -189,12 +180,17 @@ export default function ProfileCard({
         {/* Connected Instagram Profile */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[var(--color-text)]">Connected Social Profiles</span>
-            <span className="text-[11px] font-bold text-gray-400">Apify Verified</span>
+            <span className="text-xs font-bold text-zinc-900">Connected Social Profiles</span>
+            <Link
+              to="/account?tab=account-settings"
+              className="text-[11px] font-bold text-zinc-900 hover:underline"
+            >
+              Manage Connection →
+            </Link>
           </div>
 
           {socialAccounts.length === 0 && (
-            <p className="text-xs text-[var(--color-text-light)]">
+            <p className="text-xs text-zinc-500">
               No Instagram account connected yet.
             </p>
           )}
@@ -205,7 +201,7 @@ export default function ProfileCard({
             return (
               <div
                 key={acc.platform}
-                className="flex items-center justify-between bg-[var(--color-background)] rounded-2xl px-4 py-3 border border-gray-100"
+                className="flex items-center justify-between bg-zinc-50 rounded-2xl px-4 py-3 border border-zinc-200"
               >
                 <div className="flex items-center gap-3">
                   <img
@@ -214,38 +210,33 @@ export default function ProfileCard({
                     className="w-5 h-5 object-contain"
                   />
                   <div>
-                    <span className="text-xs font-bold text-[var(--color-text)] block">
+                    <span className="text-xs font-bold text-zinc-900 block">
                       {acc.handle}
                     </span>
-                    <span className="text-[10px] font-semibold text-gray-500">
+                    <span className="text-[10px] font-semibold text-zinc-500">
                       {acc.platform}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className="text-xs font-extrabold text-[var(--color-text)]">
+                  <span className="text-xs font-extrabold text-zinc-900">
                     {acc.followers.toLocaleString()} followers
                   </span>
-                  <button
-                    onClick={() => onRemoveAccount(acc.platform)}
-                    className="text-gray-400 hover:text-red-500 p-1"
-                    aria-label={`Remove ${acc.platform}`}
-                  >
-                    <X size={14} />
-                  </button>
                 </div>
               </div>
             );
           })}
 
-          <button
-            onClick={onAddAccount}
-            className="mt-1 flex items-center justify-center gap-1.5 py-2.5 rounded-2xl border border-dashed border-[var(--color-border)] text-xs font-bold text-[var(--color-primary-hover)] hover:bg-[var(--color-background)] transition-colors"
-          >
-            <Plus size={14} />
-            Connect Account
-          </button>
+          {socialAccounts.length === 0 && (
+            <Link
+              to="/account?tab=account-settings"
+              className="mt-1 flex items-center justify-center gap-1.5 py-2.5 rounded-2xl border border-dashed border-zinc-300 text-xs font-bold text-zinc-900 hover:bg-zinc-50 transition-colors"
+            >
+              <Plus size={14} />
+              Connect Account in Settings
+            </Link>
+          )}
         </div>
       </div>
     </div>

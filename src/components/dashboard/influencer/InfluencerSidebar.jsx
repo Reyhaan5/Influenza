@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  Home,
+  LayoutGrid,
   TrendingUp,
   Search,
-  Send,
+  Handshake,
   Mail,
-  Camera,
-  Settings,
   LogOut,
   ChevronsRight,
   ChevronDown,
@@ -18,15 +16,15 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import Avatar from "./Avatar";
+import { BrandIcon, BrandText } from "../../common/BrandLogo";
 
 const NAV_ITEMS = [
-  { key: "dashboard", label: "Dashboard", icon: Home, to: "/influencer-dashboard" },
+  { key: "dashboard", label: "Dashboard", icon: LayoutGrid, to: "/influencer-dashboard" },
   { key: "account", label: "My Account", icon: UserCog, to: "/account" },
-  { key: "insider-rate", label: "Insider Rate", icon: TrendingUp, to: "/insider-rate" },
+  { key: "rate-benchmark", label: "Rate Benchmark", icon: TrendingUp, to: "/rate-benchmark" },
   { key: "opportunities", label: "Opportunities", icon: Search, to: "/opportunities" },
-  { key: "requests", label: "Invitations", icon: Send, to: "/collaboration-requests" },
+  { key: "partnerships", label: "Partnerships", icon: Handshake, to: "/collaborations" },
   { key: "inbox", label: "Inbox", icon: Mail, to: "/messages" },
-  { key: "collaborations", label: "Collaborations", icon: Camera, comingSoon: true },
 ];
 
 export default function InfluencerSidebar() {
@@ -58,25 +56,39 @@ export default function InfluencerSidebar() {
         open ? "w-64" : "w-16"
       } flex flex-col`}
     >
+      {/* Brand Logo / Header -> Links to Main Site */}
+      <Link
+        to="/"
+        className="flex items-center gap-3 px-4 py-3.5 border-b border-[var(--color-border)] hover:bg-[var(--color-background)] transition cursor-pointer"
+        title="Go to Influenza Main Site"
+      >
+        <BrandIcon size="h-8 w-8" />
+        {open && (
+          <div className="min-w-0 flex-1 flex items-center justify-between">
+            <BrandText size="text-xl font-bold" />
+          </div>
+        )}
+      </Link>
+
       {/* Account Profile Header Dropdown */}
       <div className="relative border-b border-[var(--color-border)]" ref={accountRef}>
         <button
           onClick={() => setAccountOpen((o) => !o)}
-          className="flex w-full items-center gap-3 px-4 py-4 text-left hover:bg-[var(--color-background)] transition-colors"
+          className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-[var(--color-background)] transition-colors"
         >
-          <Avatar name={user?.name} size={36} />
+          <Avatar name={user?.name} size={34} />
           {open && (
             <>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold text-[var(--color-text)] truncate">
+                <p className="text-xs font-bold text-[var(--color-text)] truncate">
                   {user?.name || "Creator"}
                 </p>
-                <p className="text-xs text-[var(--color-text-light)] truncate">
+                <p className="text-[11px] text-[var(--color-text-light)] truncate">
                   {user?.email}
                 </p>
               </div>
               <ChevronDown
-                size={16}
+                size={14}
                 className={`flex-shrink-0 text-[var(--color-text-light)] transition-transform duration-200 ${
                   accountOpen ? "rotate-180" : ""
                 }`}
@@ -139,7 +151,15 @@ export default function InfluencerSidebar() {
       {/* Navigation Links */}
       <div className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
         {NAV_ITEMS.map((item) => {
-          const isActive = item.to && location.pathname === item.to;
+          const isActive =
+            item.to &&
+            (location.pathname === item.to ||
+              (item.key === "rate-benchmark" &&
+                (location.pathname === "/rate-benchmark" ||
+                  location.pathname === "/insider-rate")) ||
+              (item.key === "partnerships" &&
+                (location.pathname === "/collaborations" ||
+                  location.pathname === "/collaboration-requests")));
           const Icon = item.icon;
 
           if (item.comingSoon) {
@@ -168,16 +188,16 @@ export default function InfluencerSidebar() {
             <Link
               key={item.key}
               to={item.to}
-              className={`flex h-11 w-full items-center rounded-xl transition-colors duration-200 ${
+              className={`flex h-11 w-full items-center rounded-2xl px-2.5 transition-all duration-200 border ${
                 isActive
-                  ? "bg-[var(--color-primary)]/10 text-[var(--color-primary-hover)] border-l-2 border-[var(--color-primary)]"
-                  : "text-[var(--color-text-light)] hover:bg-[var(--color-background)] hover:text-[var(--color-text)]"
+                  ? "bg-white border-zinc-300 text-zinc-950 font-bold shadow-xs"
+                  : "border-transparent text-zinc-600 hover:bg-zinc-100/80 hover:text-zinc-950 font-medium"
               }`}
             >
-              <div className="grid h-11 w-11 flex-shrink-0 place-content-center">
-                <Icon className="h-4 w-4" />
+              <div className="grid h-8 w-8 flex-shrink-0 place-content-center">
+                <Icon className={`h-4.5 w-4.5 ${isActive ? "text-zinc-950 stroke-[2.2]" : "text-zinc-500 stroke-[1.8]"}`} />
               </div>
-              {open && <span className="text-sm font-semibold">{item.label}</span>}
+              {open && <span className="ml-1 text-sm font-semibold tracking-tight text-zinc-950">{item.label}</span>}
             </Link>
           );
         })}
@@ -185,26 +205,9 @@ export default function InfluencerSidebar() {
 
       {/* Footer Actions */}
       <div className="border-t border-[var(--color-border)] px-2 py-2 space-y-1">
-        <div
-          className="flex h-11 w-full items-center rounded-xl text-[var(--color-text-light)]/50 cursor-not-allowed"
-          title={open ? undefined : "Settings - coming soon"}
-        >
-          <div className="grid h-11 w-11 flex-shrink-0 place-content-center">
-            <Settings className="h-4 w-4" />
-          </div>
-          {open && (
-            <span className="flex items-center gap-2 text-sm font-medium">
-              Settings
-              <span className="text-[10px] font-bold uppercase tracking-wide bg-[var(--color-background)] px-1.5 py-0.5 rounded-full">
-                Soon
-              </span>
-            </span>
-          )}
-        </div>
-
         <button
           onClick={handleLogout}
-          className="flex h-11 w-full items-center rounded-xl text-[var(--color-danger)] hover:bg-[var(--color-danger)]/10 transition-colors"
+          className="flex h-11 w-full items-center rounded-xl text-[var(--color-danger)] hover:bg-[var(--color-danger)]/10 transition-colors cursor-pointer"
         >
           <div className="grid h-11 w-11 flex-shrink-0 place-content-center">
             <LogOut className="h-4 w-4" />

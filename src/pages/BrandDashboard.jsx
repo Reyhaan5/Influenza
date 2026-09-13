@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Megaphone, Users } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Megaphone, Users, Sparkles, Plus, Search } from "lucide-react";
 
 import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
-import Heading from "../components/ui/Heading";
 import StatCard from "../components/dashboard/influencer/StatCard";
 import BrandProfileCard from "../components/dashboard/brand/BrandProfileCard";
 import ProfileCompletionBanner from "../components/dashboard/brand/ProfileCompletionBanner";
@@ -250,7 +250,7 @@ export default function BrandDashboard() {
   if (loading) {
     return (
       <BrandDashboardLayout>
-        <h2 className="text-xl font-semibold text-center">Loading Profile...</h2>
+        <p className="text-zinc-500 font-medium">Loading your dashboard...</p>
       </BrandDashboardLayout>
     );
   }
@@ -263,7 +263,38 @@ export default function BrandDashboard() {
 
   return (
     <BrandDashboardLayout>
-      <Heading level={1} className="mb-8">Brand Dashboard</Heading>
+      {/* Header Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black text-zinc-950 tracking-tight">
+            Brand Dashboard
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-zinc-500 max-w-2xl font-medium">
+            Manage your company profile, showcase your product catalog, monitor active campaigns, and collaborate with top creators.
+          </p>
+        </div>
+        <div className="flex items-center gap-2.5 flex-shrink-0 flex-wrap">
+          <Link
+            to="/creator-discovery"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
+          >
+            <Sparkles size={14} className="text-yellow-300" />
+            <span>Discover Creators</span>
+          </Link>
+          <Link
+            to="/brand-dashboard/campaigns"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-900 text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
+          >
+            My Campaigns
+          </Link>
+          <Link
+            to="/collaboration-requests"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
+          >
+            Requests
+          </Link>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 

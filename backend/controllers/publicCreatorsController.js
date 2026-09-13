@@ -13,6 +13,159 @@ function guessMediaType(url = "") {
   return /\.(mp4|mov|webm|m4v)$/i.test(url) ? "video" : "image";
 }
 
+export const DEMO_CREATORS = [
+  {
+    id: "660000000000000000000001",
+    profileId: "660000000000000000000001",
+    handle: "sarahj_ugc",
+    displayName: "Sarah Jenkins",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80",
+    coverImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80",
+    city: "Los Angeles",
+    state: "California",
+    country: "United States",
+    locality: "Los Angeles, CA",
+    niches: ["Beauty & Skincare", "Fashion & Style", "Lifestyle", "UGC Videos"],
+    bio: "Passionate UGC creator specializing in authentic aesthetic product reviews, unboxings, and high-converting TikTok/Reels videos.",
+    gender: "Female",
+    ethnicity: "Caucasian",
+    basePrice: 150,
+    verified: true,
+    rating: 4.9,
+    reviewsCount: 28,
+    jobsCompleted: 35,
+    hasPitchVideo: true,
+    pitchVideoUrl: "https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-1232-large.mp4",
+    socialAccounts: [{ platform: "Instagram", followers: 85000, handle: "@sarahj_ugc" }],
+    galleryCount: 12,
+  },
+  {
+    id: "660000000000000000000002",
+    profileId: "660000000000000000000002",
+    handle: "david_fitlife",
+    displayName: "David Miller",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80",
+    coverImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=80",
+    city: "Miami",
+    state: "Florida",
+    country: "United States",
+    locality: "Miami, FL",
+    niches: ["Fitness & Gym", "Health & Wellness", "Nutrition", "Product Review"],
+    bio: "Certified personal trainer and fitness influencer creating engaging high-energy workout routines and supplement reviews.",
+    gender: "Male",
+    ethnicity: "Caucasian",
+    basePrice: 220,
+    verified: true,
+    rating: 4.8,
+    reviewsCount: 19,
+    jobsCompleted: 24,
+    hasPitchVideo: false,
+    pitchVideoUrl: null,
+    socialAccounts: [{ platform: "Instagram", followers: 120000, handle: "@david_fitlife" }],
+    galleryCount: 8,
+  },
+  {
+    id: "660000000000000000000003",
+    profileId: "660000000000000000000003",
+    handle: "elena_aesthetic",
+    displayName: "Elena Rostova",
+    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80",
+    coverImage: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&auto=format&fit=crop&q=80",
+    city: "New York",
+    state: "New York",
+    country: "United States",
+    locality: "New York, NY",
+    niches: ["Fashion", "Luxury Lifestyle", "UGC Photos", "Instagram Reels"],
+    bio: "Editorial fashion creator and digital storyteller bringing luxury and boutique brand narratives to life with cinema-grade UGC.",
+    gender: "Female",
+    ethnicity: "Caucasian",
+    basePrice: 280,
+    verified: true,
+    rating: 5.0,
+    reviewsCount: 42,
+    jobsCompleted: 50,
+    hasPitchVideo: true,
+    pitchVideoUrl: "https://assets.mixkit.co/videos/preview/mixkit-young-woman-posing-for-the-camera-40538-large.mp4",
+    socialAccounts: [{ platform: "Instagram", followers: 195000, handle: "@elena_aesthetic" }],
+    galleryCount: 16,
+  },
+  {
+    id: "660000000000000000000004",
+    profileId: "660000000000000000000004",
+    handle: "alex_techugc",
+    displayName: "Alex Rivera",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=80",
+    coverImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&auto=format&fit=crop&q=80",
+    city: "Austin",
+    state: "Texas",
+    country: "United States",
+    locality: "Austin, TX",
+    niches: ["Technology & Gadgets", "Consumer Electronics", "Unboxing", "Tutorials"],
+    bio: "Tech enthusiast building sleek, crisp 4K unboxings, gadget teardowns, and actionable desk setup guides.",
+    gender: "Male",
+    ethnicity: "Hispanic/Latino",
+    basePrice: 190,
+    verified: true,
+    rating: 4.9,
+    reviewsCount: 31,
+    jobsCompleted: 40,
+    hasPitchVideo: false,
+    pitchVideoUrl: null,
+    socialAccounts: [{ platform: "Instagram", followers: 92000, handle: "@alex_techugc" }],
+    galleryCount: 10,
+  },
+  {
+    id: "660000000000000000000005",
+    profileId: "660000000000000000000005",
+    handle: "chloedubois_paris",
+    displayName: "Chloe Dubois",
+    avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80",
+    coverImage: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&auto=format&fit=crop&q=80",
+    city: "San Francisco",
+    state: "California",
+    country: "United States",
+    locality: "San Francisco, CA",
+    niches: ["Travel & Leisure", "Food & Beverage", "Cafes & Dining", "Hospitality"],
+    bio: "Travel and culinary UGC creator exploring hidden gems, local cafes, boutique stays, and sustainable hospitality.",
+    gender: "Female",
+    ethnicity: "Caucasian",
+    basePrice: 160,
+    verified: true,
+    rating: 4.7,
+    reviewsCount: 15,
+    jobsCompleted: 18,
+    hasPitchVideo: true,
+    pitchVideoUrl: "https://assets.mixkit.co/videos/preview/mixkit-woman-sitting-on-a-rock-looking-at-the-ocean-40679-large.mp4",
+    socialAccounts: [{ platform: "Instagram", followers: 64000, handle: "@chloedubois_paris" }],
+    galleryCount: 14,
+  },
+  {
+    id: "660000000000000000000006",
+    profileId: "660000000000000000000006",
+    handle: "mayapatel_wellness",
+    displayName: "Maya Patel",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&auto=format&fit=crop&q=80",
+    coverImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80",
+    city: "Chicago",
+    state: "Illinois",
+    country: "United States",
+    locality: "Chicago, IL",
+    niches: ["Home & Decor", "Organic Living", "Mindfulness", "Self Care"],
+    bio: "Holistic wellness advocate showcasing mindful morning routines, non-toxic home essentials, and eco-friendly brands.",
+    gender: "Female",
+    ethnicity: "South Asian",
+    basePrice: 130,
+    verified: true,
+    rating: 4.9,
+    reviewsCount: 22,
+    jobsCompleted: 27,
+    hasPitchVideo: false,
+    pitchVideoUrl: null,
+    socialAccounts: [{ platform: "Instagram", followers: 48000, handle: "@mayapatel_wellness" }],
+    galleryCount: 9,
+  },
+];
+
 // ============================================================================
 // GET /api/public/creators-by-category?category=Skincare
 // ============================================================================
@@ -25,7 +178,7 @@ export const getCreatorsByCategory = async (req, res) => {
     }
 
     const creators = await InfluencerProfile.find({
-      approved: true,
+      approved: { $ne: false },
       categories: category,
     })
       .populate("user", "name email")
@@ -70,7 +223,7 @@ export const getCreatorDiscovery = async (req, res) => {
       language,
     } = req.query;
 
-    const filter = { approved: true };
+    const filter = { approved: { $ne: false } };
 
     // Location search (combining generic location with specific state/city)
     const locQuery = (location || "").trim();
@@ -313,6 +466,64 @@ export const getCreatorDiscovery = async (req, res) => {
       creators = creators.filter((c) => c.basePrice >= minP && c.basePrice <= maxP);
     }
 
+    // If no creators in database, provide high-quality fallback demo creators
+    if (creators.length === 0) {
+      let fallback = [...DEMO_CREATORS];
+
+      if (category || q) {
+        const term = (category || q).toLowerCase();
+        fallback = fallback.filter(
+          (c) =>
+            c.displayName.toLowerCase().includes(term) ||
+            c.handle.toLowerCase().includes(term) ||
+            c.niches.some((n) => n.toLowerCase().includes(term)) ||
+            c.bio.toLowerCase().includes(term)
+        );
+      }
+
+      if (location) {
+        const loc = location.toLowerCase();
+        fallback = fallback.filter(
+          (c) =>
+            c.locality.toLowerCase().includes(loc) ||
+            c.city.toLowerCase().includes(loc) ||
+            c.state.toLowerCase().includes(loc)
+        );
+      }
+
+      if (gender && gender.toLowerCase() !== "any") {
+        fallback = fallback.filter((c) => c.gender.toLowerCase() === gender.toLowerCase());
+      }
+
+      if (followers) {
+        let minF = 0;
+        let maxF = Infinity;
+        if (followers === "1k-10k") {
+          minF = 1000;
+          maxF = 10000;
+        } else if (followers === "10k-50k") {
+          minF = 10000;
+          maxF = 50000;
+        } else if (followers === "50k-100k") {
+          minF = 50000;
+          maxF = 100000;
+        } else if (followers === "100k+") {
+          minF = 100000;
+          maxF = Infinity;
+        }
+        fallback = fallback.filter((c) => {
+          const count = c.socialAccounts?.[0]?.followers || 0;
+          return count >= minF && count <= maxF;
+        });
+      }
+
+      if (minP > 0 || maxP < Infinity) {
+        fallback = fallback.filter((c) => c.basePrice >= minP && c.basePrice <= maxP);
+      }
+
+      creators = fallback;
+    }
+
     res.json({
       creators,
       total: creators.length,
@@ -368,6 +579,121 @@ export const getPublicCreatorProfile = async (req, res) => {
     }
 
     if (!profile) {
+      const demo = DEMO_CREATORS.find(
+        (c) =>
+          c.id === id ||
+          c.profileId === id ||
+          c.handle.toLowerCase() === id.toLowerCase() ||
+          `@${c.handle.toLowerCase()}` === id.toLowerCase() ||
+          c.displayName.toLowerCase().replace(/\s+/g, "-") === id.toLowerCase()
+      );
+
+      if (demo) {
+        return res.json({
+          creator: {
+            id: demo.id,
+            profileId: demo.profileId,
+            handle: `@${demo.handle.replace("@", "")}`,
+            displayName: demo.displayName,
+            headline: `${demo.niches[0] || "UGC"} Content Creator`,
+            avatar: demo.avatar,
+            coverPhoto: demo.coverImage,
+            coverPhotos: [demo.coverImage],
+            gender: demo.gender,
+            ethnicity: demo.ethnicity,
+            city: demo.city,
+            state: demo.state,
+            country: demo.country,
+            locality: demo.locality,
+            address: { city: demo.city, state: demo.state, country: demo.country },
+            bio: demo.bio,
+            passions: "Lifestyle, Creative UGC, Aesthetic Storytelling, Brand Partnerships",
+            categories: demo.niches,
+            niches: demo.niches,
+            topics: demo.niches,
+            collaborationFormats: ["Instagram Reels", "Instagram Posts", "UGC Video", "Product Photos"],
+            socialAccounts: demo.socialAccounts,
+            verified: true,
+          },
+          packages: [
+            {
+              id: "ugc-unboxing",
+              name: "1 UGC Unboxing / Review Video",
+              price: demo.basePrice,
+              type: "video",
+              duration: "30-60s",
+              description: "A dynamic and engaging unboxing & product review video tailored for social media feeds.",
+              fullDetails: "Complete unboxing flow highlighting key packaging, physical texture, first impressions, and authentic reactions.",
+            },
+            {
+              id: "ugc-product-photos",
+              name: "3 High-Resolution UGC Photos",
+              price: Math.round(demo.basePrice * 1.15),
+              type: "photo",
+              duration: "3 Images",
+              description: "3 professionally styled lifestyle & product staging photos ready for social ads.",
+              fullDetails: "3 edited, high-resolution lifestyle images suitable for e-commerce, Instagram grid, and marketing collaterals.",
+            },
+            {
+              id: "ugc-video-ad",
+              name: "1 High-Converting UGC Paid Video Ad",
+              price: Math.round(demo.basePrice * 1.3),
+              type: "ad",
+              duration: "30s",
+              description: "Hook-focused paid ad creative optimized for conversions on Meta and TikTok.",
+              fullDetails: "Includes hook variations, 30 days paid ads usage rights, vertical 9:16 export, and custom text overlays.",
+            },
+          ],
+          portfolio: [
+            {
+              id: "demo-port-1",
+              mediaUrl: demo.coverImage,
+              mediaType: "image",
+              caption: "Aesthetic Product Showcase",
+              platform: "Instagram",
+              highlighted: true,
+              source: "showcase",
+            },
+            ...(demo.pitchVideoUrl
+              ? [
+                  {
+                    id: "demo-port-2",
+                    mediaUrl: demo.pitchVideoUrl,
+                    mediaType: "video",
+                    caption: "Pitch & Video Portfolio",
+                    platform: "Instagram",
+                    highlighted: true,
+                    source: "showcase",
+                  },
+                ]
+              : []),
+          ],
+          reviews: [
+            {
+              id: "demo-rev-1",
+              rating: 5,
+              comment: "Exceptional content quality! Delivered ahead of schedule with great communication.",
+              brandName: "Glow & Co.",
+              createdAt: new Date().toISOString(),
+            },
+            {
+              id: "demo-rev-2",
+              rating: 5,
+              comment: "High conversion on our paid ads campaign with this creator's video.",
+              brandName: "Aura Essentials",
+              createdAt: new Date().toISOString(),
+            },
+          ],
+          stats: {
+            rating: demo.rating,
+            reviewsCount: demo.reviewsCount,
+            collaborationsCompleted: demo.jobsCompleted,
+            responseTimeHours: 4,
+          },
+          rateCard: null,
+        });
+      }
+
       return res.status(404).json({ message: "Creator profile not found." });
     }
 
@@ -437,58 +763,10 @@ export const getPublicCreatorProfile = async (req, res) => {
           price: pkgPrice,
           type: String(cp.contentType || "video").toLowerCase(),
           duration: `${cp.duration || 30} ${cp.durationUnit || "Seconds"}`,
-          description: cp.description || `${cp.count || 1}x ${cp.contentType || "Reel"} tailored for brand engagement and conversions.`,
+          description: cp.description || "",
           fullDetails: cp.description || `Includes high-definition production, vertical format (9:16), 1 round of revisions, and full organic usage rights.`,
         };
       });
-    } else {
-      packages = [
-        {
-          id: "ugc-unboxing",
-          name: "1 UGC Unboxing (45 Seconds)",
-          price: basePost,
-          type: "video",
-          duration: "45 Seconds",
-          description: "That perfect 'unboxing' video, but make it vibey! - 1x 30-45 second video featuring authentic unboxing reactions and product demonstration.",
-          fullDetails: "Includes script ideation, high-definition recording, lighting, vertical formatting (9:16) for Instagram Reels, 1 round of revisions, and full organic usage rights.",
-        },
-        {
-          id: "ugc-testimonial",
-          name: "1 UGC Testimonial/Review (30 Seconds)",
-          price: Math.round(basePost * 1.08),
-          type: "video",
-          duration: "30 Seconds",
-          description: "Authentic, relatable testimonial video discussing real benefits, problem-solving, and direct hook that turns viewers into buyers.",
-          fullDetails: "Includes authentic on-camera talking head, lifestyle B-roll, on-screen subtitles/captions, and call to action.",
-        },
-        {
-          id: "ugc-product-video",
-          name: "1 UGC Product Video (30 Seconds)",
-          price: baseReel,
-          type: "video",
-          duration: "30 Seconds",
-          description: "A video that will be the center of attention without begging! I've got you covered with dynamic lifestyle visuals.",
-          fullDetails: "Dynamic lifestyle presentation showing the product in action, dynamic aesthetic cuts, voiceover narration, and trending audio integration.",
-        },
-        {
-          id: "ugc-product-photos",
-          name: "3 UGC Product Photos",
-          price: Math.round(basePost * 1.18),
-          type: "photo",
-          duration: "3 Images",
-          description: "The product photos that will ACTUALLY bring you sales! - High res, high-aesthetic staging.",
-          fullDetails: "3 edited, high-resolution lifestyle images suitable for e-commerce, Instagram grid, and marketing collaterals.",
-        },
-        {
-          id: "ugc-video-ad",
-          name: "1 UGC Video Ad (30 Seconds)",
-          price: Math.round(baseReel * 1.23),
-          type: "ad",
-          duration: "30 Seconds",
-          description: "High-converting paid ad creative engineered with strong 3-second hook, pain points, and conversion-focused CTA.",
-          fullDetails: "Includes hook variations, 30 days paid ads usage rights, vertical 9:16 export, and custom text overlays.",
-        },
-      ];
     }
 
     // Compute average rating
@@ -500,14 +778,16 @@ export const getPublicCreatorProfile = async (req, res) => {
     // Full display name & title
     const fullName = [profile.personalInfo?.firstName, profile.personalInfo?.lastName].filter(Boolean).join(" ");
     const displayName = fullName || profile.user?.name || profile.handle || "Creator";
-    const primaryCategory = profile.categories?.[0] || profile.matchProfile?.niche?.[0] || "Content Creator";
-    const headline = `${primaryCategory} UGC Content Creator`;
+    const primaryCategory = profile.categories?.[0] || profile.matchProfile?.niche?.[0] || "";
+    const headline = profile.personalInfo?.title || (primaryCategory ? `${primaryCategory} Creator` : "");
 
     // Location details
     const city = profile.address?.city || "";
     const state = profile.address?.state || "";
     const country = profile.address?.country || "";
-    const locality = [city, state, country].filter(Boolean).join(", ") || "Global";
+    const locality = [city, state, country].filter(Boolean).join(", ");
+
+    const realBio = profile.matchProfile?.bio || profile.personalInfo?.description || profile.matchProfile?.passions || "";
 
     res.json({
       creator: {
@@ -528,12 +808,12 @@ export const getPublicCreatorProfile = async (req, res) => {
         country,
         locality,
         address: profile.address || {},
-        bio: profile.matchProfile?.bio || profile.matchProfile?.passions || "Passionate content creator producing high-converting UGC and authentic stories for leading brands.",
+        bio: realBio,
         passions: profile.matchProfile?.passions || "",
         categories: profile.categories || [],
         niches: profile.matchProfile?.niche || [],
         topics: profile.matchProfile?.topics || [],
-        collaborationFormats: profile.matchProfile?.collaborationFormats || ["Instagram Reels", "Instagram Posts"],
+        collaborationFormats: profile.matchProfile?.collaborationFormats || [],
         socialAccounts: profile.socialAccounts || [],
         verified: profile.approved !== false,
       },
@@ -550,7 +830,7 @@ export const getPublicCreatorProfile = async (req, res) => {
         rating: avgRating,
         reviewsCount: reviews.length,
         collaborationsCompleted: stats.collaborationsCompleted || 0,
-        responseTimeHours: stats.responseTime?.avgHours || 24,
+        responseTimeHours: stats.responseTime?.avgHours || null,
       },
       rateCard: rateCard || null,
     });

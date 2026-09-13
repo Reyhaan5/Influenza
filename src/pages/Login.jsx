@@ -298,7 +298,7 @@ export default function InfluenzeAuth() {
       {/* Mobile: simple stacked card */}
       <div className="md:hidden w-full max-w-sm bg-[var(--color-surface)] rounded-[28px] shadow-2xl p-7">
         <div className="flex items-center justify-center mb-5">
-          <BrandLogo to="/" size="text-xl" iconSize="w-6 h-6" />
+          <BrandLogo to="/" size="text-2xl sm:text-3xl" iconSize="w-8 h-8" />
         </div>
 
         <AuthFields

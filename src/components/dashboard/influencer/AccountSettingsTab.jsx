@@ -22,6 +22,7 @@ const ETHNICITY_OPTIONS = [
   "Other",
   "Pacific Islander",
   "White",
+  "Prefer not to say",
 ];
 
 const PET_OPTIONS = [
@@ -38,6 +39,8 @@ const COUNTRY_OPTIONS = [
   "New Zealand 🇳🇿",
   "Canada 🇨🇦",
   "France 🇫🇷",
+  "India 🇮🇳",
+  "Germany 🇩🇪",
 ];
 
 export default function AccountSettingsTab({ user, profile, onUpdated }) {
@@ -45,10 +48,10 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
     firstName: user?.name?.split(" ")[0] || "",
     lastName: user?.name?.split(" ").slice(1).join(" ") || "",
     email: user?.email || "",
-    birthday: profile?.birthday || "",
-    gender: profile?.gender || "",
-    ethnicity: profile?.ethnicity || "Asian",
-    petOwner: profile?.petOwner || "No",
+    birthday: profile?.personalInfo?.birthday ? new Date(profile.personalInfo.birthday).toISOString().split("T")[0] : (profile?.birthday || ""),
+    gender: profile?.personalInfo?.gender || profile?.gender || "",
+    ethnicity: profile?.personalInfo?.ethnicity || profile?.ethnicity || "",
+    petOwner: profile?.personalInfo?.petOwner || profile?.petOwner || "",
   });
 
   const [address, setAddress] = useState({
@@ -58,8 +61,8 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
     county: profile?.address?.county || "",
     state: profile?.address?.state || "",
     postcode: profile?.address?.postcode || "",
-    country: profile?.address?.country || "United States 🇺🇸",
-    phone: profile?.address?.phone || "",
+    country: profile?.address?.country || "",
+    phone: profile?.address?.phone || profile?.address?.phoneNumber || "",
   });
 
   const [notifications, setNotifications] = useState({
@@ -86,20 +89,9 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
   });
 
   const instagramAccount =
-    profile?.socialAccounts?.find((s) => s.platform?.toLowerCase() === "instagram") ||
-    (profile?.handle && profile.handle !== "@creator" && !profile.handle.includes("@creator")
-      ? {
-          platform: "Instagram",
-          handle: profile.handle,
-          followers: profile.followers || profile.stats?.followers || 0,
-        }
-      : null);
+    profile?.socialAccounts?.find((s) => s.platform?.toLowerCase() === "instagram" && s.handle?.trim()) || null;
 
-  const isInstagramConnected = Boolean(
-    instagramAccount?.handle &&
-      instagramAccount.handle.trim() !== "" &&
-      instagramAccount.handle !== "@creator"
-  );
+  const isInstagramConnected = Boolean(instagramAccount?.handle?.trim());
 
   const cleanHandle = (instagramAccount?.handle || "").replace(/^@+/, "").trim();
 
@@ -296,9 +288,10 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
           {/* Avatar Header */}
           <div className="flex items-center gap-4 border-b border-[var(--color-border)] pb-6">
             <Avatar name={user?.name} size={56} />
-            <span className="text-xs text-[var(--color-text-light)] font-semibold">
-              Profile Avatar (Managed via Creator Setup / Edit Profile)
-            </span>
+            <div>
+              <h4 className="text-sm font-bold text-[var(--color-text)]">{user?.name || "Profile Photo"}</h4>
+              <p className="text-xs text-[var(--color-text-light)]">{user?.email}</p>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
@@ -364,6 +357,7 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
                 onChange={(e) => setPersonalInfo({ ...personalInfo, ethnicity: e.target.value })}
                 className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2.5 text-sm"
               >
+                <option value="">Select ethnicity</option>
                 {ETHNICITY_OPTIONS.map((eth) => (
                   <option key={eth} value={eth}>{eth}</option>
                 ))}
@@ -376,6 +370,7 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
                 onChange={(e) => setPersonalInfo({ ...personalInfo, petOwner: e.target.value })}
                 className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2.5 text-sm"
               >
+                <option value="">Select pet status</option>
                 {PET_OPTIONS.map((pet) => (
                   <option key={pet} value={pet}>{pet}</option>
                 ))}
@@ -411,7 +406,7 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
               <label className="block text-xs font-semibold text-[var(--color-text)] mb-1.5">Address Line 1</label>
               <input
                 type="text"
-                placeholder="Example: Flat D"
+                placeholder="Flat D, Suite 101"
                 value={address.line1}
                 onChange={(e) => setAddress({ ...address, line1: e.target.value })}
                 className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-3.5 py-2.5 text-sm"
@@ -421,7 +416,7 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
               <label className="block text-xs font-semibold text-[var(--color-text)] mb-1.5">Address Line 2</label>
               <input
                 type="text"
-                placeholder="Example: 10 Hyde Park Road"
+                placeholder="10 Hyde Park Road"
                 value={address.line2}
                 onChange={(e) => setAddress({ ...address, line2: e.target.value })}
                 className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-3.5 py-2.5 text-sm"
@@ -434,7 +429,7 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
               <label className="block text-xs font-semibold text-[var(--color-text)] mb-1.5">City</label>
               <input
                 type="text"
-                placeholder="Example: New York"
+                placeholder="New York"
                 value={address.city}
                 onChange={(e) => setAddress({ ...address, city: e.target.value })}
                 className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-3.5 py-2.5 text-sm"
@@ -444,7 +439,7 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
               <label className="block text-xs font-semibold text-[var(--color-text)] mb-1.5">County</label>
               <input
                 type="text"
-                placeholder="Example: Hamilton"
+                placeholder="Hamilton"
                 value={address.county}
                 onChange={(e) => setAddress({ ...address, county: e.target.value })}
                 className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-3.5 py-2.5 text-sm"
@@ -454,7 +449,7 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
               <label className="block text-xs font-semibold text-[var(--color-text)] mb-1.5">State / Region</label>
               <input
                 type="text"
-                placeholder="Example: New York"
+                placeholder="New York"
                 value={address.state}
                 onChange={(e) => setAddress({ ...address, state: e.target.value })}
                 className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-3.5 py-2.5 text-sm"
@@ -479,6 +474,7 @@ export default function AccountSettingsTab({ user, profile, onUpdated }) {
                 onChange={(e) => setAddress({ ...address, country: e.target.value })}
                 className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2.5 text-sm"
               >
+                <option value="">Select country</option>
                 {COUNTRY_OPTIONS.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}

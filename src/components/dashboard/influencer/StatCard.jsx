@@ -7,24 +7,22 @@ export default function StatCard({
   suffix,
 }) {
   return (
-    <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 shadow-[var(--shadow-card)] flex items-center gap-4">
-
-      <div className="p-3 rounded-xl bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+    <div className="bg-white border border-zinc-200/90 rounded-3xl p-6 shadow-sm flex items-center gap-4 hover:border-zinc-300 transition-all">
+      <div className="p-3 rounded-2xl bg-zinc-100/90 border border-zinc-200/80 text-zinc-900 flex-shrink-0 flex items-center justify-center">
         {/* If Icon is standard JSX element, render directly; otherwise render as a React component */}
-        {React.isValidElement(Icon) ? Icon : Icon && <Icon size={24} />}
+        {React.isValidElement(Icon) ? Icon : Icon && <Icon size={20} className="text-zinc-900" />}
       </div>
 
       <div>
-        <p className="text-sm text-[var(--color-text-light)]">
+        <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
           {label}
         </p>
 
-        <p className="font-bold text-xl text-[var(--color-text)]">
+        <p className="font-black text-2xl text-zinc-950 mt-0.5">
           {value}
 
           {suffix && (
-            <span className="text-sm font-medium text-[var(--color-text-light)]">
-              {" "}
+            <span className="text-xs font-medium text-zinc-400 block sm:inline sm:ml-2">
               {suffix}
             </span>
           )}

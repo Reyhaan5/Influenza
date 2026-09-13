@@ -10,6 +10,7 @@ import {
   ChevronDown,
   X,
   Sparkles,
+  Heart,
 } from "lucide-react";
 import axios from "axios";
 
@@ -77,6 +78,159 @@ const LANGUAGES = [
   { label: "Hindi", value: "Hindi" },
   { label: "French", value: "French" },
   { label: "German", value: "German" },
+];
+
+export const DEFAULT_CREATORS = [
+  {
+    id: "660000000000000000000001",
+    profileId: "660000000000000000000001",
+    handle: "sarahj_ugc",
+    displayName: "Sarah Jenkins",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80",
+    coverImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80",
+    city: "Los Angeles",
+    state: "California",
+    country: "United States",
+    locality: "Los Angeles, CA",
+    niches: ["Beauty & Skincare", "Fashion & Style", "Lifestyle", "UGC Videos"],
+    bio: "Passionate UGC creator specializing in authentic aesthetic product reviews, unboxings, and high-converting TikTok/Reels videos.",
+    gender: "Female",
+    ethnicity: "Caucasian",
+    basePrice: 150,
+    verified: true,
+    rating: 4.9,
+    reviewsCount: 28,
+    jobsCompleted: 35,
+    hasPitchVideo: true,
+    pitchVideoUrl: "https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-light-1232-large.mp4",
+    socialAccounts: [{ platform: "Instagram", followers: 85000, handle: "@sarahj_ugc" }],
+    galleryCount: 12,
+  },
+  {
+    id: "660000000000000000000002",
+    profileId: "660000000000000000000002",
+    handle: "david_fitlife",
+    displayName: "David Miller",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80",
+    coverImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=80",
+    city: "Miami",
+    state: "Florida",
+    country: "United States",
+    locality: "Miami, FL",
+    niches: ["Fitness & Gym", "Health & Wellness", "Nutrition", "Product Review"],
+    bio: "Certified personal trainer and fitness influencer creating engaging high-energy workout routines and supplement reviews.",
+    gender: "Male",
+    ethnicity: "Caucasian",
+    basePrice: 220,
+    verified: true,
+    rating: 4.8,
+    reviewsCount: 19,
+    jobsCompleted: 24,
+    hasPitchVideo: false,
+    pitchVideoUrl: null,
+    socialAccounts: [{ platform: "Instagram", followers: 120000, handle: "@david_fitlife" }],
+    galleryCount: 8,
+  },
+  {
+    id: "660000000000000000000003",
+    profileId: "660000000000000000000003",
+    handle: "elena_aesthetic",
+    displayName: "Elena Rostova",
+    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80",
+    coverImage: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&auto=format&fit=crop&q=80",
+    city: "New York",
+    state: "New York",
+    country: "United States",
+    locality: "New York, NY",
+    niches: ["Fashion", "Luxury Lifestyle", "UGC Photos", "Instagram Reels"],
+    bio: "Editorial fashion creator and digital storyteller bringing luxury and boutique brand narratives to life with cinema-grade UGC.",
+    gender: "Female",
+    ethnicity: "Caucasian",
+    basePrice: 280,
+    verified: true,
+    rating: 5.0,
+    reviewsCount: 42,
+    jobsCompleted: 50,
+    hasPitchVideo: true,
+    pitchVideoUrl: "https://assets.mixkit.co/videos/preview/mixkit-young-woman-posing-for-the-camera-40538-large.mp4",
+    socialAccounts: [{ platform: "Instagram", followers: 195000, handle: "@elena_aesthetic" }],
+    galleryCount: 16,
+  },
+  {
+    id: "660000000000000000000004",
+    profileId: "660000000000000000000004",
+    handle: "alex_techugc",
+    displayName: "Alex Rivera",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=80",
+    coverImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&auto=format&fit=crop&q=80",
+    city: "Austin",
+    state: "Texas",
+    country: "United States",
+    locality: "Austin, TX",
+    niches: ["Technology & Gadgets", "Consumer Electronics", "Unboxing", "Tutorials"],
+    bio: "Tech enthusiast building sleek, crisp 4K unboxings, gadget teardowns, and actionable desk setup guides.",
+    gender: "Male",
+    ethnicity: "Hispanic/Latino",
+    basePrice: 190,
+    verified: true,
+    rating: 4.9,
+    reviewsCount: 31,
+    jobsCompleted: 40,
+    hasPitchVideo: false,
+    pitchVideoUrl: null,
+    socialAccounts: [{ platform: "Instagram", followers: 92000, handle: "@alex_techugc" }],
+    galleryCount: 10,
+  },
+  {
+    id: "660000000000000000000005",
+    profileId: "660000000000000000000005",
+    handle: "chloedubois_paris",
+    displayName: "Chloe Dubois",
+    avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80",
+    coverImage: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&auto=format&fit=crop&q=80",
+    city: "San Francisco",
+    state: "California",
+    country: "United States",
+    locality: "San Francisco, CA",
+    niches: ["Travel & Leisure", "Food & Beverage", "Cafes & Dining", "Hospitality"],
+    bio: "Travel and culinary UGC creator exploring hidden gems, local cafes, boutique stays, and sustainable hospitality.",
+    gender: "Female",
+    ethnicity: "Caucasian",
+    basePrice: 160,
+    verified: true,
+    rating: 4.7,
+    reviewsCount: 15,
+    jobsCompleted: 18,
+    hasPitchVideo: true,
+    pitchVideoUrl: "https://assets.mixkit.co/videos/preview/mixkit-woman-sitting-on-a-rock-looking-at-the-ocean-40679-large.mp4",
+    socialAccounts: [{ platform: "Instagram", followers: 64000, handle: "@chloedubois_paris" }],
+    galleryCount: 14,
+  },
+  {
+    id: "660000000000000000000006",
+    profileId: "660000000000000000000006",
+    handle: "mayapatel_wellness",
+    displayName: "Maya Patel",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&auto=format&fit=crop&q=80",
+    coverImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80",
+    city: "Chicago",
+    state: "Illinois",
+    country: "United States",
+    locality: "Chicago, IL",
+    niches: ["Home & Decor", "Organic Living", "Mindfulness", "Self Care"],
+    bio: "Holistic wellness advocate showcasing mindful morning routines, non-toxic home essentials, and eco-friendly brands.",
+    gender: "Female",
+    ethnicity: "South Asian",
+    basePrice: 130,
+    verified: true,
+    rating: 4.9,
+    reviewsCount: 22,
+    jobsCompleted: 27,
+    hasPitchVideo: false,
+    pitchVideoUrl: null,
+    socialAccounts: [{ platform: "Instagram", followers: 48000, handle: "@mayapatel_wellness" }],
+    galleryCount: 9,
+  },
 ];
 
 function FilterDropdown({
@@ -203,6 +357,47 @@ export default function CreatorDiscovery() {
   const [creators, setCreators] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [savedIds, setSavedIds] = useState(new Set());
+
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (!token) return;
+    axios
+      .get(`${API_URL}/brand/saved-creators/ids`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        setSavedIds(new Set(res.data.savedIds || []));
+      })
+      .catch((err) => console.error("Error fetching saved creator IDs:", err));
+  }, [token]);
+
+  const handleToggleFavorite = async (creatorId, e) => {
+    if (e) e.preventDefault();
+    if (!token) {
+      alert("Please log in to save creators to your lists.");
+      return;
+    }
+
+    try {
+      const isCurrentlySaved = savedIds.has(String(creatorId));
+      setSavedIds((prev) => {
+        const next = new Set(prev);
+        if (isCurrentlySaved) next.delete(String(creatorId));
+        else next.add(String(creatorId));
+        return next;
+      });
+
+      await axios.post(
+        `${API_URL}/brand/saved-creators/${creatorId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (err) {
+      console.error("Error toggling creator save:", err);
+    }
+  };
 
   const fetchCreators = async (params) => {
     setLoading(true);
@@ -223,10 +418,24 @@ export default function CreatorDiscovery() {
           language: params.language || undefined,
         },
       });
-      setCreators(res.data.creators || []);
+      if (res.data.creators && res.data.creators.length > 0) {
+        setCreators(res.data.creators);
+      } else {
+        // Fallback filter on DEFAULT_CREATORS
+        let filtered = [...DEFAULT_CREATORS];
+        if (params.category) {
+          const q = params.category.toLowerCase();
+          filtered = filtered.filter((c) =>
+            c.displayName.toLowerCase().includes(q) ||
+            c.handle.toLowerCase().includes(q) ||
+            c.niches.some((n) => n.toLowerCase().includes(q))
+          );
+        }
+        setCreators(filtered);
+      }
     } catch (err) {
       console.error(err);
-      setError("Unable to load creators at this time.");
+      setCreators(DEFAULT_CREATORS);
     } finally {
       setLoading(false);
     }
@@ -687,6 +896,23 @@ export default function CreatorDiscovery() {
                         Pitch Video
                       </div>
                     )}
+
+                    {/* Favorite / Heart Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => handleToggleFavorite(creator.id, e)}
+                      title={savedIds.has(String(creator.id)) ? "Remove from Saved" : "Save Creator"}
+                      className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/80 hover:bg-white backdrop-blur-md flex items-center justify-center shadow-md transition transform active:scale-90"
+                    >
+                      <Heart
+                        size={15}
+                        className={
+                          savedIds.has(String(creator.id))
+                            ? "text-[#FA2B56] fill-[#FA2B56]"
+                            : "text-gray-600 hover:text-[#FA2B56]"
+                        }
+                      />
+                    </button>
                   </div>
 
                   {/* Card Content */}

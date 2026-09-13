@@ -48,49 +48,49 @@ export default function BrandProfileCard({
     : [];
 
   return (
-    <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 shadow-[var(--shadow-card)] flex flex-col gap-5 h-full">
+    <div className="bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col gap-6 h-full">
       <div className="flex items-center gap-4">
         <div className="relative">
           <Avatar name={companyName} />
           {verified && (
-            <span className="absolute -bottom-1 -right-1 bg-[var(--color-primary)] rounded-full p-0.5 border-2 border-[var(--color-surface)]">
+            <span className="absolute -bottom-1 -right-1 bg-zinc-950 rounded-full p-0.5 border-2 border-white">
               <BadgeCheck size={14} className="text-white" />
             </span>
           )}
         </div>
         <div>
-          <span className="font-bold text-[var(--color-text)] text-lg">{companyName}</span>
-          <p className="text-xs text-[var(--color-text-light)]">{industry}</p>
+          <span className="font-black text-zinc-950 text-lg tracking-tight">{companyName}</span>
+          <p className="text-xs text-zinc-500 font-medium">{industry}</p>
         </div>
       </div>
 
-      <div className="flex items-center justify-around text-center">
+      <div className="flex items-center justify-around text-center py-2 bg-zinc-50/80 rounded-2xl border border-zinc-200/60">
         <div>
-          <div className="font-bold text-[var(--color-text)]">{campaignsRun}</div>
-          <div className="text-xs text-[var(--color-text-light)]">campaigns run</div>
+          <div className="font-black text-2xl text-zinc-950">{campaignsRun}</div>
+          <div className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">campaigns run</div>
         </div>
-        <div className="w-px h-8 bg-[var(--color-border)]" />
+        <div className="w-px h-8 bg-zinc-200" />
         <div>
-          <div className="font-bold text-[var(--color-text)]">{creatorsPartnered}</div>
-          <div className="text-xs text-[var(--color-text-light)]">creators partnered</div>
+          <div className="font-black text-2xl text-zinc-950">{creatorsPartnered}</div>
+          <div className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">creators partnered</div>
         </div>
       </div>
 
       {!verified && (
-        <div className="text-sm text-[var(--color-warning)] bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/30 rounded-xl px-4 py-2.5">
+        <div className="text-xs font-semibold text-zinc-700 bg-zinc-100/80 border border-zinc-200 rounded-2xl px-4 py-2.5">
           Your brand has not been verified yet.
         </div>
       )}
 
       {/* Products */}
-      <div className="border-t border-[var(--color-border)] pt-5">
+      <div className="border-t border-zinc-200/80 pt-5">
         <div className="flex items-center gap-2 mb-3">
-          <Package size={16} className="text-[var(--color-primary)]" />
-          <h4 className="text-sm font-bold text-[var(--color-text)]">Products</h4>
+          <Package size={16} className="text-zinc-900" />
+          <h4 className="text-sm font-black text-zinc-950">Products</h4>
         </div>
 
         {products.length === 0 ? (
-          <p className="text-sm text-[var(--color-text-light)]">
+          <p className="text-xs text-zinc-500 font-medium">
             No products added yet. Use Product Information below to add one.
           </p>
         ) : (
@@ -99,7 +99,7 @@ export default function BrandProfileCard({
               <select
                 value={selectedProductId || ""}
                 onChange={(e) => onSelectProduct(e.target.value)}
-                className="flex-1 rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                className="flex-1 rounded-2xl border border-zinc-200 bg-zinc-50/70 px-3.5 py-2.5 text-xs font-semibold text-zinc-900 focus:outline-none focus:border-zinc-950 focus:bg-white"
               >
                 {products.map((p) => (
                   <option key={p._id} value={p._id}>
@@ -112,9 +112,9 @@ export default function BrandProfileCard({
                 onClick={() => onEditProduct(selectedProduct)}
                 aria-label="Edit product"
                 title="Edit product"
-                className="flex-shrink-0 p-2.5 rounded-xl border border-[var(--color-border)] text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 transition"
+                className="flex-shrink-0 p-2.5 rounded-2xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 hover:text-zinc-950 transition shadow-xs cursor-pointer"
               >
-                <Pencil size={16} />
+                <Pencil size={15} />
               </button>
 
               <button
@@ -122,22 +122,22 @@ export default function BrandProfileCard({
                 disabled={removing}
                 aria-label="Remove product"
                 title="Remove product"
-                className="flex-shrink-0 p-2.5 rounded-xl border border-[var(--color-border)] text-[var(--color-danger)] hover:bg-[var(--color-danger)]/10 transition disabled:opacity-50"
+                className="flex-shrink-0 p-2.5 rounded-2xl border border-zinc-200 bg-white hover:bg-red-50 hover:border-red-200 text-zinc-400 hover:text-red-600 transition shadow-xs disabled:opacity-50 cursor-pointer"
               >
-                <Trash2 size={16} />
+                <Trash2 size={15} />
               </button>
             </div>
 
             {selectedProduct && (
-              <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] p-4 flex flex-col gap-3">
+              <div className="rounded-2xl border border-zinc-200/90 bg-zinc-50/60 p-4 sm:p-5 flex flex-col gap-3.5">
 
                 {/* Name + Price */}
                 <div className="flex items-start justify-between gap-3">
-                  <h5 className="font-bold text-[var(--color-text)] leading-snug">
+                  <h5 className="font-bold text-zinc-950 text-sm leading-snug">
                     {selectedProduct.productName}
                   </h5>
                   {formattedPrice && (
-                    <span className="flex-shrink-0 text-sm font-bold text-white bg-[var(--color-primary)] px-2.5 py-1 rounded-full">
+                    <span className="flex-shrink-0 text-xs font-black text-white bg-zinc-950 px-3 py-1 rounded-full shadow-xs">
                       ₹{formattedPrice}
                     </span>
                   )}
@@ -145,7 +145,7 @@ export default function BrandProfileCard({
 
                 {/* Category */}
                 {selectedProduct.productCategory && (
-                  <span className="w-fit text-xs font-semibold px-2.5 py-1 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)]">
+                  <span className="w-fit text-xs font-semibold px-2.5 py-1 rounded-full bg-white border border-zinc-200 text-zinc-800">
                     {selectedProduct.productCategory}
                   </span>
                 )}
@@ -153,16 +153,16 @@ export default function BrandProfileCard({
                 {/* Description — bold label, bulleted points */}
                 {descriptionPoints.length > 0 && (
                   <div>
-                    <p className="text-sm font-bold text-[var(--color-text)] mb-1.5">
+                    <p className="text-xs font-bold text-zinc-950 mb-1.5 uppercase tracking-wider">
                       Description
                     </p>
                     <ul className="flex flex-col gap-1.5">
                       {descriptionPoints.map((point, i) => (
                         <li
                           key={i}
-                          className="flex items-start gap-2 text-sm text-[var(--color-text-light)] leading-relaxed"
+                          className="flex items-start gap-2 text-xs text-zinc-600 leading-relaxed font-medium"
                         >
-                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] flex-shrink-0" />
+                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-zinc-950 flex-shrink-0" />
                           <span>{point}</span>
                         </li>
                       ))}
@@ -171,13 +171,13 @@ export default function BrandProfileCard({
                 )}
 
                 {/* Target audience badges */}
-                <div className="flex flex-wrap gap-2 pt-1 border-t border-[var(--color-border)]/60 mt-1">
-                  <span className="flex items-center gap-1.5 text-xs font-medium text-[var(--color-text)] bg-[var(--color-surface)] border border-[var(--color-border)] px-2.5 py-1 rounded-full">
-                    <Users size={12} className="text-[var(--color-primary)]" />
+                <div className="flex flex-wrap gap-2 pt-2 border-t border-zinc-200/60 mt-1">
+                  <span className="flex items-center gap-1.5 text-xs font-medium text-zinc-700 bg-white border border-zinc-200 px-2.5 py-1 rounded-full">
+                    <Users size={12} className="text-zinc-900" />
                     {selectedProduct.targetGender || "All"}
                   </span>
-                  <span className="flex items-center gap-1.5 text-xs font-medium text-[var(--color-text)] bg-[var(--color-surface)] border border-[var(--color-border)] px-2.5 py-1 rounded-full">
-                    <Calendar size={12} className="text-[var(--color-primary)]" />
+                  <span className="flex items-center gap-1.5 text-xs font-medium text-zinc-700 bg-white border border-zinc-200 px-2.5 py-1 rounded-full">
+                    <Calendar size={12} className="text-zinc-900" />
                     {formatAge(selectedProduct)}
                   </span>
                 </div>
