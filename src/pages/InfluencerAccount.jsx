@@ -7,14 +7,16 @@ import AccountSettingsTab from "../components/dashboard/influencer/AccountSettin
 import MatchProfileTab from "../components/dashboard/influencer/matchProfileTab";
 import ReviewsTab from "../components/dashboard/influencer/reviewsTab";
 import PortfolioTab from "../components/dashboard/influencer/PortFolioTab";
+import PackagesTab from "../components/dashboard/influencer/PackagesTab";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../config/api";
 
 const TABS = [
   { id: "account-settings", label: "Account Settings" },
   { id: "match-profile", label: "Match Profile" },
-  { id: "reviews", label: "Reviews" },
+  { id: "packages", label: "Packages & Rates" },
   { id: "portfolio", label: "Portfolio" },
+  { id: "reviews", label: "Reviews" },
 ];
 
 export default function InfluencerAccount() {
@@ -116,9 +118,16 @@ export default function InfluencerAccount() {
             />
           )}
 
-          {activeTab === "reviews" && <ReviewsTab />}
+          {activeTab === "packages" && (
+            <PackagesTab 
+              profile={profile} 
+              onUpdated={setProfile} 
+            />
+          )}
 
           {activeTab === "portfolio" && <PortfolioTab />}
+
+          {activeTab === "reviews" && <ReviewsTab />}
         </>
       )}
     </InfluencerDashboardLayout>

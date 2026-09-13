@@ -87,6 +87,7 @@ const ETHNICITIES = [
   "Hispanic / Latino",
   "White / Caucasian",
   "Mixed / Other",
+  "Prefer not to say",
 ];
 
 const CONTENT_TYPES = [
@@ -458,7 +459,7 @@ export default function CreatorOnboarding() {
         }
       }
     } catch (err) {
-      alert("Failed to upload media. Ensure backend upload server is running.");
+      alert("Failed to upload media. Please try again.");
     } finally {
       setUploadingMedia(false);
     }
@@ -487,11 +488,20 @@ export default function CreatorOnboarding() {
     if (selectedNiches.length === 0) errs.niches = true;
     if (languages.length === 0) errs.languages = true;
     if (!gender) errs.gender = true;
+    if (!ethnicity) errs.ethnicity = true;
+    if (!dob) errs.dob = true;
     if (portfolioItems.length === 0) errs.portfolio = true;
+
+    const locParts = locationStr.split(",").map((s) => s.trim()).filter(Boolean);
+    const city = locParts[0] || "";
+    const state = locParts[1] || "";
+    const country = locParts[2] || locParts[1] || "";
+
+    if (!city) errs.location = true;
 
     if (Object.keys(errs).length > 0) {
       setErrorFields(errs);
-      // Do not open any popup dialog; invalid fields are directly highlighted on the page with red borders
+      // Highlight invalid fields on page with red borders
       return;
     }
 
@@ -502,11 +512,6 @@ export default function CreatorOnboarding() {
       const nameParts = name.trim().split(" ");
       const firstName = nameParts[0] || "";
       const lastName = nameParts.slice(1).join(" ") || "";
-
-      const locParts = locationStr.split(",").map((s) => s.trim());
-      const city = locParts[0] || "";
-      const state = locParts[1] || "";
-      const country = locParts[2] || locParts[1] || "India";
 
       await axios.put(
         `${API_URL}/influencer/profile`,
@@ -816,7 +821,7 @@ export default function CreatorOnboarding() {
             <div className="bg-white border border-gray-200/90 rounded-3xl p-6 sm:p-7 shadow-sm">
               <h2 className="text-xl font-extrabold text-gray-950">One-click profile set up</h2>
               <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                Add your social profiles to get started — we'll auto-fill your profile from live Apify data.
+                Add your social profiles to get started — we'll automatically verify and sync your live metrics.
               </p>
 
               <div className="mt-6">
@@ -862,7 +867,7 @@ export default function CreatorOnboarding() {
                         <Instagram size={20} />
                       </div>
                       <span className="text-xs font-bold text-gray-800">Connect Instagram</span>
-                      <span className="text-[10px] text-gray-400">Apify auto-fetch</span>
+                      <span className="text-[10px] text-emerald-600 font-semibold">Live verified sync</span>
                     </button>
                   )}
                 </div>
@@ -1318,7 +1323,7 @@ export default function CreatorOnboarding() {
                       <div className="p-3.5 rounded-2xl bg-purple-50/50 border border-purple-100/80 space-y-1.5">
                         <div className="flex items-center justify-between">
                           <label className="text-xs font-bold text-gray-800 flex items-center gap-1.5">
-                            <span>Date of birth</span>
+                            <span>Date of birth</span> <span className="text-red-500">*</span>
                           </label>
                           {dob && (
                             <span className="text-[10px] font-extrabold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">
@@ -1448,12 +1453,20 @@ export default function CreatorOnboarding() {
                     {/* Ethnicity */}
                     <div>
                       <label className="text-xs font-bold text-gray-800 block mb-1.5">
-                        Ethnicity
+                        Ethnicity <span className="text-red-500">*</span>
                       </label>
                       <select
                         value={ethnicity}
-                        onChange={(e) => setEthnicity(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-900 focus:outline-none focus:ring-1 focus:ring-black bg-white"
+                        onFocus={() => clearErrorField("ethnicity")}
+                        onChange={(e) => {
+                          setEthnicity(e.target.value);
+                          clearErrorField("ethnicity");
+                        }}
+                        className={`w-full px-4 py-2.5 rounded-xl border text-xs font-semibold text-gray-900 focus:outline-none focus:ring-1 focus:ring-black bg-white transition ${
+                          errorFields.ethnicity
+                            ? "border-2 border-red-500 ring-4 ring-red-100 bg-red-50/10"
+                            : "border-gray-200"
+                        }`}
                       >
                         <option value="">Select ethnicity</option>
                         {ETHNICITIES.map((eth) => (
@@ -1631,10 +1644,6 @@ export default function CreatorOnboarding() {
                               className="w-full pl-9 pr-4 py-3 text-sm font-bold text-gray-900 focus:outline-none bg-transparent"
                             />
                           </div>
-
-                          <p className="text-xs font-semibold text-emerald-600 mt-2">
-                            You keep ${keepAmount} after Influenza's 15% fee.
-                          </p>
                         </div>
 
                         {/* Row 4: Description (optional) */}
@@ -2034,7 +2043,7 @@ export default function CreatorOnboarding() {
                   disabled={connectingInstagram}
                   className="px-6 py-2.5 rounded-xl bg-black hover:bg-gray-800 text-white text-xs font-bold shadow-md disabled:opacity-50"
                 >
-                  {connectingInstagram ? "Fetching from Apify..." : "Add to Profile"}
+                  {connectingInstagram ? "Syncing live profile..." : "Add to Profile"}
                 </button>
               </div>
             </form>

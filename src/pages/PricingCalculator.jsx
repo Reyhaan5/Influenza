@@ -161,7 +161,7 @@ export default function PricingCalculator() {
               <button
                 type="submit"
                 disabled={searching}
-                className="w-full sm:w-auto px-5 sm:px-6 py-2.5 rounded-xl sm:rounded-lg bg-black text-white text-xs sm:text-sm font-bold transition hover:bg-zinc-800 disabled:opacity-50 flex items-center justify-center gap-2 flex-shrink-0"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs sm:text-sm font-bold shadow-sm transition active:scale-95 disabled:opacity-50 flex-shrink-0 cursor-pointer"
               >
                 {searching ? <RefreshCw size={14} className="animate-spin" /> : "Check profile"}
               </button>

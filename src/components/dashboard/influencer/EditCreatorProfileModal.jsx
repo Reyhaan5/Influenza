@@ -43,7 +43,7 @@ export default function EditCreatorProfileModal({ profile, onClose, onSaved }) {
 
   const [city, setCity] = useState(address.city || "");
   const [state, setState] = useState(address.state || "");
-  const [country, setCountry] = useState(address.country || "India");
+  const [country, setCountry] = useState(address.country || "");
 
   // Calculate 18 years max date
   const eighteenYearsAgo = new Date();

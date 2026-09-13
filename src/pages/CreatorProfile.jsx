@@ -18,6 +18,7 @@ import {
   X,
   ExternalLink,
   ShieldCheck,
+  ArrowLeft,
 } from "lucide-react";
 import axios from "axios";
 
@@ -90,6 +91,45 @@ export default function CreatorProfile() {
         .catch(() => {});
     }
   }, [user]);
+
+  // Check saved status
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token || !data?.creator?.id) return;
+
+    axios
+      .get(`${API_URL}/brand/saved-creators/ids`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        const ids = new Set(res.data.savedIds || []);
+        if (ids.has(String(data.creator.id))) {
+          setSaved(true);
+        }
+      })
+      .catch(() => {});
+  }, [data?.creator?.id]);
+
+  const handleToggleSave = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please log in to save creators to your lists.");
+      return;
+    }
+    const creatorId = data?.creator?.id;
+    if (!creatorId) return;
+
+    try {
+      setSaved((prev) => !prev);
+      await axios.post(
+        `${API_URL}/brand/saved-creators/${creatorId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (err) {
+      console.error("Error saving creator:", err);
+    }
+  };
 
   const handleShare = () => {
     if (navigator.share) {
@@ -179,29 +219,39 @@ export default function CreatorProfile() {
   const { creator, packages = [], portfolio = [], reviews = [], stats = {} } = data;
 
   const selectedPackage =
-    packages.find((p) => p.id === selectedPackageId) || packages[0] || {
-      name: "Standard UGC Package",
-      price: 119,
-      description: "Custom UGC deliverables tailored for your campaign.",
-    };
+    packages.find((p) => p.id === selectedPackageId) || packages[0] || null;
 
   // Featured header photos (up to 3)
   const headerPhotos = portfolio.slice(0, 3);
-  const fallbackPhotos = [
-    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=800&auto=format&fit=crop&q=80",
-  ];
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col font-sans text-gray-900">
       <Navbar />
 
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-28 pb-20">
+        {/* Back navigation & Breadcrumb */}
+        <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 mb-4">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-800 transition font-bold cursor-pointer shadow-xs"
+            title="Go back"
+          >
+            <ArrowLeft size={13} />
+            <span>Back</span>
+          </button>
+          <span className="text-gray-300">/</span>
+          <Link to="/creator-discovery" className="hover:text-gray-900 transition">
+            Creators
+          </Link>
+          <span className="text-gray-300">/</span>
+          <span className="text-gray-900 font-bold">@{creator.handle || "profile"}</span>
+        </div>
+
         {/* Top Header Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
           <h1 className="text-xl sm:text-2xl font-extrabold text-gray-950">
-            {creator.headline || `${creator.categories?.[0] || "UGC"} Content Creator`}
+            {creator.headline || (creator.categories?.[0] ? `${creator.categories[0]} Content Creator` : `${creator.displayName}'s Profile`)}
           </h1>
 
           <div className="flex items-center gap-2.5">
@@ -216,7 +266,7 @@ export default function CreatorProfile() {
 
             <button
               type="button"
-              onClick={() => setSaved((s) => !s)}
+              onClick={handleToggleSave}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-gray-200 text-xs font-semibold transition ${
                 saved ? "text-[#FA2B56] border-[#FA2B56]/30 bg-pink-50/50" : "text-gray-700 hover:bg-gray-50"
               }`}
@@ -350,16 +400,18 @@ export default function CreatorProfile() {
                       className="flex items-center gap-1 text-xs font-bold text-gray-700 hover:text-black ml-2"
                     >
                       <Star size={13} className="fill-[#F59E0B] text-[#F59E0B]" />
-                      <span>{stats.rating > 0 ? stats.rating.toFixed(1) : "5.0"}</span>
+                      <span>{reviews.length > 0 && stats.rating > 0 ? stats.rating.toFixed(1) : "New"}</span>
                       <span className="underline font-semibold text-gray-500">
                         ({reviews.length} {reviews.length === 1 ? "Review" : "Reviews"})
                       </span>
                     </button>
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
-                    <MapPin size={12} className="text-gray-400" />
-                    {creator.locality}
-                  </p>
+                  {creator.locality && (
+                    <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
+                      <MapPin size={12} className="text-gray-400" />
+                      {creator.locality}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -372,7 +424,7 @@ export default function CreatorProfile() {
                       className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200"
                     >
                       <span className="capitalize">{acc.platform}</span>:{" "}
-                      <span className="font-bold text-gray-900">{acc.followers?.toLocaleString() || "1k+"}</span> Followers
+                      <span className="font-bold text-gray-900">{acc.followers?.toLocaleString() || "0"}</span> Followers
                     </span>
                   ))
                 ) : (
@@ -383,9 +435,11 @@ export default function CreatorProfile() {
               </div>
 
               {/* Bio Paragraph */}
-              <p className="text-sm text-gray-700 leading-relaxed pt-2">
-                {creator.bio}
-              </p>
+              {creator.bio && (
+                <p className="text-sm text-gray-700 leading-relaxed pt-2">
+                  {creator.bio}
+                </p>
+              )}
 
               {creator.passions && (
                 <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 text-xs text-gray-600">
@@ -402,68 +456,77 @@ export default function CreatorProfile() {
               <h2 className="text-lg font-extrabold text-gray-950 mb-4">Packages</h2>
 
               <div className="space-y-3">
-                {packages.map((pkg) => {
-                  const isSelected = selectedPackageId === pkg.id;
-                  const isExpanded = expandedPackageId === pkg.id;
+                {packages.length > 0 ? (
+                  packages.map((pkg) => {
+                    const isSelected = selectedPackageId === pkg.id;
+                    const isExpanded = expandedPackageId === pkg.id;
 
-                  return (
-                    <div
-                      key={pkg.id}
-                      onClick={() => setSelectedPackageId(pkg.id)}
-                      className={`rounded-2xl border p-4 transition cursor-pointer ${
-                        isSelected
-                          ? "border-gray-900 bg-white shadow-sm ring-1 ring-gray-900"
-                          : "border-gray-200 bg-white hover:border-gray-300"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="radio"
-                            name="package-selector"
-                            checked={isSelected}
-                            onChange={() => setSelectedPackageId(pkg.id)}
-                            className="w-4 h-4 text-black focus:ring-black accent-black cursor-pointer"
-                          />
-                          <div>
-                            <p className="font-bold text-sm text-gray-950 flex items-center gap-2">
-                              {pkg.name}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                              {pkg.description}
-                            </p>
+                    return (
+                      <div
+                        key={pkg.id}
+                        onClick={() => setSelectedPackageId(pkg.id)}
+                        className={`rounded-2xl border p-4 transition cursor-pointer ${
+                          isSelected
+                            ? "border-gray-900 bg-white shadow-sm ring-1 ring-gray-900"
+                            : "border-gray-200 bg-white hover:border-gray-300"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="radio"
+                              name="package-selector"
+                              checked={isSelected}
+                              onChange={() => setSelectedPackageId(pkg.id)}
+                              className="w-4 h-4 text-black focus:ring-black accent-black cursor-pointer"
+                            />
+                            <div>
+                              <p className="font-bold text-sm text-gray-950 flex items-center gap-2">
+                                {pkg.name}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                                {pkg.description}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="text-right flex-shrink-0">
+                            <span className="text-base font-extrabold text-gray-950">
+                              ${Number(pkg.price || 0).toLocaleString()}
+                            </span>
                           </div>
                         </div>
 
-                        <div className="text-right flex-shrink-0">
-                          <span className="text-base font-extrabold text-gray-950">
-                            ${Number(pkg.price || 0).toLocaleString()}
-                          </span>
+                        {/* Expandable Details */}
+                        <div className="mt-2 pl-7 flex items-center justify-between">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedPackageId(isExpanded ? null : pkg.id);
+                            }}
+                            className="text-[11px] font-bold text-gray-600 hover:text-black underline flex items-center gap-1"
+                          >
+                            {isExpanded ? "See Less" : "See More"}
+                          </button>
                         </div>
-                      </div>
 
-                      {/* Expandable Details */}
-                      <div className="mt-2 pl-7 flex items-center justify-between">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setExpandedPackageId(isExpanded ? null : pkg.id);
-                          }}
-                          className="text-[11px] font-bold text-gray-600 hover:text-black underline flex items-center gap-1"
-                        >
-                          {isExpanded ? "See Less" : "See More"}
-                        </button>
+                        {isExpanded && (
+                          <div className="mt-3 pl-7 pt-3 border-t border-gray-100 text-xs text-gray-600 leading-relaxed animate-fadeIn">
+                            {pkg.fullDetails || pkg.description}
+                          </div>
+                        )}
                       </div>
-
-                      {isExpanded && (
-                        <div className="mt-3 pl-7 pt-3 border-t border-gray-100 text-xs text-gray-600 leading-relaxed animate-fadeIn">
-                          {pkg.fullDetails || pkg.description}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                ) : (
+                  <div className="p-5 rounded-2xl border border-dashed border-gray-300 bg-gray-50/70 text-center">
+                    <p className="text-xs font-bold text-gray-700">No fixed packages published yet</p>
+                    <p className="text-[11px] text-gray-500 mt-1">
+                      This creator accepts customized deliverables. Propose your budget and requirements below.
+                    </p>
+                  </div>
+                )}
 
                 {/* Negotiate a Package Accordion */}
                 <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden transition">
@@ -475,7 +538,9 @@ export default function CreatorProfile() {
                     <div className="flex items-center gap-3">
                       <MessageCircle size={18} className="text-gray-600" />
                       <div>
-                        <p className="font-bold text-sm text-gray-950">Negotiate a Package</p>
+                        <p className="font-bold text-sm text-gray-950">
+                          {packages.length === 0 ? "Propose a Custom Offer" : "Negotiate a Package"}
+                        </p>
                         <p className="text-xs text-gray-500">
                           Tailor a collaboration to your needs: propose custom terms, pricing, or requirements.
                         </p>
@@ -558,15 +623,17 @@ export default function CreatorProfile() {
                       <p className="text-[11px] text-gray-400 mt-0.5">Followers</p>
                     </div>
                   ))}
-                  <div className="p-4 bg-white border border-gray-200 rounded-2xl">
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                      Avg Response
-                    </p>
-                    <p className="text-xl font-extrabold text-gray-950 mt-1">
-                      {stats.responseTimeHours || 24}h
-                    </p>
-                    <p className="text-[11px] text-gray-400 mt-0.5">Response Time</p>
-                  </div>
+                  {stats.responseTimeHours ? (
+                    <div className="p-4 bg-white border border-gray-200 rounded-2xl">
+                      <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                        Avg Response
+                      </p>
+                      <p className="text-xl font-extrabold text-gray-950 mt-1">
+                        {stats.responseTimeHours}h
+                      </p>
+                      <p className="text-[11px] text-gray-400 mt-0.5">Response Time</p>
+                    </div>
+                  ) : null}
                 </div>
               ) : (
                 <div className="bg-gray-100 rounded-2xl p-4 text-center text-xs text-gray-500 font-medium">
@@ -608,8 +675,7 @@ export default function CreatorProfile() {
                         alt={item.caption || "Portfolio item"}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = fallbackPhotos[0];
+                          e.target.style.display = 'none';
                         }}
                       />
                       {item.mediaType === "video" && (
@@ -644,7 +710,7 @@ export default function CreatorProfile() {
 
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-bold text-gray-600">
-                    {stats.rating > 0 ? `${stats.rating.toFixed(1)} / 5.0` : "5.0 Rating"}
+                    {reviews.length > 0 && stats.rating > 0 ? `${stats.rating.toFixed(1)} / 5.0` : "No reviews yet"}
                   </span>
                   <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-700">
                     {reviewsOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -704,60 +770,98 @@ export default function CreatorProfile() {
 
           {/* Right Column (Sticky Checkout / Request Card) */}
           <div className="lg:col-span-4 sticky top-28 space-y-4">
-            <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm">
-              <div className="flex items-baseline justify-between mb-4">
-                <span className="text-3xl font-extrabold text-gray-950">
-                  ${Number(selectedPackage.price || 0).toLocaleString()}
-                </span>
-                <span className="text-xs font-semibold text-gray-400">USD</span>
-              </div>
+            {packages.length > 0 && selectedPackage ? (
+              <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm">
+                <div className="flex items-baseline justify-between mb-4">
+                  <span className="text-3xl font-extrabold text-gray-950">
+                    ${Number(selectedPackage.price || 0).toLocaleString()}
+                  </span>
+                  <span className="text-xs font-semibold text-gray-400">USD</span>
+                </div>
 
-              {/* Package Dropdown Selector */}
-              <div className="mb-4">
-                <select
-                  value={selectedPackageId}
-                  onChange={(e) => setSelectedPackageId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-black cursor-pointer"
+                {/* Package Dropdown Selector */}
+                <div className="mb-4">
+                  <select
+                    value={selectedPackageId}
+                    onChange={(e) => setSelectedPackageId(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-black cursor-pointer"
+                  >
+                    {packages.map((pkg) => (
+                      <option key={pkg.id} value={pkg.id}>
+                        {pkg.name} (${Number(pkg.price || 0).toLocaleString()})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Selected package short description */}
+                {selectedPackage.description && (
+                  <p className="text-xs text-gray-500 leading-relaxed mb-6">
+                    {selectedPackage.description}
+                  </p>
+                )}
+
+                {/* Add to Cart / Invite to Campaign Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowInviteModal(true)}
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#FA2B56] to-[#E0244B] hover:opacity-95 text-white font-bold text-sm shadow-md transition active:scale-98"
                 >
-                  {packages.map((pkg) => (
-                    <option key={pkg.id} value={pkg.id}>
-                      {pkg.name} (${Number(pkg.price || 0).toLocaleString()})
-                    </option>
-                  ))}
-                </select>
+                  Add to Cart / Invite
+                </button>
+
+                <div className="text-center my-3 text-xs text-gray-400 font-medium">
+                  or
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setNegotiateOpen(true)}
+                  className="w-full py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-800 font-bold text-xs transition"
+                >
+                  Negotiate a Package
+                </button>
+
+                <div className="mt-5 pt-4 border-t border-gray-100 flex items-center justify-center gap-1.5 text-[11px] text-gray-500 font-semibold cursor-pointer hover:text-black">
+                  <HelpCircle size={13} />
+                  <span>How does it work?</span>
+                </div>
               </div>
+            ) : (
+              <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm">
+                <div className="mb-5">
+                  <h3 className="text-base font-extrabold text-gray-950">Direct Collaboration</h3>
+                  <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+                    This creator accepts direct campaign proposals and customized deliverables.
+                  </p>
+                </div>
 
-              {/* Selected package short description */}
-              <p className="text-xs text-gray-500 leading-relaxed mb-6">
-                {selectedPackage.description}
-              </p>
+                <button
+                  type="button"
+                  onClick={() => setShowInviteModal(true)}
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#FA2B56] to-[#E0244B] hover:opacity-95 text-white font-bold text-sm shadow-md transition active:scale-98"
+                >
+                  Invite to Campaign
+                </button>
 
-              {/* Add to Cart / Invite to Campaign Button */}
-              <button
-                type="button"
-                onClick={() => setShowInviteModal(true)}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#FA2B56] to-[#E0244B] hover:opacity-95 text-white font-bold text-sm shadow-md transition active:scale-98"
-              >
-                Add to Cart / Invite
-              </button>
+                <div className="text-center my-3 text-xs text-gray-400 font-medium">
+                  or
+                </div>
 
-              <div className="text-center my-3 text-xs text-gray-400 font-medium">
-                or
+                <button
+                  type="button"
+                  onClick={() => setNegotiateOpen(true)}
+                  className="w-full py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-800 font-bold text-xs transition"
+                >
+                  Propose Custom Offer
+                </button>
+
+                <div className="mt-5 pt-4 border-t border-gray-100 flex items-center justify-center gap-1.5 text-[11px] text-gray-500 font-semibold cursor-pointer hover:text-black">
+                  <HelpCircle size={13} />
+                  <span>How does it work?</span>
+                </div>
               </div>
-
-              <button
-                type="button"
-                onClick={() => setNegotiateOpen(true)}
-                className="w-full py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-800 font-bold text-xs transition"
-              >
-                Negotiate a Package
-              </button>
-
-              <div className="mt-5 pt-4 border-t border-gray-100 flex items-center justify-center gap-1.5 text-[11px] text-gray-500 font-semibold cursor-pointer hover:text-black">
-                <HelpCircle size={13} />
-                <span>How does it work?</span>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </main>

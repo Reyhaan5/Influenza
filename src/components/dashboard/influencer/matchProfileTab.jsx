@@ -9,7 +9,7 @@ const PAYMENT_OPTIONS = [
   {
     id: "gifted",
     title: "Gifted",
-    desc: "You'll work with brands on just a gifted product and no payments. Social Cat is mainly a gifted influencer platform and we've only recently started testing paid and affiliate options.",
+    desc: "Collaborate with brands on gifted product campaigns without upfront fixed cash fees.",
   },
   {
     id: "paid",
@@ -43,7 +43,7 @@ function SectionLayout({ title, description, children, onSave, saving }) {
               type="button"
               onClick={onSave}
               disabled={saving}
-              className="bg-black hover:bg-black/80 text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 disabled:opacity-50 cursor-pointer"
             >
               {saving ? "Saving..." : "Save"}
             </button>
@@ -58,7 +58,7 @@ export default function MatchProfileTab({ profile, onUpdated }) {
   const [data, setData] = useState({
     campaignActive: profile?.matchProfile?.campaignActive ?? true,
     invitationsActive: profile?.matchProfile?.invitationsActive ?? true,
-    collaborationFormats: profile?.matchProfile?.collaborationFormats || ["Instagram Reels", "Instagram Stories", "Instagram Post"],
+    collaborationFormats: profile?.matchProfile?.collaborationFormats || [],
     paymentType: profile?.matchProfile?.paymentType || "gifted",
     minAskingPrice: profile?.matchProfile?.minAskingPrice ?? "",
     maxAskingPrice: profile?.matchProfile?.maxAskingPrice ?? "",
@@ -66,15 +66,15 @@ export default function MatchProfileTab({ profile, onUpdated }) {
     accountNiche:
       (Array.isArray(profile?.matchProfile?.niche) && profile.matchProfile.niche[0]) ||
       profile?.matchProfile?.accountNiche ||
-      "Lifestyle",
+      "",
     topics: profile?.matchProfile?.topics || [],
     leadTimeDays: profile?.matchProfile?.leadTimeDays ?? "",
-    preferredCompanies: profile?.matchProfile?.preferredCompanies || ["Software"],
-    audience: profile?.matchProfile?.audience || ["Men (25-44)"],
+    preferredCompanies: profile?.matchProfile?.preferredCompanies || [],
+    audience: profile?.matchProfile?.audience || [],
     followersLocations:
       profile?.matchProfile?.followersLocations ||
       profile?.matchProfile?.followersLocation ||
-      ["United States 🇺🇸"],
+      [],
   });
 
   // Sync state if profile prop updates after mounting
@@ -83,7 +83,7 @@ export default function MatchProfileTab({ profile, onUpdated }) {
       setData({
         campaignActive: profile.matchProfile.campaignActive ?? true,
         invitationsActive: profile.matchProfile.invitationsActive ?? true,
-        collaborationFormats: profile.matchProfile.collaborationFormats || ["Instagram Reels", "Instagram Stories", "Instagram Post"],
+        collaborationFormats: profile.matchProfile.collaborationFormats || [],
         paymentType: profile.matchProfile.paymentType || "gifted",
         minAskingPrice: profile.matchProfile.minAskingPrice ?? "",
         maxAskingPrice: profile.matchProfile.maxAskingPrice ?? "",
@@ -91,15 +91,15 @@ export default function MatchProfileTab({ profile, onUpdated }) {
         accountNiche:
           (Array.isArray(profile.matchProfile.niche) && profile.matchProfile.niche[0]) ||
           profile.matchProfile.accountNiche ||
-          "Lifestyle",
+          "",
         topics: profile.matchProfile.topics || [],
         leadTimeDays: profile.matchProfile.leadTimeDays ?? "",
-        preferredCompanies: profile.matchProfile.preferredCompanies || ["Software"],
-        audience: profile.matchProfile.audience || ["Men (25-44)"],
+        preferredCompanies: profile.matchProfile.preferredCompanies || [],
+        audience: profile.matchProfile.audience || [],
         followersLocations:
           profile.matchProfile.followersLocations ||
           profile.matchProfile.followersLocation ||
-          ["United States 🇺🇸"],
+          [],
       });
     }
   }, [profile]);

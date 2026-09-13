@@ -10,19 +10,20 @@ export default function PublicCreatorCard({ profile }) {
 
   return (
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 shadow-[var(--shadow-card)] flex flex-col gap-3">
-      <div className="flex items-center gap-3">
-        <Link to={`/creators/${profile.user?._id || profile._id || profile.handle}`} className="hover:opacity-80 transition">
-          <Avatar name={(profile.handle || profile.user?.name || "?").replace("@", "")} size={44} />
-        </Link>
+      <Link
+        to={`/creators/${profile.user?._id || profile._id || profile.handle}`}
+        className="flex items-center gap-3 group transition"
+      >
+        <Avatar name={(profile.handle || profile.user?.name || "?").replace("@", "")} size={44} />
         <div>
-          <Link to={`/creators/${profile.user?._id || profile._id || profile.handle}`} className="font-bold text-[var(--color-text)] hover:text-[var(--color-primary-hover)] transition">
+          <span className="font-bold text-[var(--color-text)] group-hover:text-[var(--color-primary-hover)] transition block">
             {profile.handle}
-          </Link>
+          </span>
           {profile.user?.name && (
             <p className="text-xs text-[var(--color-text-light)]">{profile.user.name}</p>
           )}
         </div>
-      </div>
+      </Link>
 
       {profile.categories?.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
