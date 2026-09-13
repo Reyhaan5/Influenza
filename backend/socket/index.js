@@ -4,6 +4,8 @@ import User from "../models/User.js";
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
 
+import { corsOptions } from "../config/cors.js";
+
 let io;
 
 // Lets REST controllers (e.g. deleteConversation) push realtime events
@@ -13,16 +15,8 @@ export function getIO() {
 }
 
 export function initSocket(httpServer) {
-  const allowedOrigins = [
-    process.env.CLIENT_URL,
-    "http://localhost:5173",
-  ].filter(Boolean);
-
   io = new Server(httpServer, {
-    cors: {
-      origin: allowedOrigins,
-      credentials: true,
-    },
+    cors: corsOptions,
   });
 
   // Auth: every socket connection must present the same JWT used for REST calls

@@ -29,20 +29,21 @@ import "./models/Conversation.js";
 import "./models/Message.js";
 import "./models/GalleryContent.js";
 
+import { corsOptions } from "./config/cors.js";
+
 dotenv.config(); // loads variables from .env into process.env
 connectDB(); // connect to MongoDB Atlas (see config/db.js)
 
 const app = express();
 
+// Trust reverse proxy (needed for Render / Heroku / Vercel to correctly identify client IP)
+app.set("trust proxy", 1);
+
 // ---------- Security Middleware ----------
 
-// CORS — only allow requests from the frontend origin
-const allowedOrigins = [
-  process.env.CLIENT_URL,
-  "http://localhost:5173",
-].filter(Boolean);
-
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+// CORS — support dynamic Vercel preview URLs, localhost, and CLIENT_URL
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 // Global rate limiter — 100 requests per 15 minutes per IP
 const globalLimiter = rateLimit({
