@@ -91,8 +91,10 @@ export const lookupInstagramHandle = async (req, res) => {
 
         const fullName = profile.fullName ?? profile.name ?? rawHandle;
         const rawPic = profile.profilePicUrlHD ?? profile.profilePicUrl ?? "";
+        const host = req.get("host");
+        const protocol = req.protocol;
         const profilePicUrl = rawPic
-            ? `http://localhost:5000/api/public/proxy-image?url=${encodeURIComponent(rawPic)}`
+            ? `${protocol}://${host}/api/public/proxy-image?url=${encodeURIComponent(rawPic)}`
             : "";
         const verified = Boolean(profile.verified ?? profile.isVerified);
         const biography = profile.biography ?? profile.bio ?? "";

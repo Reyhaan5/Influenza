@@ -1,10 +1,13 @@
 import { ApifyClient } from "apify-client";
 
 export async function scrapeInstagram(username) {
+    const token = process.env.APIFY_TOKEN;
+    if (!token) {
+        throw new Error("Apify token is missing. Please add APIFY_TOKEN to your environment variables on Render.");
+    }
+
     try {
-        const client = new ApifyClient({
-            token: process.env.APIFY_TOKEN,
-        });
+        const client = new ApifyClient({ token });
 
         const cleanUsername = username.trim().replace(/^@/, "");
         console.log(`[Apify Scraper] Scraping live Instagram profile for: ${cleanUsername}`);
@@ -31,6 +34,9 @@ export async function scrapeInstagram(username) {
     } catch (err) {
         console.error("===== APIFY SCRAPER ERROR =====");
         console.error(err.message);
+        if (err.message && (err.message.includes("402") || err.message.includes("x402") || err.message.includes("payment"))) {
+            throw new Error("Apify API credits exhausted or invalid token. Please update your APIFY_TOKEN in Render.");
+        }
         throw err;
     }
 }
