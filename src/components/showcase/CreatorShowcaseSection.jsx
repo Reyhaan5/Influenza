@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { MessageSquare, User, Sparkles, Send, CheckCircle2, ChevronDown, Check, Flame, Award } from "lucide-react";
-import { FaTiktok, FaInstagram } from "react-icons/fa";
+import { FaInstagram } from "react-icons/fa";
 
 export const COUNTRIES = [
   { code: "ca", dialCode: "+1", name: "Canada" },
@@ -201,8 +201,8 @@ export default function CreatorShowcaseSection() {
                       alt="Creator Elena"
                       className="w-full h-full object-cover rounded-full ring-2 ring-pink-100"
                     />
-                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-black rounded-full flex items-center justify-center text-white text-[9px] shadow-xs">
-                      <FaTiktok />
+                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-tr from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white text-[9px] shadow-xs">
+                      <FaInstagram />
                     </div>
                   </div>
 
@@ -244,8 +244,8 @@ export default function CreatorShowcaseSection() {
                       alt="Creator Nourishment"
                       className="w-full h-full object-cover rounded-full ring-4 ring-pink-200"
                     />
-                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-black rounded-full flex items-center justify-center text-white text-[11px] shadow-sm">
-                      <FaTiktok />
+                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-tr from-purple-600 to-pink-500 rounded-full flex items-center justify-center text-white text-[11px] shadow-sm">
+                      <FaInstagram />
                     </div>
                   </div>
 
@@ -353,8 +353,8 @@ export default function CreatorShowcaseSection() {
                     alt="Influencer 2"
                     className="w-7 h-7 rounded-full object-cover ring-2 ring-white shadow-xs"
                   />
-                  <div className="w-7 h-7 rounded-full bg-black flex items-center justify-center text-white text-[10px] ring-2 ring-white shadow-xs">
-                    <FaTiktok />
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-pink-500 to-rose-500 flex items-center justify-center text-white text-[10px] ring-2 ring-white shadow-xs">
+                    <FaInstagram />
                   </div>
                   <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-white text-[10px] ring-2 ring-white shadow-xs">
                     <FaInstagram />
@@ -414,7 +414,7 @@ export default function CreatorShowcaseSection() {
                         setIsLaunched(true);
                         setTimeout(() => setIsLaunched(false), 3000);
                       }}
-                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold text-white shadow-sm flex items-center gap-1.5 transition-all ${
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold text-white shadow-sm flex items-center gap-1.5 transition-all cursor-pointer ${
                         isLaunched
                           ? "bg-emerald-600"
                           : "bg-gradient-to-r from-[#FF006E] to-[#E11D48] hover:scale-105 active:scale-95"
@@ -455,7 +455,7 @@ export default function CreatorShowcaseSection() {
                       <span className="px-1.5 py-0.5 rounded-md bg-purple-100 text-purple-700 font-bold">
                         Brand name
                       </span>
-                      , an official Meta and TikTok Partner.
+                      , an official Brand Partner on Influenza.
                     </p>
                     <p className="hidden sm:block text-gray-500 text-[11px]">
                       We’ve been following your recent content and would love to partner up for our new product launch campaign...
