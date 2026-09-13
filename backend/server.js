@@ -23,6 +23,7 @@ import "./models/CollaborationRequest.js";
 import "./models/Collaboration.js";
 import "./models/ContentPost.js";
 import "./models/Review.js";
+import "./models/Brand.js";
 import "./models/Product.js";
 import "./models/Conversation.js";
 import "./models/Message.js";

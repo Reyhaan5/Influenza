@@ -10,7 +10,23 @@ const collaborationSchema = new mongoose.Schema(
     deliverablesTotal: { type: Number, default: 1 },
     deliverablesCompleted: { type: Number, default: 0 }, // incremented when a ContentPost is added
     paymentStatus: { type: String, enum: ["pending", "paid"], default: "pending" }, // manually toggled by brand for now
-    stage: { type: String, enum: ["in_progress", "completed"], default: "in_progress" },
+    stage: {
+      type: String,
+      enum: [
+        "application",
+        "content_creation",
+        "review",
+        "in_review",
+        "posting",
+        "ready_to_post",
+        "completed",
+        "in_progress",
+      ],
+      default: "content_creation",
+    },
+    brandEntity: { type: mongoose.Schema.Types.ObjectId, ref: "Brand" },
+    notes: { type: String, default: "" },
+    deadline: { type: Date },
   },
   { timestamps: true }
 );

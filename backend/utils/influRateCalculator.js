@@ -24,7 +24,8 @@ export const NICHE_MULTIPLIERS = {
 };
 
 export const CREATOR_TIERS = [
-  { name: "Nano", min: 0, max: 10000, baseRatePerFollower: 0.35 },
+  { name: "Starter", min: 0, max: 1000, baseRatePerFollower: 1.2 },
+  { name: "Nano", min: 1000, max: 10000, baseRatePerFollower: 0.35 },
   { name: "Micro", min: 10000, max: 50000, baseRatePerFollower: 0.28 },
   { name: "Mid", min: 50000, max: 200000, baseRatePerFollower: 0.22 },
   { name: "Macro", min: 200000, max: 500000, baseRatePerFollower: 0.16 },

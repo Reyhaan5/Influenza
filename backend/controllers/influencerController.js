@@ -2,6 +2,7 @@ import InfluencerProfile from "../models/InfluencerProfile.js";
 import Opportunity from "../models/Opportunity.js";
 import CollaborationRequest from "../models/CollaborationRequest.js";
 import RateCard from "../models/RateCard.js";
+import { scrapeInstagram } from "../services/instagram/apifyService.js";
 
 const MAX_CATEGORIES = 10;
 
@@ -177,26 +178,61 @@ export const updateMatchProfile = async (req, res) => {
 };
 
 // POST /api/influencer/social-accounts (protected)
-// Manual entry for now — no OAuth verification yet.
-// Body: { platform, handle, followers }
+// Body: { platform, handle } -> auto-scrapes followers & verification
 export const addSocialAccount = async (req, res) => {
   try {
-    const { platform, handle, followers } = req.body;
+    const { platform = "Instagram", handle } = req.body;
 
-    if (!platform || !handle) {
-      return res.status(400).json({ message: "Platform and handle are required." });
+    if (!handle) {
+      return res.status(400).json({ message: "Social account handle is required." });
     }
 
-    const profile = await InfluencerProfile.findOneAndUpdate(
-      { user: req.user._id },
-      { $push: { socialAccounts: { platform, handle, followers: followers || 0, verified: false } } },
-      { new: true }
-    );
+    const cleanHandle = handle.replace(/^@+/, "").trim();
+    let followers = 0;
+    let verified = false;
 
+    // Live scrape via Apify if platform is Instagram
+    if (platform.toLowerCase() === "instagram") {
+      try {
+        const scraped = await scrapeInstagram(cleanHandle);
+        if (scraped) {
+          followers = scraped.followersCount ?? scraped.followers ?? 0;
+          verified = Boolean(scraped.verified ?? scraped.isVerified);
+        }
+      } catch (scrapeErr) {
+        console.warn("Apify auto-scrape on addSocialAccount note:", scrapeErr.message);
+      }
+    }
+
+    const profile = await InfluencerProfile.findOne({ user: req.user._id });
     if (!profile) {
       return res.status(404).json({ message: "Profile not found." });
     }
 
+    profile.handle = `@${cleanHandle}`;
+    if (followers > 0) {
+      profile.followers = followers;
+      if (profile.stats) profile.stats.followers = followers;
+    }
+
+    const existingIndex = profile.socialAccounts.findIndex(
+      (s) => s.platform.toLowerCase() === platform.toLowerCase()
+    );
+
+    if (existingIndex >= 0) {
+      profile.socialAccounts[existingIndex].handle = `@${cleanHandle}`;
+      profile.socialAccounts[existingIndex].followers = followers;
+      profile.socialAccounts[existingIndex].verified = verified;
+    } else {
+      profile.socialAccounts.push({
+        platform: "Instagram",
+        handle: `@${cleanHandle}`,
+        followers,
+        verified,
+      });
+    }
+
+    await profile.save();
     res.status(201).json(profile);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
@@ -238,11 +274,13 @@ export const disconnectInstagramAccount = async (req, res) => {
     // 1. Wipe all social accounts
     profile.socialAccounts = [];
 
-    // 2. Reset handle to a clean default
-    const defaultHandle = req.user?.name
-      ? `@${req.user.name.toLowerCase().replace(/[^a-z0-9_]/g, "")}`
-      : "@creator";
-    profile.handle = defaultHandle;
+    // 2. Clear handle & followers (do not synthesize a joined username)
+    profile.handle = "";
+    profile.followers = 0;
+    if (profile.stats) {
+      profile.stats.followers = 0;
+      profile.stats.engagementRate = 0;
+    }
 
     await profile.save();
 
