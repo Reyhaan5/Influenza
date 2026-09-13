@@ -5,7 +5,7 @@ import { LayoutDashboard, Megaphone, Search, Users, Send } from "lucide-react";
 const links = [
   { to: "/brand-dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/brand-dashboard/campaigns", label: "Campaigns", icon: Megaphone },
-  { to: "/brand-dashboard/search", label: "Search Creators", icon: Search },
+  { to: "/creator-discovery", label: "Search Creators", icon: Search },
   { to: "/collaboration-requests", label: "Requests", icon: Send },
   { to: "/brand-dashboard/collaborations", label: "Collaborations", icon: Users },
 ];
