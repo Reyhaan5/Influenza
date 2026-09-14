@@ -99,7 +99,7 @@ export default function BrandCreatorLists() {
           </div>
           <Link
             to="/creator-discovery"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer"
           >
             <Compass size={15} />
             <span>Discover more creators</span>
@@ -118,7 +118,7 @@ export default function BrandCreatorLists() {
               placeholder="Search saved creators by name, niche, location..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3.5 py-2 text-xs border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-[#c026d3] text-gray-800 placeholder-gray-400 transition"
+              className="w-full pl-9 pr-3.5 py-2 text-xs border border-gray-300 rounded-xl bg-white focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 text-gray-800 placeholder-gray-400 transition"
             />
           </div>
         </div>
@@ -131,7 +131,7 @@ export default function BrandCreatorLists() {
           </div>
         ) : filteredList.length === 0 ? (
           <div className="py-20 text-center flex flex-col items-center justify-center bg-white border border-dashed border-gray-200 rounded-3xl p-8">
-            <div className="w-16 h-16 rounded-full bg-fuchsia-50 flex items-center justify-center text-[#c026d3] mb-4">
+            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 mb-4">
               <Bookmark size={28} />
             </div>
             <h3 className="text-base font-bold text-gray-900 mb-1">No saved creators yet</h3>
@@ -140,7 +140,7 @@ export default function BrandCreatorLists() {
             </p>
             <Link
               to="/creator-discovery"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer"
             >
               <Compass size={15} />
               <span>Browse Creator Discovery</span>
@@ -173,7 +173,7 @@ export default function BrandCreatorLists() {
                         }}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-pink-100 via-purple-100 to-indigo-100 text-gray-700 font-bold text-2xl">
+                      <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-700 font-bold text-2xl">
                         {displayName[0]?.toUpperCase() || "C"}
                       </div>
                     )}
@@ -235,7 +235,7 @@ export default function BrandCreatorLists() {
                           onClick={() =>
                             navigate(`/messages?with=${creatorUserId}`)
                           }
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-[11px] font-bold shadow-sm transition active:scale-95 cursor-pointer"
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-[11px] font-bold shadow-xs transition active:scale-95 cursor-pointer"
                         >
                           <MessageSquare size={13} />
                           <span>Message</span>

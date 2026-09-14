@@ -122,14 +122,14 @@ export default function BrandOrganizationBrands() {
                 setEditingBrand(null);
                 setShowBrandModal(true);
               }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer"
             >
               <Plus size={14} />
               <span>Add Brand</span>
             </button>
             <button
               onClick={() => alert("Redirecting to subscription plans...")}
-              className="bg-[#c026d3] hover:bg-[#a21caf] text-white text-xs font-semibold px-5 py-2.5 rounded-xl shadow-xs transition-colors cursor-pointer"
+              className="bg-white hover:bg-gray-50 border border-gray-300 text-gray-800 text-xs font-bold px-5 py-2.5 rounded-xl shadow-xs transition-colors cursor-pointer"
             >
               Change the plan
             </button>
@@ -148,7 +148,7 @@ export default function BrandOrganizationBrands() {
               placeholder="Search by brand name"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3.5 py-2 text-xs border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-[#c026d3] text-gray-800 placeholder-gray-400 transition"
+              className="w-full pl-9 pr-3.5 py-2 text-xs border border-gray-300 rounded-xl bg-white focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 text-gray-800 placeholder-gray-400 transition"
             />
           </div>
 
@@ -156,7 +156,7 @@ export default function BrandOrganizationBrands() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="appearance-none bg-white border border-gray-200 rounded-full pl-4 pr-9 py-2 text-xs font-medium text-gray-700 hover:border-gray-300 focus:outline-none focus:border-[#c026d3] transition cursor-pointer"
+              className="appearance-none bg-white border border-gray-300 rounded-xl pl-4 pr-9 py-2 text-xs font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition cursor-pointer"
             >
               <option value="">Status</option>
               <option value="active">Active</option>
@@ -190,7 +190,7 @@ export default function BrandOrganizationBrands() {
                   setEditingBrand(null);
                   setShowBrandModal(true);
                 }}
-                className="bg-[#c026d3] hover:bg-[#a21caf] text-white text-xs font-semibold px-5 py-2.5 rounded-xl shadow-xs transition"
+                className="bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-xs transition"
               >
                 + Add your first brand
               </button>
@@ -291,11 +291,11 @@ export default function BrandOrganizationBrands() {
                               <Pencil size={14} />
                             </button>
 
-                            {/* Active Toggle Switch (matching magenta switch in screenshot) */}
+                            {/* Active Toggle Switch */}
                             <button
                               onClick={() => handleToggleStatus(b)}
                               className={`relative inline-flex h-5.5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                                isActive ? "bg-[#c026d3]" : "bg-gray-200"
+                                isActive ? "bg-zinc-900" : "bg-gray-200"
                               }`}
                               title={isActive ? "Disable brand" : "Enable brand"}
                             >
@@ -362,7 +362,7 @@ export default function BrandOrganizationBrands() {
                     }
                     target="_blank"
                     rel="noreferrer"
-                    className="text-[#c026d3] underline"
+                    className="text-zinc-900 font-bold underline"
                   >
                     {activeInfoBrand.websiteOrSocialLink || "N/A"}
                   </a>

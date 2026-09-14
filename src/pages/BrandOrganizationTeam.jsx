@@ -97,12 +97,12 @@ export default function BrandOrganizationTeam() {
   return (
     <BrandDashboardLayout>
       <div className="max-w-7xl mx-auto pb-12">
-        {/* Header matching Screenshot 3 */}
+        {/* Header */}
         <div className="flex items-center justify-between mb-1">
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Team</h1>
           <button
             onClick={() => setShowInviteModal(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer"
           >
             <Plus size={15} />
             <span>Invite new member</span>
@@ -147,7 +147,7 @@ export default function BrandOrganizationTeam() {
                         {/* Name Column with Avatar + Badges */}
                         <td className="py-4 px-6">
                           <div className="flex items-center gap-3.5">
-                            <div className="w-9 h-9 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-xs shrink-0 shadow-xs">
+                            <div className="w-9 h-9 rounded-full bg-zinc-900 text-white font-bold flex items-center justify-center text-xs shrink-0 shadow-xs">
                               {initials}
                             </div>
                             <div>
@@ -155,10 +155,10 @@ export default function BrandOrganizationTeam() {
                                 <span className="font-bold text-gray-900 text-xs">{m.name}</span>
                                 {m.isOwner && (
                                   <>
-                                    <span className="bg-pink-100 text-pink-700 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                                    <span className="bg-gray-100 text-gray-800 text-[10px] font-bold px-1.5 py-0.5 rounded">
                                       You
                                     </span>
-                                    <span className="bg-cyan-50 text-cyan-800 text-[10px] font-medium px-2 py-0.5 rounded border border-cyan-100">
+                                    <span className="bg-zinc-100 text-zinc-900 text-[10px] font-semibold px-2 py-0.5 rounded border border-gray-200">
                                       Organization owner
                                     </span>
                                   </>
@@ -210,7 +210,7 @@ export default function BrandOrganizationTeam() {
             <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
               <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-fuchsia-50 text-[#c026d3] flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-900 flex items-center justify-center">
                     <Mail size={16} />
                   </div>
                   <h3 className="font-bold text-gray-900 text-base">Invite team member</h3>
@@ -236,7 +236,7 @@ export default function BrandOrganizationTeam() {
                       setInviteForm({ ...inviteForm, email: e.target.value })
                     }
                     placeholder="colleague@example.com"
-                    className="w-full px-3.5 py-2.5 text-xs border border-gray-200 rounded-xl focus:outline-none focus:border-[#c026d3]"
+                    className="w-full px-3.5 py-2.5 text-xs border border-gray-300 rounded-xl focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
                   />
                 </div>
 
@@ -251,7 +251,7 @@ export default function BrandOrganizationTeam() {
                       setInviteForm({ ...inviteForm, name: e.target.value })
                     }
                     placeholder="John Doe"
-                    className="w-full px-3.5 py-2.5 text-xs border border-gray-200 rounded-xl focus:outline-none focus:border-[#c026d3]"
+                    className="w-full px-3.5 py-2.5 text-xs border border-gray-300 rounded-xl focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
                   />
                 </div>
 
@@ -264,7 +264,7 @@ export default function BrandOrganizationTeam() {
                     onChange={(e) =>
                       setInviteForm({ ...inviteForm, access: e.target.value })
                     }
-                    className="w-full px-3.5 py-2.5 text-xs border border-gray-200 rounded-xl focus:outline-none focus:border-[#c026d3] bg-white cursor-pointer"
+                    className="w-full px-3.5 py-2.5 text-xs border border-gray-300 rounded-xl focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 bg-white cursor-pointer"
                   >
                     <option value="Full Access">Full Access (Manage campaigns, brands & team)</option>
                     <option value="Campaign Manager">Campaign Manager (Create and run campaigns)</option>
@@ -284,7 +284,7 @@ export default function BrandOrganizationTeam() {
                   <button
                     type="submit"
                     disabled={inviting || !inviteForm.email}
-                    className="px-5 py-2 bg-[#c026d3] hover:bg-[#a21caf] text-white text-xs font-semibold rounded-xl shadow-xs transition disabled:opacity-50 cursor-pointer"
+                    className="px-5 py-2 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold rounded-xl shadow-xs transition disabled:opacity-50 cursor-pointer"
                   >
                     {inviting ? "Inviting..." : "Send invite"}
                   </button>

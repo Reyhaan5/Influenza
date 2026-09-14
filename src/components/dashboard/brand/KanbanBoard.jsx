@@ -57,6 +57,8 @@ const COLUMNS = [
 export default function KanbanBoard({
   collaborations = [],
   onStageChange,
+  onOpenWorkflow,
+  onOpenReview,
 }) {
   const [draggingCollab, setDraggingCollab] = useState(null);
   const [dragOverColumn, setDragOverColumn] = useState(null);
@@ -174,6 +176,8 @@ export default function KanbanBoard({
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
                     onStageChange={onStageChange}
+                    onOpenWorkflow={onOpenWorkflow}
+                    onOpenReview={onOpenReview}
                     isDragging={draggingCollab?._id === collab._id}
                   />
                 ))

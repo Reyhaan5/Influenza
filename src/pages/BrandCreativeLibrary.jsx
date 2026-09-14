@@ -112,7 +112,7 @@ export default function BrandCreativeLibrary() {
           </div>
           <Link
             to="/brand-dashboard/campaigns"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer"
           >
             <Plus size={15} />
             <span>New Campaign</span>
@@ -131,7 +131,7 @@ export default function BrandCreativeLibrary() {
               placeholder="Search creatives by title, campaign, brand..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3.5 py-2 text-xs border border-gray-200 rounded-xl bg-white focus:outline-none focus:border-[#c026d3] text-gray-800 placeholder-gray-400 transition"
+              className="w-full pl-9 pr-3.5 py-2 text-xs border border-gray-300 rounded-xl bg-white focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 text-gray-800 placeholder-gray-400 transition"
             />
           </div>
 
@@ -140,7 +140,7 @@ export default function BrandCreativeLibrary() {
             <select
               value={selectedBrand}
               onChange={(e) => setSelectedBrand(e.target.value)}
-              className="appearance-none bg-white border border-gray-200 rounded-full pl-4 pr-9 py-2 text-xs font-medium text-gray-700 hover:border-gray-300 focus:outline-none focus:border-[#c026d3] transition cursor-pointer"
+              className="appearance-none bg-white border border-gray-300 rounded-xl pl-4 pr-9 py-2 text-xs font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition cursor-pointer"
             >
               <option value="">All Brands</option>
               {brands.map((b) => (
@@ -160,7 +160,7 @@ export default function BrandCreativeLibrary() {
             <select
               value={selectedCampaign}
               onChange={(e) => setSelectedCampaign(e.target.value)}
-              className="appearance-none bg-white border border-gray-200 rounded-full pl-4 pr-9 py-2 text-xs font-medium text-gray-700 hover:border-gray-300 focus:outline-none focus:border-[#c026d3] transition cursor-pointer"
+              className="appearance-none bg-white border border-gray-300 rounded-xl pl-4 pr-9 py-2 text-xs font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition cursor-pointer"
             >
               <option value="">All Campaigns</option>
               {campaigns.map((c) => (
@@ -180,7 +180,7 @@ export default function BrandCreativeLibrary() {
             <select
               value={selectedMediaType}
               onChange={(e) => setSelectedMediaType(e.target.value)}
-              className="appearance-none bg-white border border-gray-200 rounded-full pl-4 pr-9 py-2 text-xs font-medium text-gray-700 hover:border-gray-300 focus:outline-none focus:border-[#c026d3] transition cursor-pointer"
+              className="appearance-none bg-white border border-gray-300 rounded-xl pl-4 pr-9 py-2 text-xs font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition cursor-pointer"
             >
               <option value="">All Types</option>
               <option value="Video">Video</option>
@@ -200,17 +200,14 @@ export default function BrandCreativeLibrary() {
             <span>Loading creative library...</span>
           </div>
         ) : filteredCreatives.length === 0 ? (
-          <div className="py-20 text-center flex flex-col items-center justify-center bg-white border border-dashed border-gray-200 rounded-3xl p-8">
-            <div className="w-16 h-16 rounded-full bg-fuchsia-50 flex items-center justify-center text-[#c026d3] mb-4">
-              <Layers size={28} />
-            </div>
-            <h3 className="text-base font-bold text-gray-900 mb-1">No creatives in library yet</h3>
+          <div className="py-16 text-center flex flex-col items-center justify-center bg-white border border-dashed border-gray-200 rounded-3xl p-8">
+            <h3 className="text-base font-bold text-gray-900 mb-1">No creatives in this vault yet</h3>
             <p className="text-xs text-gray-500 max-w-sm mb-6">
               When creators produce and submit UGC videos or photos for your campaigns, they will be organized and available for download here.
             </p>
             <Link
               to="/brand-dashboard/campaigns"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer"
             >
               <Plus size={15} />
               <span>Launch a Campaign</span>
@@ -266,7 +263,7 @@ export default function BrandCreativeLibrary() {
                   <div className="p-4 flex-1 flex flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between text-[11px] text-gray-500 mb-1">
-                        <span className="font-semibold text-[#c026d3]">{item.brandName}</span>
+                        <span className="font-semibold text-zinc-900">{item.brandName}</span>
                         <span>{item.mediaType}</span>
                       </div>
                       <h3 className="font-bold text-gray-900 text-xs truncate mb-1">
@@ -283,7 +280,7 @@ export default function BrandCreativeLibrary() {
                       </span>
                       <button
                         onClick={() => setPreviewCreative(item)}
-                        className="inline-flex items-center gap-1 text-[#c026d3] hover:text-[#a21caf] font-semibold text-[11px] cursor-pointer"
+                        className="inline-flex items-center gap-1 text-zinc-900 hover:text-black font-semibold text-[11px] cursor-pointer"
                       >
                         <span>Preview</span>
                         <Eye size={12} />
@@ -328,7 +325,7 @@ export default function BrandCreativeLibrary() {
                   />
                 ) : (
                   <div className="text-center text-white space-y-2 p-8">
-                    <Video size={48} className="mx-auto text-fuchsia-400" />
+                    <Video size={48} className="mx-auto text-gray-400" />
                     <h4 className="text-sm font-bold">{previewCreative.title}</h4>
                     <p className="text-xs text-gray-400">
                       Format: {previewCreative.format} | Placement: {previewCreative.rawOrReady}
@@ -359,7 +356,7 @@ export default function BrandCreativeLibrary() {
                       download
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#c026d3] hover:bg-[#a21caf] text-white text-xs font-semibold rounded-xl shadow-xs transition"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold rounded-xl shadow-xs transition"
                     >
                       <Download size={13} />
                       <span>Download Creative</span>
