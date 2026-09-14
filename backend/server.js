@@ -31,9 +31,13 @@ import "./models/Conversation.js";
 import "./models/Message.js";
 import "./models/GalleryContent.js";
 
+import path from "path";
+import { fileURLToPath } from "url";
 import { corsOptions } from "./config/cors.js";
 
-dotenv.config(); // loads variables from .env into process.env
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.join(__dirname, ".env") });
+dotenv.config(); // fallback
 connectDB(); // connect to MongoDB Atlas (see config/db.js)
 
 const app = express();
