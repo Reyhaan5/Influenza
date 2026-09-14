@@ -16,7 +16,7 @@ const PAYMENTS = [
   { key: "paid", label: "Paid" },
 ];
 
-export default function CollaborationRow({ collab, onUpdate }) {
+export default function CollaborationRow({ collab, onUpdate, onOpenWorkflow, onOpenReview }) {
   const creatorName =
     collab.influencerProfile?.displayName ||
     collab.influencer?.name ||
@@ -26,6 +26,7 @@ export default function CollaborationRow({ collab, onUpdate }) {
     collab.influencer?.email?.split("@")[0] ||
     "creator";
   const avatarUrl = collab.influencerProfile?.avatar || "";
+  const isCompleted = collab.stage === "completed";
 
   return (
     <div className="bg-white border border-gray-200/90 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -62,6 +63,29 @@ export default function CollaborationRow({ collab, onUpdate }) {
 
       {/* Controls & Stage updates */}
       <div className="flex flex-wrap items-center gap-2.5">
+        <button
+          type="button"
+          onClick={() => onOpenWorkflow && onOpenWorkflow(collab)}
+          className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 ${
+            collab.stage === "review"
+              ? "bg-amber-500 hover:bg-amber-600 text-white animate-pulse shadow-xs"
+              : "bg-black hover:bg-gray-800 text-white"
+          }`}
+        >
+          <Sparkles size={12} className={collab.stage === "review" ? "text-white" : "text-amber-400"} />
+          <span>{collab.stage === "review" ? "Review Submission" : "Deliverables"}</span>
+        </button>
+
+        {isCompleted && onOpenReview && (
+          <button
+            type="button"
+            onClick={() => onOpenReview(collab)}
+            className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs transition"
+          >
+            ⭐ Rate
+          </button>
+        )}
+
         <Link
           to={`/brand-dashboard/chats?with=${collab.influencer?._id || collab.influencer}`}
           className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition"

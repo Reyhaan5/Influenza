@@ -55,6 +55,8 @@ export default function KanbanCard({
   onDragStart,
   onDragEnd,
   onStageChange,
+  onOpenWorkflow,
+  onOpenReview,
   isDragging,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -249,31 +251,65 @@ export default function KanbanCard({
           </span>
         </div>
 
-        {/* Action Links Bar */}
-        <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-black/10">
-          <span className="text-[9px] font-extrabold uppercase tracking-wider text-black/60">
-            {style.pill}
-          </span>
-
-          <div className="flex items-center gap-2">
-            <Link
-              to={`/brand-dashboard/chats?with=${collab.influencer?._id || collab.influencer}`}
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1 text-[11px] font-black text-black hover:opacity-75 p-1 rounded transition"
-              title="Chat with creator"
+        {/* Deliverables & Review Action Buttons */}
+        <div className="mt-2.5 pt-2 border-t border-black/10 flex flex-col gap-1.5">
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onOpenWorkflow) onOpenWorkflow(collab);
+              }}
+              className={`flex-1 py-1.5 px-2 rounded-lg font-bold text-[11px] transition-all flex items-center justify-center gap-1 shadow-2xs ${
+                stageKey === "review"
+                  ? "bg-amber-500 hover:bg-amber-600 text-white animate-pulse"
+                  : "bg-white hover:bg-black hover:text-white text-black border border-black/30"
+              }`}
             >
-              <MessageSquare size={13} />
-              <span>Chat</span>
-            </Link>
+              <Sparkles size={11} />
+              <span>{stageKey === "review" ? "Review Submission" : "Deliverables"}</span>
+            </button>
 
-            <Link
-              to={`/creators/${collab.influencer?._id || collab.influencer}`}
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-0.5 text-[11px] font-black text-black/60 hover:text-black p-1 rounded transition"
-              title="View profile"
-            >
-              <ExternalLink size={12} />
-            </Link>
+            {stageKey === "completed" && onOpenReview && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenReview(collab);
+                }}
+                className="py-1.5 px-2.5 rounded-lg bg-black hover:bg-gray-800 text-white font-bold text-[11px] transition-colors flex items-center gap-1 shadow-2xs"
+                title="Rate & Review Creator"
+              >
+                <span>⭐ Rate</span>
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between pt-1 text-[10px]">
+            <span className="text-[9px] font-extrabold uppercase tracking-wider text-black/60">
+              {style.pill}
+            </span>
+
+            <div className="flex items-center gap-2">
+              <Link
+                to={`/brand-dashboard/chats?with=${collab.influencer?._id || collab.influencer}`}
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1 text-[11px] font-black text-black hover:opacity-75 p-0.5 rounded transition"
+                title="Chat with creator"
+              >
+                <MessageSquare size={12} />
+                <span>Chat</span>
+              </Link>
+
+              <Link
+                to={`/creators/${collab.influencer?._id || collab.influencer}`}
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-0.5 text-[11px] font-black text-black/60 hover:text-black p-0.5 rounded transition"
+                title="View profile"
+              >
+                <ExternalLink size={12} />
+              </Link>
+            </div>
           </div>
         </div>
       </div>

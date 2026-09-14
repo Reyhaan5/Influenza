@@ -33,6 +33,10 @@ import {
   getMyCollaborations,
   updateCollaboration,
 } from "../controllers/collaborationController.js";
+import {
+  createReview,
+  getReviewByCollab,
+} from "../controllers/reviewController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
 import upload from "../middleware/upload.js";
@@ -106,5 +110,11 @@ COLLABORATIONS
 */
 router.get("/collaborations", protect, getMyCollaborations);
 router.put("/collaborations/:id", protect, updateCollaboration);
+
+/*
+REVIEWS
+*/
+router.post("/reviews", protect, createReview);
+router.get("/reviews/:collabId", protect, getReviewByCollab);
 
 export default router;

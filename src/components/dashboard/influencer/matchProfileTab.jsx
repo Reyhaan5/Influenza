@@ -30,20 +30,20 @@ function SectionLayout({ title, description, children, onSave, saving }) {
   return (
     <div className="grid md:grid-cols-[1fr_2.5fr] gap-6 items-start">
       <div>
-        <h3 className="font-bold text-[var(--color-text)] text-base">{title}</h3>
+        <h3 className="font-bold text-gray-900 text-sm tracking-tight">{title}</h3>
         {description && (
-          <p className="mt-1 text-xs text-[var(--color-text-light)] leading-relaxed">{description}</p>
+          <p className="mt-1 text-xs text-gray-500 leading-relaxed">{description}</p>
         )}
       </div>
-      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 shadow-[var(--shadow-card)] flex flex-col gap-5">
+      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xs flex flex-col gap-5">
         {children}
         {onSave && (
-          <div className="flex justify-end pt-2 border-t border-[var(--color-border)]">
+          <div className="flex justify-end pt-3 border-t border-gray-100">
             <button
               type="button"
               onClick={onSave}
               disabled={saving}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold shadow-xs transition active:scale-95 disabled:opacity-50 cursor-pointer"
             >
               {saving ? "Saving..." : "Save"}
             </button>

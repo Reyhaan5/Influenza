@@ -23,6 +23,7 @@ import ProfileCard from "../components/dashboard/influencer/ProfileCard";
 import ConnectBanner from "../components/dashboard/influencer/ConnectBanner";
 import StatCard from "../components/dashboard/influencer/StatCard";
 import MyRateCard from "../components/dashboard/influencer/MyRateCard";
+import Folder from "../components/ui/Folder";
 
 import { API_URL } from "../config/api";
 
@@ -72,7 +73,7 @@ export default function InfluencerDashboard() {
   if (loading) {
     return (
       <InfluencerDashboardLayout>
-        <p className="text-[var(--color-text-light)]">Loading your dashboard...</p>
+        <p className="text-(--color-text-light)">Loading your dashboard...</p>
       </InfluencerDashboardLayout>
     );
   }
@@ -80,7 +81,7 @@ export default function InfluencerDashboard() {
   if (error || !profile || !dashboard) {
     return (
       <InfluencerDashboardLayout>
-        <p className="text-[var(--color-danger)]">{error || "Something went wrong."}</p>
+        <p className="text-(--color-danger)">{error || "Something went wrong."}</p>
       </InfluencerDashboardLayout>
     );
   }
@@ -103,10 +104,10 @@ export default function InfluencerDashboard() {
             Live overview of your creator performance, active deliverables, public showcase, and rate card.
           </p>
         </div>
-        <div className="flex items-center gap-2.5 flex-shrink-0 flex-wrap">
+        <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
           <Link
             to="/creator-onboarding"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-linear-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
           >
             <Sparkles size={14} className="text-yellow-300" />
             <span>Setup Wizard</span>
@@ -130,7 +131,7 @@ export default function InfluencerDashboard() {
       {isSetupIncomplete && (
         <div className="mt-6 p-5 rounded-3xl bg-zinc-950 text-white border border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-fadeIn">
           <div className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-yellow-400 flex-shrink-0 mt-0.5">
+            <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-yellow-400 shrink-0 mt-0.5">
               <AlertCircle size={22} />
             </div>
             <div>
@@ -145,7 +146,7 @@ export default function InfluencerDashboard() {
 
           <Link
             to="/creator-onboarding"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 flex-shrink-0 cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-linear-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 shrink-0 cursor-pointer"
           >
             <span>Launch Setup Wizard</span>
             <ArrowRight size={14} />
@@ -183,6 +184,111 @@ export default function InfluencerDashboard() {
           value={dashboard.stats.reviewsCount > 0 ? dashboard.stats.rating : "—"}
           suffix={dashboard.stats.reviewsCount > 0 ? `${dashboard.stats.reviewsCount} reviews` : "No reviews yet"}
         />
+      </div>
+
+      {/* INTERACTIVE CREATOR MEDIA KIT & DELIVERABLE VAULTS */}
+      <div className="mt-8 bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-7 shadow-sm space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="font-black text-base sm:text-lg text-zinc-950 flex items-center gap-2">
+                <Sparkles size={20} className="text-zinc-900" />
+                Interactive Media Kit &amp; Deliverables Vault
+              </h2>
+            </div>
+            <p className="text-xs text-zinc-500 font-medium mt-1">
+              Click any folder below to fan out your verified deliverable cards, performance metrics, and sponsorship assets.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2 pb-2 items-center justify-items-center">
+          
+          {/* Vault 1: Sponsorship Formats */}
+          <div className="w-full flex flex-col items-center p-5 rounded-2xl bg-zinc-50/70 border border-zinc-200/80 hover:border-zinc-300 shadow-2xs hover:shadow-xs transition-all">
+            <div className="h-28 flex items-center justify-center">
+              <Folder
+                size={1.15}
+                color="#DB2777"
+                items={[
+                  <div className="w-full h-full p-2 flex flex-col justify-center items-center text-center">
+                    <span className="text-[9px] font-black text-pink-950 leading-none">🎬 4K Reel</span>
+                    <span className="text-[7.5px] text-pink-600 font-semibold mt-0.5">In-Feed 60s</span>
+                  </div>,
+                  <div className="w-full h-full p-2 flex flex-col justify-center items-center text-center">
+                    <span className="text-[9px] font-black text-fuchsia-950 leading-none">📱 3x Stories</span>
+                    <span className="text-[7.5px] text-fuchsia-600 font-semibold mt-0.5">Link + Poll</span>
+                  </div>,
+                  <div className="w-full h-full p-2 flex flex-col justify-center items-center text-center">
+                    <span className="text-[9px] font-black text-purple-950 leading-none">📄 Usage Rights</span>
+                    <span className="text-[7.5px] text-purple-600 font-semibold mt-0.5">30-Day Digital</span>
+                  </div>,
+                ]}
+              />
+            </div>
+            <h4 className="text-xs font-black text-zinc-950 mt-3">Deliverable Stack</h4>
+            <p className="text-[10px] text-zinc-500 font-medium text-center mt-0.5">
+              Standard formats &amp; production quality
+            </p>
+          </div>
+
+          {/* Vault 2: Verified Metrics */}
+          <div className="w-full flex flex-col items-center p-5 rounded-2xl bg-zinc-50/70 border border-zinc-200/80 hover:border-zinc-300 shadow-2xs hover:shadow-xs transition-all">
+            <div className="h-28 flex items-center justify-center">
+              <Folder
+                size={1.15}
+                color="#7C3AED"
+                items={[
+                  <div className="w-full h-full p-2 flex flex-col justify-center items-center text-center">
+                    <span className="text-[9px] font-black text-purple-950 leading-none">📈 High Eng.</span>
+                    <span className="text-[7.5px] text-purple-600 font-semibold mt-0.5">8.4% Average</span>
+                  </div>,
+                  <div className="w-full h-full p-2 flex flex-col justify-center items-center text-center">
+                    <span className="text-[9px] font-black text-indigo-950 leading-none">👥 Top Niche</span>
+                    <span className="text-[7.5px] text-indigo-600 font-semibold mt-0.5">18-34 Urban</span>
+                  </div>,
+                  <div className="w-full h-full p-2 flex flex-col justify-center items-center text-center">
+                    <span className="text-[9px] font-black text-pink-950 leading-none">🛡️ Brand Safe</span>
+                    <span className="text-[7.5px] text-pink-600 font-semibold mt-0.5">100% Authentic</span>
+                  </div>,
+                ]}
+              />
+            </div>
+            <h4 className="text-xs font-black text-zinc-950 mt-3">Verified Media Kit</h4>
+            <p className="text-[10px] text-zinc-500 font-medium text-center mt-0.5">
+              Real metrics verified by platform
+            </p>
+          </div>
+
+          {/* Vault 3: Escrow & Rates */}
+          <div className="w-full flex flex-col items-center p-5 rounded-2xl bg-zinc-50/70 border border-zinc-200/80 hover:border-zinc-300 shadow-2xs hover:shadow-xs transition-all">
+            <div className="h-28 flex items-center justify-center">
+              <Folder
+                size={1.15}
+                color="#4F46E5"
+                items={[
+                  <div className="w-full h-full p-2 flex flex-col justify-center items-center text-center">
+                    <span className="text-[9px] font-black text-indigo-950 leading-none">💳 Escrow Pay</span>
+                    <span className="text-[7.5px] text-indigo-600 font-semibold mt-0.5">Guaranteed</span>
+                  </div>,
+                  <div className="w-full h-full p-2 flex flex-col justify-center items-center text-center">
+                    <span className="text-[9px] font-black text-blue-950 leading-none">⚡ 48h Delivery</span>
+                    <span className="text-[7.5px] text-blue-600 font-semibold mt-0.5">Fast Turnaround</span>
+                  </div>,
+                  <div className="w-full h-full p-2 flex flex-col justify-center items-center text-center">
+                    <span className="text-[9px] font-black text-teal-950 leading-none">🤝 Direct Deals</span>
+                    <span className="text-[7.5px] text-teal-600 font-semibold mt-0.5">No Agency Cuts</span>
+                  </div>,
+                ]}
+              />
+            </div>
+            <h4 className="text-xs font-black text-zinc-950 mt-3">Protected Payouts</h4>
+            <p className="text-[10px] text-zinc-500 font-medium text-center mt-0.5">
+              Secure contracts &amp; escrow terms
+            </p>
+          </div>
+
+        </div>
       </div>
 
       {/* ACTIVE PRICING PACKAGES SHOWCASE */}
@@ -228,7 +334,7 @@ export default function InfluencerDashboard() {
             </p>
             <Link
               to="/creator-onboarding"
-              className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
+              className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-linear-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
             >
               <Plus size={14} /> Setup Packages in Wizard
             </Link>
@@ -315,7 +421,7 @@ export default function InfluencerDashboard() {
             </p>
             <Link
               to="/account?tab=portfolio"
-              className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
+              className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-linear-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
             >
               <Plus size={14} /> Upload in Portfolio Tab
             </Link>
@@ -329,7 +435,7 @@ export default function InfluencerDashboard() {
               return (
                 <div
                   key={itemId}
-                  className="group relative aspect-[9/16] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-200 shadow-sm"
+                  className="group relative aspect-9/16 rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-200 shadow-sm"
                 >
                   {isVideo ? (
                     <video src={item.mediaUrl} className="w-full h-full object-cover" muted playsInline />
@@ -354,7 +460,7 @@ export default function InfluencerDashboard() {
                   )}
 
                   {/* Caption overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-2.5 flex flex-col justify-end">
+                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-2.5 flex flex-col justify-end">
                     <p className="text-[10px] text-white font-bold truncate">
                       {item.caption || "Showcase Highlight"}
                     </p>

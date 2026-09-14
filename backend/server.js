@@ -11,6 +11,7 @@ import publicRoutes from "./routes/publicRoutes.js";
 import brandRoutes from "./routes/brandRoutes.js";
 import collaborationRequestRoutes from "./routes/collaborationRequestRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import deliverableRoutes from "./routes/deliverableRoutes.js";
 import { initSocket } from "./socket/index.js";
 
 // Registering every model here ensures Mongoose knows about them before
@@ -21,6 +22,7 @@ import "./models/InfluencerProfile.js";
 import "./models/Opportunity.js";
 import "./models/CollaborationRequest.js";
 import "./models/Collaboration.js";
+import "./models/Deliverable.js";
 import "./models/ContentPost.js";
 import "./models/Review.js";
 import "./models/Brand.js";
@@ -45,20 +47,20 @@ app.set("trust proxy", 1);
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 
-// Global rate limiter — 100 requests per 15 minutes per IP
+// Global rate limiter — generous threshold for SPA navigation & multi-endpoint dashboards
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: process.env.NODE_ENV === "production" ? 1000 : 5000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many requests, please try again later." },
 });
 app.use(globalLimiter);
 
-// Stricter rate limiter for auth routes — 10 requests per 15 minutes
+// Rate limiter for auth routes
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 50,
   message: { error: "Too many login attempts, please try again later." },
 });
 
@@ -68,8 +70,9 @@ app.use(express.json());
 // Sanitize user input — prevents NoSQL injection via $gt, $ne, etc.
 app.use(mongoSanitize());
 
-// Serves uploaded product images statically
+// Serves uploaded product images statically (both /uploads and /api/uploads)
 app.use("/uploads", express.static("uploads"));
+app.use("/api/uploads", express.static("uploads"));
 
 // ---------- Routes ----------
 
@@ -84,6 +87,8 @@ app.use("/api/brand", brandRoutes);
 app.use("/api/collaboration-requests", collaborationRequestRoutes);
 // Every URL starting with /api/messages goes to messageRoutes.js
 app.use("/api/messages", messageRoutes);
+// Deliverables workflow
+app.use("/api/collaborations/:collabId/deliverables", deliverableRoutes);
 
 // Simple health check — visit http://localhost:5000/ to confirm it's running
 app.get("/", (req, res) => {

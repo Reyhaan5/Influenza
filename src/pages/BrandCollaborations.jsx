@@ -20,6 +20,8 @@ import {
 import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 import CollaborationRow from "../components/dashboard/brand/CollaborationRow";
 import KanbanBoard from "../components/dashboard/brand/KanbanBoard";
+import DeliverableWorkflowModal from "../components/dashboard/common/DeliverableWorkflowModal";
+import LeaveReviewModal from "../components/dashboard/brand/LeaveReviewModal";
 import { API_URL } from "../config/api";
 
 export default function BrandCollaborations() {
@@ -33,6 +35,10 @@ export default function BrandCollaborations() {
   const [selectedBrand, setSelectedBrand] = useState("all");
   const [selectedCampaign, setSelectedCampaign] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Deliverables & Review Modals
+  const [workflowCollab, setWorkflowCollab] = useState(null);
+  const [reviewCollab, setReviewCollab] = useState(null);
 
   const token = localStorage.getItem("token");
   const authHeader = useMemo(
@@ -243,7 +249,7 @@ export default function BrandCollaborations() {
             className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-[#FA2B56] to-[#E0244B] hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-sm transition active:scale-95"
           >
             <Plus size={14} />
-            <span>+ Find Creators</span>
+            <span>Find Creators</span>
           </Link>
         </div>
       </div>
@@ -364,6 +370,8 @@ export default function BrandCollaborations() {
         <KanbanBoard
           collaborations={filteredCollabs}
           onStageChange={handleStageChange}
+          onOpenWorkflow={(c) => setWorkflowCollab(c)}
+          onOpenReview={(c) => setReviewCollab(c)}
         />
       ) : (
         <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
@@ -374,12 +382,47 @@ export default function BrandCollaborations() {
           ) : (
             <div className="p-4 flex flex-col gap-3">
               {filteredCollabs.map((c) => (
-                <CollaborationRow key={c._id} collab={c} onUpdate={handleUpdate} />
+                <CollaborationRow
+                  key={c._id}
+                  collab={c}
+                  onUpdate={handleUpdate}
+                  onOpenWorkflow={(collab) => setWorkflowCollab(collab)}
+                  onOpenReview={(collab) => setReviewCollab(collab)}
+                />
               ))}
             </div>
           )}
         </div>
       )}
+
+      {/* Deliverable Workflow Modal */}
+      <DeliverableWorkflowModal
+        isOpen={Boolean(workflowCollab)}
+        onClose={() => setWorkflowCollab(null)}
+        collaboration={workflowCollab}
+        role="brand"
+        onUpdated={(updatedCollab) => {
+          setCollaborations((prev) =>
+            prev.map((c) => (c._id === updatedCollab._id ? { ...c, ...updatedCollab } : c))
+          );
+          setWorkflowCollab((prev) => (prev ? { ...prev, ...updatedCollab } : null));
+        }}
+        onOpenReviewModal={() => {
+          const target = workflowCollab;
+          setWorkflowCollab(null);
+          setReviewCollab(target);
+        }}
+      />
+
+      {/* Brand Rate & Review Modal */}
+      <LeaveReviewModal
+        isOpen={Boolean(reviewCollab)}
+        onClose={() => setReviewCollab(null)}
+        collaboration={reviewCollab}
+        onReviewSubmitted={() => {
+          fetchData();
+        }}
+      />
     </BrandDashboardLayout>
   );
 }

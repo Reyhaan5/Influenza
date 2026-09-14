@@ -775,9 +775,7 @@ export default function CreatorOnboarding() {
 
           <button
             type="button"
-            onClick={() => {
-              if (step1Errors.length === 0) setCurrentStep(2);
-            }}
+            onClick={() => setCurrentStep(2)}
             className="flex items-center gap-2 transition hover:opacity-80"
           >
             <div
@@ -796,9 +794,7 @@ export default function CreatorOnboarding() {
 
           <button
             type="button"
-            onClick={() => {
-              if (step1Errors.length === 0) setCurrentStep(3);
-            }}
+            onClick={() => setCurrentStep(3)}
             className="flex items-center gap-2 transition hover:opacity-80"
           >
             <div
