@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Star,
   MapPin,
@@ -19,6 +19,8 @@ import {
   ExternalLink,
   ShieldCheck,
   ArrowLeft,
+  AlertCircle,
+  LogIn,
 } from "lucide-react";
 import axios from "axios";
 
@@ -30,6 +32,7 @@ import { API_URL } from "../config/api";
 
 export default function CreatorProfile() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -149,22 +152,42 @@ export default function CreatorProfile() {
     reviewsRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Auto-trigger invite modal if URL contains ?invite=true
+  useEffect(() => {
+    if (searchParams.get("invite") === "true") {
+      setShowInviteModal(true);
+    }
+  }, [searchParams]);
+
+  const handleOpenInvite = () => {
+    setShowInviteModal(true);
+  };
+
   const handleSendInvite = async (e) => {
     e.preventDefault();
     if (!user) {
-      navigate("/login");
+      navigate(`/login?redirect=/creators/${id}`);
+      return;
+    }
+
+    if (user.role === "influencer") {
+      navigate(`/messages?with=${data?.creator?.id || data?.creator?.profileId || id}`);
       return;
     }
 
     setSendingInvite(true);
     try {
+      const creatorTargetId = data?.creator?.id || data?.creator?.profileId || id;
+      const creatorName = data?.creator?.displayName || data?.creator?.handle || "Creator";
+
       await axios.post(
         `${API_URL}/collaboration-requests`,
         {
-          influencerId: data.creator.id,
+          influencerId: creatorTargetId,
+          creatorName: creatorName,
           opportunityId: selectedCampaignId || undefined,
-          message: inviteMessage || `Hi ${data.creator.displayName}, we'd love to collaborate with you!`,
-          packageSelected: selectedPackageId,
+          message: inviteMessage || `Hi ${creatorName}, we'd love to collaborate with you!`,
+          packageSelected: selectedPackage?.name || selectedPackageId,
         },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
@@ -277,8 +300,8 @@ export default function CreatorProfile() {
 
             <button
               type="button"
-              onClick={() => setShowInviteModal(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#FA2B56] to-[#E0244B] hover:opacity-90 text-white text-xs font-bold shadow-sm transition active:scale-95"
+              onClick={handleOpenInvite}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
             >
               <Plus size={15} />
               Invite to Campaign
@@ -492,7 +515,7 @@ export default function CreatorProfile() {
 
                           <div className="text-right flex-shrink-0">
                             <span className="text-base font-extrabold text-gray-950">
-                              ${Number(pkg.price || 0).toLocaleString()}
+                              ₹{Number(pkg.price || 0).toLocaleString("en-IN")}
                             </span>
                           </div>
                         </div>
@@ -556,13 +579,13 @@ export default function CreatorProfile() {
                       <div className="grid sm:grid-cols-2 gap-3 pt-3">
                         <div>
                           <label className="block text-xs font-semibold text-gray-700 mb-1">
-                            Your Proposed Budget ($)
+                            Your Proposed Budget (₹)
                           </label>
                           <input
                             type="number"
                             value={negotiateOffer}
                             onChange={(e) => setNegotiateOffer(e.target.value)}
-                            placeholder="e.g. 150"
+                            placeholder="e.g. 5000"
                             className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-black"
                           />
                         </div>
@@ -592,10 +615,10 @@ export default function CreatorProfile() {
                       <button
                         type="button"
                         onClick={() => {
-                          setInviteMessage(`Custom Negotiation Offer: $${negotiateOffer || "Negotiable"}. Requirements: ${negotiateNotes}`);
-                          setShowInviteModal(true);
+                          setInviteMessage(`Custom Negotiation Offer: ₹${negotiateOffer || "Negotiable"}. Requirements: ${negotiateNotes}`);
+                          handleOpenInvite();
                         }}
-                        className="px-5 py-2 bg-black hover:bg-black/90 text-white text-xs font-bold rounded-xl transition"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
                       >
                         Submit Custom Proposal
                       </button>
@@ -774,9 +797,9 @@ export default function CreatorProfile() {
               <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm">
                 <div className="flex items-baseline justify-between mb-4">
                   <span className="text-3xl font-extrabold text-gray-950">
-                    ${Number(selectedPackage.price || 0).toLocaleString()}
+                    ₹{Number(selectedPackage.price || 0).toLocaleString("en-IN")}
                   </span>
-                  <span className="text-xs font-semibold text-gray-400">USD</span>
+                  <span className="text-xs font-semibold text-gray-400">INR</span>
                 </div>
 
                 {/* Package Dropdown Selector */}
@@ -788,7 +811,7 @@ export default function CreatorProfile() {
                   >
                     {packages.map((pkg) => (
                       <option key={pkg.id} value={pkg.id}>
-                        {pkg.name} (${Number(pkg.price || 0).toLocaleString()})
+                        {pkg.name} (₹{Number(pkg.price || 0).toLocaleString("en-IN")})
                       </option>
                     ))}
                   </select>
@@ -804,9 +827,10 @@ export default function CreatorProfile() {
                 {/* Add to Cart / Invite to Campaign Button */}
                 <button
                   type="button"
-                  onClick={() => setShowInviteModal(true)}
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#FA2B56] to-[#E0244B] hover:opacity-95 text-white font-bold text-sm shadow-md transition active:scale-98"
+                  onClick={handleOpenInvite}
+                  className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold text-sm shadow-md transition active:scale-98 cursor-pointer"
                 >
+                  <Plus size={16} />
                   Add to Cart / Invite
                 </button>
 
@@ -838,9 +862,10 @@ export default function CreatorProfile() {
 
                 <button
                   type="button"
-                  onClick={() => setShowInviteModal(true)}
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#FA2B56] to-[#E0244B] hover:opacity-95 text-white font-bold text-sm shadow-md transition active:scale-98"
+                  onClick={handleOpenInvite}
+                  className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold text-sm shadow-md transition active:scale-98 cursor-pointer"
                 >
+                  <Plus size={16} />
                   Invite to Campaign
                 </button>
 
@@ -871,33 +896,90 @@ export default function CreatorProfile() {
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative animate-fadeIn">
             <button
+              type="button"
               onClick={() => setShowInviteModal(false)}
-              className="absolute top-5 right-5 text-gray-400 hover:text-black"
+              className="absolute top-5 right-5 text-gray-400 hover:text-black transition"
             >
               <X size={20} />
             </button>
 
             <div className="flex items-center gap-3 mb-5">
-              <Avatar name={creator.displayName} size={44} />
+              <Avatar name={creator.displayName || creator.handle} size={44} />
               <div>
                 <h3 className="font-extrabold text-gray-950 text-base">
-                  Invite {creator.displayName}
+                  Invite {creator.displayName || creator.handle}
                 </h3>
-                <p className="text-xs text-gray-500">
-                  Selected: {selectedPackage.name} (${selectedPackage.price})
+                <p className="text-xs text-gray-500 font-medium">
+                  {selectedPackage
+                    ? `Selected: ${selectedPackage.name} (₹${Number(selectedPackage.price || 0).toLocaleString("en-IN")})`
+                    : "Direct Collaboration / Custom Brief"}
                 </p>
               </div>
             </div>
 
             {inviteSuccess ? (
               <div className="text-center py-8">
-                <div className="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3">
                   <Check size={24} />
                 </div>
                 <h4 className="font-bold text-gray-900 text-base">Collaboration Request Sent!</h4>
                 <p className="text-xs text-gray-500 mt-1">
-                  {creator.displayName} will be notified and you can track updates in your dashboard.
+                  {creator.displayName || "The creator"} has been notified and you can track updates in your Brand Dashboard.
                 </p>
+              </div>
+            ) : !user ? (
+              <div className="text-center py-6 space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-pink-50 text-[#FA2B56] flex items-center justify-center mx-auto">
+                  <LogIn size={24} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-900 text-sm">Account Required</h4>
+                  <p className="text-xs text-gray-500 mt-1 max-w-xs mx-auto">
+                    Please log in or register a Brand account to invite {creator.displayName || "creators"} to your campaigns.
+                  </p>
+                </div>
+                <div className="pt-2 flex items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowInviteModal(false)}
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-100 transition"
+                  >
+                    Cancel
+                  </button>
+                  <Link
+                    to={`/login?redirect=/creators/${id}`}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
+                  >
+                    Log In to Continue
+                  </Link>
+                </div>
+              </div>
+            ) : user.role === "influencer" ? (
+              <div className="text-center py-6 space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
+                  <AlertCircle size={24} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-900 text-sm">Creator Account Active</h4>
+                  <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
+                    You are logged in as an Influencer/Creator. Campaign hiring invitations are sent from Brand accounts. To connect with @{creator.handle || "this creator"}, you can chat directly via Messages.
+                  </p>
+                </div>
+                <div className="pt-2 flex items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowInviteModal(false)}
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-100 transition"
+                  >
+                    Close
+                  </button>
+                  <Link
+                    to={`/messages?with=${creator.id || creator.profileId || id}`}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
+                  >
+                    Send Direct Message
+                  </Link>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSendInvite} className="space-y-4">
@@ -909,7 +991,7 @@ export default function CreatorProfile() {
                     <select
                       value={selectedCampaignId}
                       onChange={(e) => setSelectedCampaignId(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-medium text-gray-900 focus:outline-none"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-medium text-gray-900 focus:outline-none focus:ring-1 focus:ring-black cursor-pointer"
                     >
                       <option value="">Direct Collaboration (No specific campaign)</option>
                       {brandCampaigns.map((c) => (
@@ -929,8 +1011,8 @@ export default function CreatorProfile() {
                     rows={4}
                     value={inviteMessage}
                     onChange={(e) => setInviteMessage(e.target.value)}
-                    placeholder={`Hi ${creator.displayName}, we loved your content style and would like to collaborate for our upcoming campaign...`}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-medium text-gray-900 focus:outline-none focus:ring-1 focus:ring-black"
+                    placeholder={`Hi ${creator.displayName || "there"}, we loved your content style and would like to collaborate on our upcoming project...`}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-medium text-gray-900 focus:outline-none focus:ring-1 focus:ring-black resize-none"
                   />
                 </div>
 
@@ -938,14 +1020,14 @@ export default function CreatorProfile() {
                   <button
                     type="button"
                     onClick={() => setShowInviteModal(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-100"
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-100 transition"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={sendingInvite}
-                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#FA2B56] to-[#E0244B] text-white text-xs font-bold shadow-md hover:opacity-95 disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 disabled:opacity-50 cursor-pointer"
                   >
                     {sendingInvite ? "Sending..." : "Send Invitation"}
                   </button>

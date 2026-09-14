@@ -11,10 +11,13 @@ import {
   Layers,
   Building2,
   User,
+  Sparkles,
 } from "lucide-react";
 
 import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
+import DeliverableWorkflowModal from "../components/dashboard/common/DeliverableWorkflowModal";
+import LeaveReviewModal from "../components/dashboard/brand/LeaveReviewModal";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../config/api";
 
@@ -42,6 +45,8 @@ export default function PartnershipsHub() {
   const [loading, setLoading] = useState(true);
   const [respondingId, setRespondingId] = useState(null);
   const [updatingCollabId, setUpdatingCollabId] = useState(null);
+  const [workflowCollab, setWorkflowCollab] = useState(null);
+  const [reviewCollab, setReviewCollab] = useState(null);
 
   const authHeader = () => ({
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -355,6 +360,15 @@ export default function PartnershipsHub() {
                         </div>
 
                         <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => setWorkflowCollab(c)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black text-white text-xs font-bold hover:bg-gray-800 transition cursor-pointer shadow-xs"
+                          >
+                            <Sparkles size={13} className="text-amber-400" />
+                            <span>{isBrand ? "Review Deliverables" : "Submit Deliverables"}</span>
+                          </button>
+
                           {partner?._id && (
                             <button
                               onClick={() => navigate(`/messages?with=${partner._id}`)}
@@ -469,10 +483,30 @@ export default function PartnershipsHub() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 shrink-0">
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => setWorkflowCollab(c)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition cursor-pointer"
+                        >
+                          <Sparkles size={12} className="text-amber-500" />
+                          View Deliverables
+                        </button>
+
+                        {isBrand && (
+                          <button
+                            type="button"
+                            onClick={() => setReviewCollab(c)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 text-amber-900 border border-amber-300 text-xs font-bold hover:bg-amber-100 transition cursor-pointer"
+                          >
+                            ⭐ Rate Creator
+                          </button>
+                        )}
+
                         <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
                           Payment: {c.paymentStatus}
                         </span>
+
                         {partner?._id && (
                           <button
                             onClick={() => navigate(`/messages?with=${partner._id}`)}
@@ -489,6 +523,34 @@ export default function PartnershipsHub() {
               )}
             </div>
           )}
+
+          {/* Modals */}
+          <DeliverableWorkflowModal
+            isOpen={Boolean(workflowCollab)}
+            onClose={() => setWorkflowCollab(null)}
+            collaboration={workflowCollab}
+            role={user?.role || "influencer"}
+            onUpdated={(updatedCollab) => {
+              setCollaborations((prev) =>
+                prev.map((c) => (c._id === updatedCollab._id ? { ...c, ...updatedCollab } : c))
+              );
+              setWorkflowCollab((prev) => (prev ? { ...prev, ...updatedCollab } : null));
+            }}
+            onOpenReviewModal={() => {
+              const target = workflowCollab;
+              setWorkflowCollab(null);
+              setReviewCollab(target);
+            }}
+          />
+
+          <LeaveReviewModal
+            isOpen={Boolean(reviewCollab)}
+            onClose={() => setReviewCollab(null)}
+            collaboration={reviewCollab}
+            onReviewSubmitted={() => {
+              fetchData();
+            }}
+          />
         </>
       )}
     </div>

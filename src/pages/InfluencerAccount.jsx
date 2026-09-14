@@ -60,39 +60,38 @@ export default function InfluencerAccount() {
         });
       })
       .finally(() => setLoading(false));
-  }, [user]);
+  }, [user?._id]);
 
   return (
     <InfluencerDashboardLayout>
       {/* Top Header Row with Page Title and Preview Action */}
       <div className="flex items-center justify-between mb-6">
-        <Heading level={1}>Your Profile</Heading>
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Your Profile</h1>
         <Link
           to={`/creators/${profile?.user?._id || profile?._id || user?._id || ""}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-black hover:bg-black/80 text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-colors shadow-sm inline-flex items-center gap-1.5"
+          className="bg-black hover:bg-black/80 text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-colors shadow-xs inline-flex items-center gap-1.5 cursor-pointer"
         >
           Preview Profile
         </Link>
       </div>
 
       {/* Navigation Tabs Bar */}
-      <div className="flex flex-wrap items-center gap-6 border-b border-[var(--color-border)] mb-8">
+      <div className="flex items-center gap-8 border-b border-gray-200 mb-8 overflow-x-auto">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              className={`pb-3 text-sm font-semibold border-b-2 -mb-px transition-colors flex items-center gap-1.5 ${
+              className={`pb-3 text-sm transition-all border-b-2 -mb-px cursor-pointer whitespace-nowrap ${
                 isActive
-                  ? "border-red-500 text-[var(--color-text)] font-bold"
-                  : "border-transparent text-[var(--color-text-light)] hover:text-[var(--color-text)]"
+                  ? "border-zinc-950 text-zinc-950 font-bold"
+                  : "border-transparent text-gray-500 hover:text-gray-900 font-medium"
               }`}
             >
               {tab.label}
-              {isActive && <span className="text-red-500 font-black text-xs">•</span>}
             </button>
           );
         })}
@@ -100,7 +99,7 @@ export default function InfluencerAccount() {
 
       {/* Dynamic Tab Body */}
       {loading ? (
-        <p className="text-[var(--color-text-light)]">Loading your profile...</p>
+        <p className="text-(--color-text-light)">Loading your profile...</p>
       ) : (
         <>
           {activeTab === "account-settings" && (

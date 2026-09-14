@@ -62,9 +62,9 @@ export function calculateInfluRate({
   const engagementRate = Number(((totalInteractions / safeFollowers) * 100).toFixed(2));
 
   // 2. Audience Quality
-  let qualityLabel = "Low";
-  let qualityScore = 5;
-  let qualityFactor = 0.75;
+  let qualityLabel;
+  let qualityScore;
+  let qualityFactor;
 
   if (engagementRate >= 6.0) {
     qualityLabel = "Excellent";
