@@ -30,6 +30,7 @@ import "./models/Product.js";
 import "./models/Conversation.js";
 import "./models/Message.js";
 import "./models/GalleryContent.js";
+import "./models/InstagramCache.js";
 
 import path from "path";
 import { fileURLToPath } from "url";
