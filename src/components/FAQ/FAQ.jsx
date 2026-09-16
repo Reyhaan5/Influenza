@@ -1,7 +1,7 @@
 import Section from "../common/Section";
 import FAQItem from "./FAQItem";
 import { faqs } from "../../constants/faq";
-import { MessageCircle } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 
 function FAQ() {
   return (
@@ -95,7 +95,7 @@ function FAQ() {
             text-[var(--color-primary)]
           "
         >
-          <MessageCircle size={30} />
+          <MessageSquare size={30} />
         </div>
 
         <h3

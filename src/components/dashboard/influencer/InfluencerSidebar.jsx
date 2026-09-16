@@ -3,15 +3,14 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutGrid,
   TrendingUp,
-  Search,
+  Target,
   Handshake,
-  Mail,
+  MessageSquare,
   LogOut,
   ChevronsRight,
   ChevronDown,
   User,
   PenSquare,
-  Power,
   UserCog,
 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
@@ -22,9 +21,9 @@ const NAV_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutGrid, to: "/influencer-dashboard" },
   { key: "account", label: "My Account", icon: UserCog, to: "/account" },
   { key: "rate-benchmark", label: "Rate Benchmark", icon: TrendingUp, to: "/rate-benchmark" },
-  { key: "opportunities", label: "Opportunities", icon: Search, to: "/opportunities" },
+  { key: "opportunities", label: "Opportunities", icon: Target, to: "/opportunities" },
   { key: "partnerships", label: "Partnerships", icon: Handshake, to: "/collaborations" },
-  { key: "inbox", label: "Inbox", icon: Mail, to: "/messages" },
+  { key: "inbox", label: "Inbox", icon: MessageSquare, to: "/messages" },
 ];
 
 export default function InfluencerSidebar() {
@@ -141,7 +140,7 @@ export default function InfluencerSidebar() {
               onClick={handleLogout}
               className="flex items-center gap-2.5 w-full text-left px-4 py-2.5 text-sm font-medium text-[var(--color-danger)] hover:bg-[var(--color-danger)]/10"
             >
-              <Power size={16} />
+              <LogOut size={16} />
               Logout
             </button>
           </div>

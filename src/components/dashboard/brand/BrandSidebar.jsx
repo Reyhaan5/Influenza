@@ -22,6 +22,7 @@ import {
   Check,
   Plus,
   Sparkles,
+  Handshake,
 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import { useActiveBrand } from "../../../context/BrandContext";
@@ -303,7 +304,7 @@ export default function BrandSidebar() {
             }
           >
             <div className="grid h-8 w-8 flex-shrink-0 place-content-center">
-              <Users size={16} strokeWidth={2} />
+              <Handshake size={16} strokeWidth={2} />
             </div>
             {open && <span className="ml-1 text-sm font-semibold tracking-tight text-zinc-950 truncate">Collaborations</span>}
           </NavLink>
@@ -361,7 +362,7 @@ export default function BrandSidebar() {
                     }`
                   }
                 >
-                  <UserCheck size={13} />
+                  <Users size={13} />
                   <span>Team</span>
                 </NavLink>
               </div>

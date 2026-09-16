@@ -151,10 +151,6 @@ export default function ContentGallery() {
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-zinc-300 bg-zinc-100 px-3.5 py-1.5 text-xs font-semibold text-zinc-800">
-                <Sparkles size={13} className="text-zinc-700" />
-                <span>Creator Content Showcase</span>
-              </div>
 
               {/* Headline */}
               <h1 className="mt-4 text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-950 leading-[1.15]">

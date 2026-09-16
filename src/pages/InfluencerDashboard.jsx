@@ -15,6 +15,7 @@ import {
   Clock,
   LayoutGrid,
   Camera,
+  Handshake,
 } from "lucide-react";
 
 import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
@@ -173,7 +174,7 @@ export default function InfluencerDashboard() {
       {/* Quick Stats */}
       <div className="mt-6 grid sm:grid-cols-2 gap-6">
         <StatCard
-          icon={Camera}
+          icon={Handshake}
           label="Total Collaborations"
           value={dashboard.stats.collaborationsCompleted}
           suffix={dashboard.stats.collaborationsCompleted === 0 ? "No collaborations yet" : undefined}

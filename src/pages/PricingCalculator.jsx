@@ -1,7 +1,9 @@
-// src/pages/PricingCalculator.jsx — Modash-Style Instagram Engagement & Rate Calculator
+// src/pages/PricingCalculator.jsx — Modern Influenza Theme Engagement & Pricing Calculator
 
 import React, { useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   Users,
   Heart,
@@ -19,12 +21,18 @@ import {
   AlertCircle,
   HelpCircle,
   Video,
+  Flame,
+  Zap,
+  DollarSign,
+  Award,
+  Check,
+  BarChart3,
 } from "lucide-react";
 import { FaInstagram as InstagramIcon } from "react-icons/fa";
 
 import Navbar from "../components/layout/Navbar";
-import Section from "../components/common/Section";
 import Footer from "../components/footer/Footer";
+import ArrowFillButton from "../components/common/ArrowFillButton";
 import { QualityPill } from "../components/ui/QualityBadge";
 import { calculateInfluRate } from "../utils/influRateCalculator";
 import { API_URL } from "../config/api";
@@ -47,11 +55,11 @@ function formatCurrency(num, currency = "INR") {
 }
 
 const POPULAR_PROFILES = [
+  { name: "Virat Kohli", handle: "virat.kohli" },
+  { name: "Tech Burner", handle: "techburner" },
   { name: "Leo Messi", handle: "leomessi" },
   { name: "Will Smith", handle: "willsmith" },
-  { name: "Virat Kohli", handle: "virat.kohli" },
   { name: "Zendaya", handle: "zendaya" },
-  { name: "Tech Burner", handle: "techburner" },
   { name: "The Rock", handle: "therock" },
 ];
 
@@ -122,74 +130,142 @@ export default function PricingCalculator() {
   const minEarnings = Math.round(basePrice * 0.75);
   const maxEarnings = Math.round(basePrice * 1.35);
 
-    return (
-    <>
+  return (
+    <div className="min-h-screen bg-[#FAFAFA] flex flex-col font-sans relative overflow-hidden">
       <Navbar />
 
-      <Section className="pt-28 sm:pt-36 pb-16 sm:pb-24 min-h-screen px-3 sm:px-6">
-        <div className="max-w-5xl mx-auto space-y-10 sm:space-y-12">
+      {/* Subtle Ambient Glows consistent with Website Theme */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="absolute top-16 left-1/4 -translate-x-1/2 w-[600px] h-[400px] bg-pink-200/25 blur-[120px] rounded-full" />
+        <div className="absolute top-36 right-1/4 translate-x-1/2 w-[500px] h-[350px] bg-purple-200/25 blur-[120px] rounded-full" />
+        <div className="absolute top-96 left-1/2 -translate-x-1/2 w-[450px] h-[300px] bg-pink-100/25 blur-[100px] rounded-full" />
+      </div>
+
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-32 sm:pt-40 pb-20">
+        <div className="space-y-12 sm:space-y-16">
 
           {/* ===================================================================
-              HERO SEARCH HEADER
+              HERO SEARCH HEADER (Influenza Brand Themed)
           =================================================================== */}
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-[var(--color-text)] leading-tight">
-              Instagram Engagement Rate & Rate Calculator
-            </h1>
-            <p className="mt-3 sm:mt-4 text-xs sm:text-sm md:text-base text-[var(--color-text-light)] max-w-2xl mx-auto leading-relaxed">
-              Check any Instagram creator's engagement rate, average likes, comments, and post-level performance. Free, with no sign-up needed.
-            </p>
+            
 
-            {/* Modash-style Responsive Search Bar */}
-            <form
+            {/* Main Headline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-zinc-950 tracking-tight leading-[1.15]"
+            >
+              Instagram Engagement Rate &{" "}
+              <span className="bg-gradient-to-r from-[#FF1475] via-purple-600 to-[#FF1475] bg-clip-text text-transparent">
+                Pricing Calculator
+              </span>
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="mt-4 sm:mt-5 text-sm sm:text-base md:text-lg text-zinc-600 max-w-2xl mx-auto leading-relaxed font-normal"
+            >
+              Evaluate real engagement rates, benchmark against niche averages, and calculate fair commercial deliverable pricing in ₹ INR. Free with zero sign-up required.
+            </motion.p>
+
+            {/* Branded Pill Search Bar */}
+            <motion.form
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSearch(handleInput);
               }}
-              className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center max-w-xl mx-auto rounded-2xl sm:rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-1.5 shadow-sm gap-2 sm:gap-0 focus-within:ring-2 focus-within:ring-black"
+              className="mt-8 bg-white border border-zinc-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.06)] rounded-full p-2 pl-5 sm:pl-6 flex flex-col sm:flex-row items-stretch sm:items-center max-w-xl mx-auto gap-2 sm:gap-0 hover:shadow-[0_6px_28px_rgba(0,0,0,0.09)] transition-all focus-within:border-pink-300 focus-within:ring-4 focus-within:ring-pink-500/10"
             >
-              <div className="relative flex-1 flex items-center pl-3">
-                <span className="text-[var(--color-text-light)] font-bold text-sm">@</span>
+              <div className="relative flex-1 flex items-center">
+                <span className="text-zinc-400 font-bold text-base mr-1">@</span>
                 <input
                   type="text"
                   value={handleInput}
                   onChange={(e) => setHandleInput(e.target.value)}
-                  placeholder="Enter Instagram username (e.g. willsmith)"
-                  className="w-full pl-2 pr-4 py-2 sm:py-2.5 bg-transparent text-xs sm:text-sm font-medium text-[var(--color-text)] focus:outline-none placeholder:text-[var(--color-text-light)]/60"
+                  placeholder="Enter Instagram username (e.g. virat.kohli)"
+                  className="w-full bg-transparent text-sm sm:text-base font-medium text-zinc-900 focus:outline-none placeholder:text-zinc-400"
                 />
               </div>
               <button
                 type="submit"
                 disabled={searching}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs sm:text-sm font-bold shadow-sm transition active:scale-95 disabled:opacity-50 flex-shrink-0 cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full bg-gradient-to-r from-[#FF1475] to-purple-600 hover:from-[#e00f65] hover:to-purple-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-pink-500/20 transition-all active:scale-95 disabled:opacity-50 flex-shrink-0 cursor-pointer"
               >
-                {searching ? <RefreshCw size={14} className="animate-spin" /> : "Check profile"}
+                {searching ? (
+                  <>
+                    <RefreshCw size={15} className="animate-spin" />
+                    <span>Analyzing...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Check Profile</span>
+                    <ArrowRight size={15} />
+                  </>
+                )}
               </button>
-            </form>
+            </motion.form>
+
+            {/* Popular Profiles Chips */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
+              <span className="text-xs font-semibold text-zinc-500 mr-1 flex items-center gap-1">
+                <Flame size={13} className="text-[#FF1475]" /> Popular:
+              </span>
+              {POPULAR_PROFILES.map((p) => (
+                <button
+                  key={p.handle}
+                  type="button"
+                  onClick={() => {
+                    setHandleInput(p.handle);
+                    handleSearch(p.handle);
+                  }}
+                  className="px-3.5 py-1.5 rounded-full bg-white border border-zinc-200/90 text-xs font-semibold text-zinc-700 hover:border-[#FF1475] hover:text-[#FF1475] hover:bg-pink-50/40 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>{p.name}</span>
+                  <span className="text-zinc-400 text-[11px]">@{p.handle}</span>
+                </button>
+              ))}
+            </div>
 
             {errorNotice && (
-              <div className="mt-4 inline-flex items-center gap-2 text-xs font-medium text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-4 py-2 rounded-xl text-left">
-                <AlertCircle size={14} className="flex-shrink-0" />
+              <motion.div
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-5 inline-flex items-center gap-2 text-xs font-semibold text-red-700 bg-red-50 border border-red-200 px-4 py-2.5 rounded-2xl text-left shadow-xs"
+              >
+                <AlertCircle size={15} className="flex-shrink-0 text-red-600" />
                 <span>{errorNotice}</span>
-              </div>
+              </motion.div>
             )}
           </div>
 
           {/* ===================================================================
-              DYNAMIC PROFILE RESULT STATE (ONLY RENDERS WHEN PROFILE IS ENTERED)
+              DYNAMIC PROFILE RESULT STATE (ONLY RENDERS WHEN PROFILE IS LOADED)
           =================================================================== */}
           {profile && calculated && (
-            <div className="space-y-5 sm:space-y-6 animate-fadeIn">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-6"
+            >
               
               {/* Currency Toggle */}
-              <div className="flex items-center justify-between sm:justify-end gap-2">
-                <span className="text-xs text-[var(--color-text-light)] font-semibold">Valuation Currency:</span>
-                <div className="inline-flex rounded-lg p-1 bg-[var(--color-surface)] border border-[var(--color-border)] text-xs font-bold">
+              <div className="flex items-center justify-between sm:justify-end gap-2.5">
+                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Currency:</span>
+                <div className="inline-flex rounded-full p-1 bg-white border border-zinc-200/90 text-xs font-bold shadow-xs">
                   <button
                     type="button"
                     onClick={() => setCurrency("INR")}
-                    className={`px-3 py-1 rounded-md transition ${
-                      currency === "INR" ? "bg-black text-white shadow-sm" : "text-[var(--color-text-light)] hover:text-black dark:hover:text-white"
+                    className={`px-3.5 py-1 rounded-full transition-all ${
+                      currency === "INR" ? "bg-zinc-950 text-white shadow-xs" : "text-zinc-600 hover:text-zinc-950"
                     }`}
                   >
                     ₹ INR
@@ -197,8 +273,8 @@ export default function PricingCalculator() {
                   <button
                     type="button"
                     onClick={() => setCurrency("USD")}
-                    className={`px-3 py-1 rounded-md transition ${
-                      currency === "USD" ? "bg-black text-white shadow-sm" : "text-[var(--color-text-light)] hover:text-black dark:hover:text-white"
+                    className={`px-3.5 py-1 rounded-full transition-all ${
+                      currency === "USD" ? "bg-zinc-950 text-white shadow-xs" : "text-zinc-600 hover:text-zinc-950"
                     }`}
                   >
                     $ USD
@@ -206,11 +282,11 @@ export default function PricingCalculator() {
                 </div>
               </div>
 
-              {/* 1. TOP STATS ROW (Responsive Modash Grid: Profile spans 2 cols on mobile, 1 col on desktop) */}
+              {/* 1. TOP STATS ROW (5 Cards with Influenza Themed Highlights) */}
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
                 
                 {/* Profile Card */}
-                <div className="col-span-2 sm:col-span-2 lg:col-span-1 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3.5 sm:p-4 shadow-sm flex items-center gap-3">
+                <div className="col-span-2 sm:col-span-2 lg:col-span-1 rounded-2xl border border-zinc-200/90 bg-white p-4 shadow-xs flex items-center gap-3.5 hover:border-zinc-300 transition-all">
                   <div className="relative flex-shrink-0">
                     <img
                       src={profile.avatar}
@@ -225,7 +301,7 @@ export default function PricingCalculator() {
                           e.target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${profile.handle}`;
                         }
                       }}
-                      className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border border-zinc-200 shadow-sm"
+                      className="w-12 h-12 rounded-full object-cover border-2 border-pink-100 shadow-xs"
                     />
                     {profile.verified && (
                       <div className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-0.5 shadow">
@@ -234,68 +310,86 @@ export default function PricingCalculator() {
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-bold text-xs sm:text-sm text-[var(--color-text)] truncate flex items-center gap-1">
+                    <h3 className="font-bold text-sm text-zinc-950 truncate flex items-center gap-1">
                       <span className="truncate">{profile.fullName}</span>
-                      <InstagramIcon size={12} className="text-zinc-400 flex-shrink-0" />
+                      <InstagramIcon size={12} className="text-pink-500 flex-shrink-0" />
                     </h3>
-                    <p className="text-[11px] sm:text-xs text-[var(--color-text-light)] font-medium truncate">
+                    <p className="text-xs text-zinc-500 font-semibold truncate mt-0.5">
                       {formatCompact(profile.followers)} Followers
                     </p>
                   </div>
                 </div>
 
-                {/* Pink Engagement Rate Highlight Card */}
-                <div className="col-span-1 rounded-2xl border border-pink-200 bg-[#FFB6C1]/30 dark:bg-pink-950/40 p-3.5 sm:p-4 shadow-sm flex flex-col justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-md bg-black text-white flex items-center justify-center flex-shrink-0">
-                      <TrendingUp size={12} />
+                {/* Signature Influenza Pink Engagement Rate Highlight Card */}
+                <div className="col-span-1 rounded-2xl border border-pink-200 bg-gradient-to-br from-pink-50/80 via-white to-purple-50/80 p-4 shadow-xs flex flex-col justify-between hover:border-pink-300 transition-all">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-zinc-600">Engagement</span>
+                    <div className="h-6 w-6 rounded-lg bg-gradient-to-r from-[#FF1475] to-purple-600 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+                      <TrendingUp size={13} />
                     </div>
-                    <span className="text-lg sm:text-2xl font-black text-black dark:text-pink-200">
+                  </div>
+                  <div className="mt-2">
+                    <span className="text-2xl sm:text-3xl font-black text-zinc-950 tracking-tight">
                       {calculated.metrics.engagementRate}%
                     </span>
+                    <span className="block text-[11px] font-semibold text-[#FF1475] mt-0.5">
+                      {calculated.overallRating.breakdown.qualityScore.qualityLabel} ER
+                    </span>
                   </div>
-                  <span className="text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-pink-300 mt-2">
-                    Engagement rate
-                  </span>
                 </div>
 
                 {/* Average Likes Card */}
-                <div className="col-span-1 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3.5 sm:p-4 shadow-sm flex flex-col justify-between">
-                  <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-semibold text-[var(--color-text-light)]">
-                    <Heart size={14} className="fill-black text-black flex-shrink-0" />
-                    <span className="text-lg sm:text-2xl font-black text-[var(--color-text)]">
+                <div className="col-span-1 rounded-2xl border border-zinc-200/90 bg-white p-4 shadow-xs flex flex-col justify-between hover:border-zinc-300 transition-all">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-zinc-500">Avg Likes</span>
+                    <div className="h-6 w-6 rounded-lg bg-pink-50 text-[#FF1475] flex items-center justify-center flex-shrink-0">
+                      <Heart size={13} className="fill-[#FF1475]" />
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <span className="text-2xl font-black text-zinc-950 tracking-tight">
                       {formatCompact(profile.avgLikes)}
                     </span>
+                    <span className="block text-[11px] text-zinc-400 font-medium mt-0.5">
+                      per post
+                    </span>
                   </div>
-                  <span className="text-[11px] sm:text-xs font-semibold text-[var(--color-text-light)] mt-2">
-                    Average likes
-                  </span>
                 </div>
 
                 {/* Average Comments Card */}
-                <div className="col-span-1 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3.5 sm:p-4 shadow-sm flex flex-col justify-between">
-                  <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-semibold text-[var(--color-text-light)]">
-                    <MessageCircle size={14} className="fill-black text-black flex-shrink-0" />
-                    <span className="text-lg sm:text-2xl font-black text-[var(--color-text)]">
+                <div className="col-span-1 rounded-2xl border border-zinc-200/90 bg-white p-4 shadow-xs flex flex-col justify-between hover:border-zinc-300 transition-all">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-zinc-500">Avg Comments</span>
+                    <div className="h-6 w-6 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center flex-shrink-0">
+                      <MessageCircle size={13} className="fill-purple-600" />
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <span className="text-2xl font-black text-zinc-950 tracking-tight">
                       {formatCompact(profile.avgComments)}
                     </span>
+                    <span className="block text-[11px] text-zinc-400 font-medium mt-0.5">
+                      per post
+                    </span>
                   </div>
-                  <span className="text-[11px] sm:text-xs font-semibold text-[var(--color-text-light)] mt-2">
-                    Average comments
-                  </span>
                 </div>
 
                 {/* Average Reel Plays / Views Card */}
-                <div className="col-span-1 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3.5 sm:p-4 shadow-sm flex flex-col justify-between">
-                  <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-semibold text-[var(--color-text-light)]">
-                    <Play size={14} className="fill-black text-black flex-shrink-0" />
-                    <span className="text-lg sm:text-2xl font-black text-[var(--color-text)]">
+                <div className="col-span-1 rounded-2xl border border-zinc-200/90 bg-white p-4 shadow-xs flex flex-col justify-between hover:border-zinc-300 transition-all">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-zinc-500">Avg Reel Plays</span>
+                    <div className="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                      <Play size={13} className="fill-blue-600" />
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <span className="text-2xl font-black text-zinc-950 tracking-tight">
                       {formatCompact(profile.avgViews)}
                     </span>
+                    <span className="block text-[11px] text-zinc-400 font-medium mt-0.5">
+                      per Reel
+                    </span>
                   </div>
-                  <span className="text-[11px] sm:text-xs font-semibold text-[var(--color-text-light)] mt-2">
-                    Average Reel plays
-                  </span>
                 </div>
 
               </div>
@@ -303,49 +397,54 @@ export default function PricingCalculator() {
               {/* 2. MIDDLE DASHBOARD GRID (Profile Details + Benchmark Chart + Top Performing Reels) */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
                 
-                {/* Profile Details Sidebar Card */}
-                <div className="lg:col-span-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:p-5 shadow-sm space-y-4 flex flex-col justify-between">
+                {/* Profile Details Card */}
+                <div className="lg:col-span-3 rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs space-y-4 flex flex-col justify-between">
                   <div className="space-y-3">
-                    <span className="text-[10px] sm:text-xs font-bold uppercase text-[var(--color-text-light)] tracking-wider block">
-                      Profile details
+                    <span className="text-[11px] font-bold uppercase text-zinc-400 tracking-wider block">
+                      Profile Details
                     </span>
-                    <div className="text-xs text-[var(--color-text)] space-y-2">
+                    <div className="text-xs text-zinc-800 space-y-2.5">
                       <div className="font-bold flex items-center gap-1.5 truncate">
-                        <InstagramIcon size={14} className="flex-shrink-0" />
-                        <span className="truncate">@{profile.handle}</span>
+                        <InstagramIcon size={14} className="text-[#FF1475] flex-shrink-0" />
+                        <span className="truncate font-mono">@{profile.handle}</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-[var(--color-text-light)]">
+                      <div className="flex items-center gap-1.5 text-zinc-600 font-medium">
                         <CheckCircle2 size={14} className="text-emerald-500 flex-shrink-0" />
-                        <span>Live data verified</span>
+                        <span>Live Instagram verified</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-[var(--color-text-light)]">
-                        <ShieldCheck size={14} className="text-blue-500 flex-shrink-0" />
+                      <div className="flex items-center gap-1.5 text-zinc-600 font-medium">
+                        <ShieldCheck size={14} className="text-purple-600 flex-shrink-0" />
                         <span>AQS Authenticity Audited</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="pt-3 sm:pt-4 border-t border-[var(--color-border)] space-y-2.5 sm:space-y-3">
-                    <p className="text-[10px] sm:text-[11px] text-[var(--color-text-light)] leading-relaxed">
-                      Influenza evaluates audience authenticity, real reach, and fair collaboration pricing.
+                  <div className="pt-4 border-t border-zinc-100 space-y-3">
+                    <p className="text-[11px] text-zinc-500 leading-relaxed font-medium">
+                      Influenza evaluates active reach, real engagement, and fair ₹ collaboration valuation.
                     </p>
                     <QualityPill quality={calculated.overallRating.breakdown.qualityScore.qualityLabel} size="sm" />
                   </div>
                 </div>
 
                 {/* Engagement Benchmark Visualizer */}
-                <div className="lg:col-span-5 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:p-5 shadow-sm flex flex-col justify-between">
+                <div className="lg:col-span-5 rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs flex flex-col justify-between">
                   <div>
-                    <span className="text-[10px] sm:text-xs font-bold uppercase text-[var(--color-text-light)] tracking-wider block mb-3">
-                      Engagement rate benchmark
-                    </span>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[11px] font-bold uppercase text-zinc-400 tracking-wider block">
+                        Engagement Benchmark
+                      </span>
+                      <span className="text-[11px] font-bold text-zinc-500">
+                        Category: <strong className="text-zinc-900 capitalize">{calculated.metrics.niche}</strong>
+                      </span>
+                    </div>
                     
-                    {/* Simulated Histogram Benchmark Chart */}
-                    <div className="h-28 sm:h-32 flex items-end gap-1.5 sm:gap-2 pt-4 px-1 sm:px-2 border-b border-[var(--color-border)]">
-                      <div className="flex-1 bg-zinc-200 dark:bg-zinc-800 rounded-t h-[30%]" title="1k-5k tier avg" />
-                      <div className="flex-1 bg-zinc-200 dark:bg-zinc-800 rounded-t h-[45%]" title="5k-20k tier avg" />
-                      <div className="flex-1 bg-purple-300 dark:bg-purple-800 rounded-t h-[75%] relative flex flex-col items-center">
-                        <div className="absolute -top-6">
+                    {/* Branded Histogram Benchmark Chart */}
+                    <div className="h-32 flex items-end gap-2 pt-6 px-2 border-b border-zinc-100">
+                      <div className="flex-1 bg-zinc-100 rounded-t-lg h-[30%]" title="1k-5k tier avg" />
+                      <div className="flex-1 bg-zinc-100 rounded-t-lg h-[45%]" title="5k-20k tier avg" />
+                      <div className="flex-1 bg-gradient-to-t from-[#FF1475] to-purple-500 rounded-t-lg h-[80%] relative flex flex-col items-center shadow-xs">
+                        <div className="absolute -top-7 flex flex-col items-center">
                           <img
                             src={profile.avatar}
                             alt=""
@@ -354,52 +453,63 @@ export default function PricingCalculator() {
                             onError={(e) => {
                               e.target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${profile.handle}`;
                             }}
-                            className="w-5 h-5 rounded-full border border-black shadow object-cover"
+                            className="w-5 h-5 rounded-full border-2 border-white shadow-md object-cover"
                           />
                         </div>
                       </div>
-                      <div className="flex-1 bg-black text-white rounded-t h-[60%]" title="Median benchmark" />
-                      <div className="flex-1 bg-zinc-200 dark:bg-zinc-800 rounded-t h-[40%]" />
-                      <div className="flex-1 bg-zinc-200 dark:bg-zinc-800 rounded-t h-[25%]" />
-                      <div className="flex-1 bg-zinc-200 dark:bg-zinc-800 rounded-t h-[15%]" />
+                      <div className="flex-1 bg-zinc-900 rounded-t-lg h-[55%]" title="Median benchmark" />
+                      <div className="flex-1 bg-zinc-100 rounded-t-lg h-[38%]" />
+                      <div className="flex-1 bg-zinc-100 rounded-t-lg h-[24%]" />
+                      <div className="flex-1 bg-zinc-100 rounded-t-lg h-[15%]" />
                     </div>
                   </div>
 
-                  <div className="mt-3 flex items-center justify-between text-[10px] sm:text-[11px] text-[var(--color-text-light)]">
-                    <span>Creator ER: <strong>{calculated.metrics.engagementRate}%</strong></span>
-                    <span>Median Benchmark: <strong>1.45%</strong></span>
+                  <div className="mt-3 flex items-center justify-between text-xs text-zinc-600 font-medium">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-[#FF1475]" />
+                      Creator ER: <strong className="text-zinc-950 font-bold">{calculated.metrics.engagementRate}%</strong>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-zinc-900" />
+                      Median: <strong className="text-zinc-950 font-bold">1.45%</strong>
+                    </span>
                   </div>
                 </div>
 
                 {/* Top Performing Reels / Posts Card */}
-                <div className="lg:col-span-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:p-5 shadow-sm space-y-3">
-                  <span className="text-[10px] sm:text-xs font-bold uppercase text-[var(--color-text-light)] tracking-wider block">
-                    Top performing posts
-                  </span>
+                <div className="lg:col-span-4 rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase text-zinc-400 tracking-wider block">
+                      Top Performing Posts
+                    </span>
+                    <span className="text-[11px] text-zinc-400 font-medium">
+                      Recent 12
+                    </span>
+                  </div>
 
                   {profile.topPosts && profile.topPosts.length > 0 ? (
-                    <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                    <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
                       {profile.topPosts.map((post, idx) => (
                         <div
                           key={idx}
-                          className="p-2 sm:p-2.5 rounded-xl bg-[var(--color-background)] border border-[var(--color-border)] flex items-center justify-between gap-2"
+                          className="p-2.5 rounded-xl bg-zinc-50 border border-zinc-200/80 flex items-center justify-between gap-2 hover:bg-zinc-100/70 transition"
                         >
                           <div className="min-w-0 flex-1">
-                            <p className="text-xs font-semibold text-[var(--color-text)] truncate">
+                            <p className="text-xs font-semibold text-zinc-900 truncate">
                               {post.caption || `Post #${idx + 1}`}
                             </p>
-                            <span className="text-[10px] text-[var(--color-text-light)]">
+                            <span className="text-[10px] text-zinc-500 font-medium">
                               {formatCompact(post.likes)} Likes • {formatCompact(post.comments)} Comments
                             </span>
                           </div>
-                          <span className="text-xs font-mono font-bold text-black dark:text-white flex-shrink-0">
+                          <span className="text-xs font-mono font-bold text-zinc-950 flex-shrink-0">
                             {formatCompact(post.views || post.likes * 3)}
                           </span>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="py-6 text-center text-xs text-[var(--color-text-light)]">
+                    <div className="py-8 text-center text-xs text-zinc-400 font-medium">
                       Recent post engagements calculated from 12 latest posts.
                     </div>
                   )}
@@ -407,106 +517,122 @@ export default function PricingCalculator() {
 
               </div>
 
-              {/* 3. ESTIMATED PRICING VALUATION BANNER */}
-              <div className="rounded-2xl border border-purple-200 bg-gradient-to-r from-purple-50/70 via-white to-purple-50/70 dark:from-purple-950/20 dark:via-[var(--color-surface)] dark:to-purple-950/20 p-5 sm:p-7 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6">
-                <div>
-                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 block mb-1">
-                    InfluRate™ Commercial Valuation
-                  </span>
-                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-black dark:text-white tracking-tight">
-                    {formatCurrency(minEarnings, currency)} - {formatCurrency(maxEarnings, currency)}
+              {/* 3. HIGH-IMPACT ESTIMATED PRICING VALUATION BANNER */}
+              <div className="relative overflow-hidden rounded-3xl bg-zinc-950 text-white p-6 sm:p-8 shadow-xl border border-zinc-800">
+                {/* Ambient glow inside dark card */}
+                <div className="absolute top-0 right-0 w-80 h-80 bg-pink-500/15 rounded-full blur-3xl pointer-events-none -z-10" />
+                <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl pointer-events-none -z-10" />
+
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+                  <div>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-500/20 text-[#FF1475] border border-pink-500/30 text-[11px] font-bold uppercase tracking-wider mb-2">
+                      <Sparkles size={12} />
+                      InfluRate™ Commercial Rate Card
+                    </span>
+                    <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
+                      {formatCurrency(minEarnings, currency)} - {formatCurrency(maxEarnings, currency)}
+                    </div>
+                    <p className="text-xs sm:text-sm text-zinc-400 mt-1.5 font-medium max-w-xl">
+                      Suggested benchmark per Post / Reel based on {formatCompact(profile.followers)} verified followers, {calculated.metrics.engagementRate}% ER, and current Indian creator market demand.
+                    </p>
                   </div>
-                  <p className="text-xs text-[var(--color-text-light)] mt-1">
-                    Estimated fair value per Post / Reel based on {formatCompact(profile.followers)} followers & {calculated.metrics.engagementRate}% engagement rate.
-                  </p>
+
+                  {/* Rating Score Badge */}
+                  <div className="flex items-center gap-3.5 self-start md:self-center bg-zinc-900/90 border border-zinc-800 p-3 rounded-2xl">
+                    <div className="text-right">
+                      <span className="text-xs font-bold text-white block">
+                        Score: {calculated.overallRating.score}/100 ({calculated.overallRating.grade})
+                      </span>
+                      <span className="text-[11px] text-zinc-400 font-medium">
+                        Reach ({calculated.overallRating.breakdown.reachScore.score}/35) • Eng ({calculated.overallRating.breakdown.engagementScore.score}/35)
+                      </span>
+                    </div>
+                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-[#FF1475] to-purple-600 text-white font-black text-lg flex items-center justify-center shadow-md flex-shrink-0">
+                      {calculated.overallRating.score}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-3 self-end md:self-center">
-                  <div className="text-right">
-                    <span className="text-xs font-bold text-[var(--color-text)] block">
-                      Score: {calculated.overallRating.score}/100 ({calculated.overallRating.grade})
+                {/* Deliverable Breakdown Grid */}
+                <div className="mt-6 pt-6 border-t border-zinc-800/80 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
+                      1x Reel
                     </span>
-                    <span className="text-[10px] sm:text-[11px] text-[var(--color-text-light)]">
-                      Reach ({calculated.overallRating.breakdown.reachScore.score}/35) • Eng ({calculated.overallRating.breakdown.engagementScore.score}/35)
+                    <span className="text-sm sm:text-base font-black text-white mt-1 block">
+                      {formatCurrency(calculated.rateCard.deliverables.reel.price, currency)}
                     </span>
                   </div>
-                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-black text-white font-black text-base sm:text-lg flex items-center justify-center shadow-md flex-shrink-0">
-                    {calculated.overallRating.score}
+                  <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
+                      1x Feed Post
+                    </span>
+                    <span className="text-sm sm:text-base font-black text-white mt-1 block">
+                      {formatCurrency(calculated.rateCard.deliverables.post.price, currency)}
+                    </span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
+                      Story (Set of 2)
+                    </span>
+                    <span className="text-sm sm:text-base font-black text-white mt-1 block">
+                      {formatCurrency(calculated.rateCard.deliverables.story.price, currency)}
+                    </span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
+                      3-Reel Bundle
+                    </span>
+                    <span className="text-sm sm:text-base font-black text-pink-400 mt-1 block">
+                      {formatCurrency(calculated.rateCard.deliverables.reelBundle.price, currency)}
+                    </span>
                   </div>
                 </div>
+
               </div>
 
-            </div>
+            </motion.div>
           )}
 
           {/* ===================================================================
-              "TRY IT ON A POPULAR PROFILE" (Images 2 & 3)
+              "WHAT'S A GOOD ENGAGEMENT RATE ON INSTAGRAM?" BENCHMARK SECTION
           =================================================================== */}
-          <div className="space-y-3 sm:space-y-4 pt-4 border-t border-[var(--color-border)]">
-            <div>
-              <h2 className="text-lg sm:text-2xl font-bold text-[var(--color-text)] tracking-tight">
-                Try it on a popular profile
-              </h2>
-              <p className="text-xs sm:text-sm text-[var(--color-text-light)] mt-1">
-                Click any creator to fetch real live profile data and evaluate their authentic rate, or type a username into the search above.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-2 sm:gap-2.5">
-              {POPULAR_PROFILES.map((p) => (
-                <button
-                  key={p.handle}
-                  type="button"
-                  onClick={() => {
-                    setHandleInput(p.handle);
-                    handleSearch(p.handle);
-                  }}
-                  className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-xs font-semibold text-[var(--color-text)] hover:border-black hover:bg-zinc-50 dark:hover:bg-zinc-900 transition flex items-center gap-1.5 shadow-sm"
-                >
-                  <span>{p.name}</span>
-                  <span className="text-[var(--color-text-light)] font-normal font-mono text-[11px] sm:text-xs">@{p.handle}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* ===================================================================
-              "WHAT'S A GOOD ENGAGEMENT RATE ON INSTAGRAM?" BENCHMARK SECTION (Image 2 Design - Responsive)
-          =================================================================== */}
-          <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:p-7 md:p-10 shadow-sm space-y-6 sm:space-y-8">
-            <div>
-              <h2 className="text-lg sm:text-2xl font-bold text-[var(--color-text)] tracking-tight">
+          <div className="rounded-3xl border border-zinc-200/90 bg-white p-6 sm:p-8 md:p-10 shadow-xs space-y-6 sm:space-y-8">
+            <div className="max-w-2xl">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#FF1475] uppercase tracking-wider mb-1 block">
+                <BarChart3 size={13} /> Industry Benchmarks
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-zinc-950 tracking-tight">
                 What's a good engagement rate on Instagram?
               </h2>
-              <p className="text-xs sm:text-sm text-[var(--color-text-light)] mt-1 max-w-2xl leading-relaxed">
-                Engagement rate drops sharply once an account grows past a few thousand followers, then flattens out and ticks back up on the biggest profiles. A 3% rate on a 4K account is ordinary; the same 3% on a 500K account is exceptional.
+              <p className="text-xs sm:text-sm text-zinc-600 mt-2 leading-relaxed font-medium">
+                Engagement rate drops naturally once an account grows past a few thousand followers, then flattens out and stabilizes on the largest profiles. A 3% rate on a 4K account is ordinary; the same 3% on a 500K account is extraordinary.
               </p>
             </div>
 
-            {/* Custom Benchmark Graphic Matrix with horizontal scroll container for ultra small screens */}
+            {/* Benchmark Matrix Table */}
             <div className="overflow-x-auto pb-2 -mx-2 sm:mx-0 px-2 sm:px-0">
-              <div className="min-w-[480px] sm:min-w-0 space-y-2.5 sm:space-y-3 pt-2">
+              <div className="min-w-[500px] sm:min-w-0 space-y-2.5 sm:space-y-3 pt-2">
                 
                 {/* Top Arch Bracket with Follower count Pill */}
                 <div className="relative pt-6">
-                  {/* Arch outline bracket spanning columns */}
                   <div className="grid grid-cols-12">
                     <div className="col-span-3 sm:col-span-2" />
                     <div className="col-span-9 sm:col-span-10 relative">
-                      <div className="absolute -top-3 left-0 right-0 h-6 sm:h-7 border-t border-l border-r border-zinc-400/80 dark:border-zinc-600 rounded-t-xl pointer-events-none" />
+                      <div className="absolute -top-3 left-0 right-0 h-6 sm:h-7 border-t border-l border-r border-zinc-300 rounded-t-xl pointer-events-none" />
                       
                       {/* Centered Pill Badge */}
                       <div className="relative z-10 flex justify-center -top-6">
-                        <span className="bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-[10px] sm:text-[11px] font-semibold px-3 py-0.5 rounded-md border border-zinc-300 dark:border-zinc-700">
-                          Follower count
+                        <span className="bg-zinc-100 text-zinc-800 text-[11px] font-bold px-3.5 py-0.5 rounded-full border border-zinc-200 shadow-xs">
+                          Follower Tier
                         </span>
                       </div>
 
                       {/* Header Columns under the bracket */}
-                      <div className="grid grid-cols-4 text-center font-bold text-[11px] sm:text-xs text-zinc-700 dark:text-zinc-300 pb-1">
-                        <span>1k–5k</span>
-                        <span>10k–50k</span>
-                        <span>100k–500k</span>
+                      <div className="grid grid-cols-4 text-center font-bold text-xs text-zinc-700 pb-1">
+                        <span>1k – 5k</span>
+                        <span>10k – 50k</span>
+                        <span>100k – 500k</span>
                         <span>1M+</span>
                       </div>
                     </div>
@@ -515,10 +641,10 @@ export default function PricingCalculator() {
 
                 {/* Row 1: High */}
                 <div className="grid grid-cols-12 items-center gap-2 sm:gap-3">
-                  <div className="col-span-3 sm:col-span-2 text-right pr-2 font-medium text-xs sm:text-sm text-zinc-700 dark:text-zinc-300">
+                  <div className="col-span-3 sm:col-span-2 text-right pr-2 font-bold text-xs sm:text-sm text-zinc-700">
                     High
                   </div>
-                  <div className="col-span-9 sm:col-span-10 rounded-md border border-[#F3D7EC] bg-[#FBF0F9] dark:bg-pink-950/20 dark:border-pink-900/40 py-2.5 sm:py-3.5 px-1 sm:px-2 grid grid-cols-4 text-center text-[11px] sm:text-xs md:text-sm font-bold text-zinc-900 dark:text-pink-100">
+                  <div className="col-span-9 sm:col-span-10 rounded-xl border border-emerald-100 bg-emerald-50/50 py-3 px-2 grid grid-cols-4 text-center text-xs sm:text-sm font-bold text-emerald-950">
                     <span>&gt; 6.16%</span>
                     <span>&gt; 1.27%</span>
                     <span>&gt; 0.93%</span>
@@ -528,10 +654,10 @@ export default function PricingCalculator() {
 
                 {/* Row 2: Above average */}
                 <div className="grid grid-cols-12 items-center gap-2 sm:gap-3">
-                  <div className="col-span-3 sm:col-span-2 text-right pr-2 font-medium text-xs sm:text-sm text-zinc-700 dark:text-zinc-300">
+                  <div className="col-span-3 sm:col-span-2 text-right pr-2 font-bold text-xs sm:text-sm text-zinc-700">
                     Above average
                   </div>
-                  <div className="col-span-9 sm:col-span-10 rounded-md border border-[#F3D7EC] bg-[#FBF0F9] dark:bg-pink-950/20 dark:border-pink-900/40 py-2.5 sm:py-3.5 px-1 sm:px-2 grid grid-cols-4 text-center text-[11px] sm:text-xs md:text-sm font-bold text-zinc-900 dark:text-pink-100">
+                  <div className="col-span-9 sm:col-span-10 rounded-xl border border-purple-100 bg-purple-50/40 py-3 px-2 grid grid-cols-4 text-center text-xs sm:text-sm font-bold text-purple-950">
                     <span>3.85 – 6.16%</span>
                     <span>0.65 – 1.27%</span>
                     <span>0.46 – 0.93%</span>
@@ -539,12 +665,12 @@ export default function PricingCalculator() {
                   </div>
                 </div>
 
-                {/* Row 3: Average (Highlighted Purple Bar) */}
+                {/* Row 3: Average (Highlighted Influenza Gradient Bar) */}
                 <div className="grid grid-cols-12 items-center gap-2 sm:gap-3">
-                  <div className="col-span-3 sm:col-span-2 text-right pr-2 font-medium text-xs sm:text-sm text-zinc-700 dark:text-zinc-300">
+                  <div className="col-span-3 sm:col-span-2 text-right pr-2 font-bold text-xs sm:text-sm text-zinc-950">
                     Average
                   </div>
-                  <div className="col-span-9 sm:col-span-10 rounded-md bg-[#DDA7F6] dark:bg-purple-600 py-2.5 sm:py-3.5 px-1 sm:px-2 grid grid-cols-4 text-center text-[11px] sm:text-xs md:text-sm font-black text-zinc-950 dark:text-white shadow-sm">
+                  <div className="col-span-9 sm:col-span-10 rounded-xl border-2 border-pink-400 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-pink-500/10 py-3 px-2 grid grid-cols-4 text-center text-xs sm:text-sm font-black text-zinc-950 shadow-xs">
                     <span>3.16 – 3.85%</span>
                     <span>0.49 – 0.65%</span>
                     <span>0.35 – 0.46%</span>
@@ -554,10 +680,10 @@ export default function PricingCalculator() {
 
                 {/* Row 4: Below average */}
                 <div className="grid grid-cols-12 items-center gap-2 sm:gap-3">
-                  <div className="col-span-3 sm:col-span-2 text-right pr-2 font-medium text-xs sm:text-sm text-zinc-700 dark:text-zinc-300">
+                  <div className="col-span-3 sm:col-span-2 text-right pr-2 font-bold text-xs sm:text-sm text-zinc-700">
                     Below average
                   </div>
-                  <div className="col-span-9 sm:col-span-10 rounded-md border border-[#F0D5ED] bg-[#F8EAFB] dark:bg-purple-950/20 dark:border-purple-900/40 py-2.5 sm:py-3.5 px-1 sm:px-2 grid grid-cols-4 text-center text-[11px] sm:text-xs md:text-sm font-bold text-zinc-900 dark:text-purple-100">
+                  <div className="col-span-9 sm:col-span-10 rounded-xl border border-zinc-200/70 bg-zinc-50/60 py-3 px-2 grid grid-cols-4 text-center text-xs sm:text-sm font-semibold text-zinc-700">
                     <span>1.85 – 3.16%</span>
                     <span>0.24 – 0.49%</span>
                     <span>0.16 – 0.35%</span>
@@ -567,10 +693,10 @@ export default function PricingCalculator() {
 
                 {/* Row 5: Low */}
                 <div className="grid grid-cols-12 items-center gap-2 sm:gap-3">
-                  <div className="col-span-3 sm:col-span-2 text-right pr-2 font-medium text-xs sm:text-sm text-zinc-700 dark:text-zinc-300">
+                  <div className="col-span-3 sm:col-span-2 text-right pr-2 font-bold text-xs sm:text-sm text-zinc-500">
                     Low
                   </div>
-                  <div className="col-span-9 sm:col-span-10 rounded-md border border-[#F0D5ED] bg-[#F8EAFB] dark:bg-purple-950/20 dark:border-purple-900/40 py-2.5 sm:py-3.5 px-1 sm:px-2 grid grid-cols-4 text-center text-[11px] sm:text-xs md:text-sm font-bold text-zinc-900 dark:text-purple-100">
+                  <div className="col-span-9 sm:col-span-10 rounded-xl border border-zinc-200/50 bg-zinc-50/40 py-3 px-2 grid grid-cols-4 text-center text-xs sm:text-sm font-medium text-zinc-500">
                     <span>&lt; 1.85%</span>
                     <span>&lt; 0.24%</span>
                     <span>&lt; 0.16%</span>
@@ -583,33 +709,36 @@ export default function PricingCalculator() {
           </div>
 
           {/* ===================================================================
-              "HOW WE CALCULATE ENGAGEMENT RATE" (Image 3 - Responsive)
+              "HOW WE CALCULATE ENGAGEMENT RATE" FORMULA SECTION
           =================================================================== */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center pt-4">
             <div className="space-y-3 sm:space-y-4">
-              <h2 className="text-xl sm:text-3xl font-bold text-[var(--color-text)] tracking-tight">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#FF1475] uppercase tracking-wider">
+                <Zap size={13} /> Transparent Methodology
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-zinc-950 tracking-tight">
                 How we calculate engagement rate
               </h2>
-              <p className="text-xs sm:text-sm text-[var(--color-text-light)] leading-relaxed">
-                To determine a creator's engagement rate, take the average/median number of likes and comments across their recent posts, divide by their total follower count, and multiply by 100.
+              <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed font-medium">
+                To determine a creator's real engagement rate, Influenza computes the average interactions (likes and comments) across recent posts, divides by total followers, and normalizes into a standard percentage.
               </p>
-              <p className="text-xs sm:text-sm text-[var(--color-text-light)] leading-relaxed">
-                Influenza analyzes the last 12 active posts so one single viral outlier doesn't distort the true baseline figure.
+              <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed font-medium">
+                We sample the latest 12 active posts to ensure single viral anomalies or giveaway spikes don't distort fair baseline collaboration pricing.
               </p>
             </div>
 
-            {/* Pink/Coral Formula Card */}
-            <div className="rounded-2xl p-5 sm:p-8 bg-[#FFB6C1]/40 dark:bg-pink-950/40 border border-pink-200 dark:border-pink-900 text-center space-y-3 sm:space-y-4 shadow-sm">
-              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-pink-950 dark:text-pink-200">
+            {/* Branded Formula Card */}
+            <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-pink-50/80 via-white to-purple-50/80 border border-pink-200 text-center space-y-4 shadow-xs">
+              <span className="text-xs font-bold uppercase tracking-wider text-pink-900">
                 Formula Definition
               </span>
-              <div className="text-xs sm:text-base md:text-lg font-black text-black dark:text-white flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+              <div className="text-sm sm:text-base md:text-lg font-black text-zinc-950 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
                 <span>Engagement rate =</span>
                 <div className="inline-flex flex-col items-center">
-                  <span className="border-b-2 border-black dark:border-white px-1.5 sm:px-2 pb-0.5 text-[11px] sm:text-xs md:text-sm font-bold">
-                    Average Likes + Comments
+                  <span className="border-b-2 border-zinc-900 px-2 pb-0.5 text-xs sm:text-sm font-bold">
+                    Avg Likes + Comments
                   </span>
-                  <span className="pt-0.5 text-[11px] sm:text-xs md:text-sm font-bold">
+                  <span className="pt-0.5 text-xs sm:text-sm font-bold text-zinc-600">
                     Total Followers
                   </span>
                 </div>
@@ -619,55 +748,94 @@ export default function PricingCalculator() {
           </div>
 
           {/* ===================================================================
-              "WHAT AFFECTS AN INSTAGRAM ENGAGEMENT RATE" (Image 3 - Responsive Grid)
+              "WHAT AFFECTS AN INSTAGRAM ENGAGEMENT RATE" (3-Card Feature Grid)
           =================================================================== */}
-          <div className="space-y-4 sm:space-y-6 pt-4 border-t border-[var(--color-border)]">
+          <div className="space-y-6 pt-6 border-t border-zinc-200/80">
             <div>
-              <h2 className="text-xl sm:text-3xl font-bold text-[var(--color-text)] tracking-tight">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#FF1475] uppercase tracking-wider mb-1 block">
+                <Layers size={13} /> Performance Factors
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-zinc-950 tracking-tight">
                 What affects an Instagram engagement rate?
               </h2>
-              <p className="text-xs sm:text-sm text-[var(--color-text-light)] mt-1">
-                Two creators with identical follower counts can post very different engagement rates. Here's what usually explains the gap.
+              <p className="text-xs sm:text-sm text-zinc-600 mt-1 font-medium">
+                Two creators with identical follower counts can have very different engagement rates. Here is what explains the variance.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {/* 1. Audience size */}
-              <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 sm:p-6 shadow-sm space-y-2.5 sm:space-y-3">
-                <h3 className="font-bold text-sm sm:text-base text-[var(--color-text)]">
-                  Audience size
+              <div className="rounded-3xl border border-zinc-200/90 bg-white p-6 shadow-xs space-y-3 hover:border-pink-200 hover:shadow-md transition-all">
+                <div className="w-11 h-11 rounded-2xl bg-pink-50 text-[#FF1475] flex items-center justify-center font-bold">
+                  <Users size={20} />
+                </div>
+                <h3 className="font-bold text-base text-zinc-950">
+                  Audience Size
                 </h3>
-                <p className="text-xs text-[var(--color-text-light)] leading-relaxed">
-                  Engagement falls as accounts grow. Bigger audiences are less closely connected to the creator, so compare rates against creators of a similar size rather than in isolation.
+                <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed font-medium">
+                  Engagement naturally declines as accounts scale. Micro creators maintain direct community intimacy, while mega creators require broader audience targeting.
                 </p>
               </div>
 
               {/* 2. Content format */}
-              <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 sm:p-6 shadow-sm space-y-2.5 sm:space-y-3">
-                <h3 className="font-bold text-sm sm:text-base text-[var(--color-text)]">
-                  Content format
+              <div className="rounded-3xl border border-zinc-200/90 bg-white p-6 shadow-xs space-y-3 hover:border-pink-200 hover:shadow-md transition-all">
+                <div className="w-11 h-11 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+                  <Video size={20} />
+                </div>
+                <h3 className="font-bold text-base text-zinc-950">
+                  Content Format
                 </h3>
-                <p className="text-xs text-[var(--color-text-light)] leading-relaxed">
-                  Reels, carousels, and static posts engage differently. A profile average hides that, so check which format is actually driving high interaction before you brief a creator.
+                <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed font-medium">
+                  Reels, carousels, and stories generate distinct engagement depth. Influenza calculates format-specific rates so deliverable expectations match true format reach.
                 </p>
               </div>
 
-              {/* 3. Fake followers & Bots */}
-              <div className="col-span-1 sm:col-span-2 lg:col-span-1 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 sm:p-6 shadow-sm space-y-2.5 sm:space-y-3">
-                <h3 className="font-bold text-sm sm:text-base text-[var(--color-text)]">
-                  Fake followers & Bots
+              {/* 3. Authenticity & AQS */}
+              <div className="col-span-1 sm:col-span-2 lg:col-span-1 rounded-3xl border border-zinc-200/90 bg-white p-6 shadow-xs space-y-3 hover:border-pink-200 hover:shadow-md transition-all">
+                <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                  <ShieldCheck size={20} />
+                </div>
+                <h3 className="font-bold text-base text-zinc-950">
+                  Audience Authenticity
                 </h3>
-                <p className="text-xs text-[var(--color-text-light)] leading-relaxed">
-                  Fake followers sit in the denominator without ever engaging, which pulls the rate down. Bought comments or engagement pods create unnatural ratio spikes.
+                <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed font-medium">
+                  Inactive bot followers inflate the denominator without engaging, pulling ER down. Our AQS engine filters out suspicious activity to protect brand ROI.
                 </p>
               </div>
             </div>
           </div>
 
+          {/* ===================================================================
+              BOTTOM CTA PROMPT
+          =================================================================== */}
+          <div className="rounded-3xl bg-zinc-950 text-white p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-72 h-72 bg-pink-500/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative z-10">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#FF1475] block mb-1">
+                Explore Creator Partnerships
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-black text-white">
+                Find creators and book verified packages
+              </h3>
+              <p className="text-xs sm:text-sm text-zinc-400 mt-1.5 font-medium max-w-lg">
+                Discover top creators with live rates in ₹, direct messaging, and secure campaign management.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 flex-shrink-0 relative z-10">
+              <Link
+                to="/creator-discovery"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#FF1475] to-purple-600 hover:from-[#e00f65] hover:to-purple-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-pink-500/20 transition active:scale-95 cursor-pointer"
+              >
+                <span>Browse Creators</span>
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+          </div>
+
         </div>
-      </Section>
+      </main>
 
       <Footer />
-    </>
+    </div>
   );
 }

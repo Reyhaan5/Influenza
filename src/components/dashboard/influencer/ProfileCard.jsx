@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { MapPin, ShieldCheck, ExternalLink, Edit2, Plus, X } from "lucide-react";
+import { MapPin, ShieldCheck, ExternalLink, Pencil, Plus, X } from "lucide-react";
 import Avatar from "./Avatar";
 import SegmentedProgressBar from "./SegmentedProgressBar";
 
@@ -119,7 +119,7 @@ export default function ProfileCard({
             to="/account"
             className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer"
           >
-            <Edit2 size={13} />
+            <Pencil size={13} />
             <span>Edit Profile &amp; Details</span>
           </Link>
         </div>
