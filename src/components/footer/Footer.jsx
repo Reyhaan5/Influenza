@@ -174,9 +174,9 @@ function Footer() {
             </ul>
 
             <div className="mt-7 space-y-2.5 pt-5 border-t border-zinc-100 text-xs font-medium text-zinc-500">
-              <a href="mailto:hello@influenza.ai" className="flex items-center gap-2.5 hover:text-zinc-950 transition">
+              <a href="mailto:influenzaryzentechnologies@gmail.com" className="flex items-center gap-2.5 hover:text-zinc-950 transition">
                 <Mail size={14} className="text-zinc-700" />
-                <span>hello@influenza.ai</span>
+                <span>influenzaryzentechnologies@gmail.com</span>
               </a>
 
               <div className="flex items-center gap-2.5">
