@@ -211,10 +211,10 @@ export default function PricingCalculator() {
                 e.preventDefault();
                 handleSearch(handleInput);
               }}
-              className="mt-8 bg-white border border-zinc-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.06)] rounded-full p-2 pl-5 sm:pl-6 flex flex-col sm:flex-row items-stretch sm:items-center max-w-xl mx-auto gap-2 sm:gap-0 hover:shadow-[0_6px_28px_rgba(0,0,0,0.09)] transition-all focus-within:border-pink-300 focus-within:ring-4 focus-within:ring-pink-500/10"
+              className="mt-6 sm:mt-8 bg-white border border-zinc-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.06)] rounded-2xl sm:rounded-full p-2 pl-4 sm:pl-6 flex flex-col sm:flex-row items-stretch sm:items-center max-w-xl mx-auto gap-2.5 sm:gap-0 hover:shadow-[0_6px_28px_rgba(0,0,0,0.09)] transition-all focus-within:border-pink-300 focus-within:ring-4 focus-within:ring-pink-500/10"
             >
-              <div className="relative flex-1 flex items-center">
-                <span className="text-zinc-400 font-bold text-base mr-1">@</span>
+              <div className="relative flex-1 flex items-center py-1 sm:py-0">
+                <span className="text-zinc-400 font-bold text-base mr-1.5 flex-shrink-0">@</span>
                 <input
                   type="text"
                   value={handleInput}
@@ -226,7 +226,7 @@ export default function PricingCalculator() {
               <button
                 type="submit"
                 disabled={searching}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full bg-gradient-to-r from-[#FF1475] to-purple-600 hover:from-[#e00f65] hover:to-purple-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-pink-500/20 transition-all active:scale-95 disabled:opacity-50 flex-shrink-0 cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 rounded-xl sm:rounded-full bg-gradient-to-r from-[#FF1475] to-purple-600 hover:from-[#e00f65] hover:to-purple-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-pink-500/20 transition-all active:scale-95 disabled:opacity-50 flex-shrink-0 cursor-pointer"
               >
                 {searching ? (
                   <>
@@ -243,7 +243,7 @@ export default function PricingCalculator() {
             </motion.form>
 
             {/* Popular Profiles Chips */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-5 sm:mt-6">
               <span className="text-xs font-semibold text-zinc-500 mr-1 flex items-center gap-1">
                 <Flame size={13} className="text-[#FF1475]" /> Popular:
               </span>
@@ -547,23 +547,23 @@ export default function PricingCalculator() {
               </div>
 
               {/* 3. HIGH-IMPACT ESTIMATED PRICING VALUATION BANNER */}
-              <div className="rounded-3xl border border-zinc-200/90 bg-white p-6 sm:p-8 shadow-xs">
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                  <div>
+              <div className="rounded-3xl border border-zinc-200/90 bg-white p-5 sm:p-7 md:p-8 shadow-xs">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6">
+                  <div className="min-w-0 flex-1">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-[#FF1475] block mb-1">
                       Estimated Valuation
                     </span>
-                    <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-zinc-950 tracking-tight">
+                    <div className="text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-zinc-950 tracking-tight break-words">
                       {formatCurrency(calculated.rateCard.minEarnings, currency)} - {formatCurrency(calculated.rateCard.maxEarnings, currency)}
                     </div>
-                    <p className="text-xs sm:text-sm text-zinc-600 mt-1.5 font-medium max-w-xl">
+                    <p className="text-xs sm:text-sm text-zinc-600 mt-1.5 font-medium max-w-xl leading-relaxed">
                       Suggested benchmark per Post / Reel based on {formatCompact(profile.followers)} verified followers, {calculated.metrics.engagementRate}% ER, and current Indian creator market demand.
                     </p>
                   </div>
 
                   {/* Rating Score Badge with CountUp */}
-                  <div className="flex items-center gap-3.5 self-start md:self-center bg-zinc-50 border border-zinc-200/90 p-3 sm:p-3.5 rounded-2xl shadow-xs flex-shrink-0">
-                    <div className="text-right">
+                  <div className="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-3 sm:gap-3.5 self-stretch sm:self-auto md:self-center bg-zinc-50 border border-zinc-200/90 p-3 sm:p-3.5 rounded-2xl shadow-xs flex-shrink-0">
+                    <div className="text-left sm:text-right">
                       <span className="text-xs font-bold text-zinc-900 block">
                         Score: <CountUp key={`score-${calculated.overallRating.score}`} to={calculated.overallRating.score} duration={1.2} />/100 ({calculated.overallRating.grade})
                       </span>
@@ -571,7 +571,7 @@ export default function PricingCalculator() {
                         Reach ({calculated.overallRating.breakdown.reachScore.score}/35) • Eng ({calculated.overallRating.breakdown.engagementScore.score}/35)
                       </span>
                     </div>
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-[#FF1475] to-purple-600 text-white font-black text-lg flex items-center justify-center shadow-xs flex-shrink-0">
+                    <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-gradient-to-r from-[#FF1475] to-purple-600 text-white font-black text-base sm:text-lg flex items-center justify-center shadow-xs flex-shrink-0">
                       <CountUp
                         key={`badge-${calculated.overallRating.score}`}
                         to={calculated.overallRating.score}
@@ -582,36 +582,36 @@ export default function PricingCalculator() {
                 </div>
 
                 {/* Deliverable Breakdown Grid */}
-                <div className="mt-6 pt-6 border-t border-zinc-100 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200/80">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">
+                <div className="mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-zinc-100 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+                  <div className="p-3 sm:p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200/80 min-w-0">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block truncate">
                       1x Reel
                     </span>
-                    <span className="text-sm sm:text-base font-black text-zinc-950 mt-1 block">
+                    <span className="text-xs sm:text-sm md:text-base font-black text-zinc-950 mt-1 block truncate">
                       {formatCurrency(calculated.rateCard.deliverables.reel.price, currency)}
                     </span>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200/80">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">
+                  <div className="p-3 sm:p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200/80 min-w-0">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block truncate">
                       1x Feed Post
                     </span>
-                    <span className="text-sm sm:text-base font-black text-zinc-950 mt-1 block">
+                    <span className="text-xs sm:text-sm md:text-base font-black text-zinc-950 mt-1 block truncate">
                       {formatCurrency(calculated.rateCard.deliverables.post.price, currency)}
                     </span>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200/80">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">
+                  <div className="p-3 sm:p-3.5 rounded-2xl bg-zinc-50 border border-zinc-200/80 min-w-0">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block truncate">
                       Story (Set of 2)
                     </span>
-                    <span className="text-sm sm:text-base font-black text-zinc-950 mt-1 block">
+                    <span className="text-xs sm:text-sm md:text-base font-black text-zinc-950 mt-1 block truncate">
                       {formatCurrency(calculated.rateCard.deliverables.story.price, currency)}
                     </span>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-pink-50/60 border border-pink-200/90">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#FF1475] block">
+                  <div className="p-3 sm:p-3.5 rounded-2xl bg-pink-50/60 border border-pink-200/90 min-w-0">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#FF1475] block truncate">
                       3-Reel Bundle
                     </span>
-                    <span className="text-sm sm:text-base font-black text-[#FF1475] mt-1 block">
+                    <span className="text-xs sm:text-sm md:text-base font-black text-[#FF1475] mt-1 block truncate">
                       {formatCurrency(calculated.rateCard.deliverables.reelBundle.price, currency)}
                     </span>
                   </div>
@@ -835,23 +835,23 @@ export default function PricingCalculator() {
           {/* ===================================================================
               BOTTOM CTA PROMPT
           =================================================================== */}
-          <div className="rounded-3xl bg-zinc-950 text-white p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
+          <div className="rounded-3xl bg-zinc-950 text-white p-6 sm:p-8 md:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 sm:gap-6 shadow-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-72 h-72 bg-pink-500/20 rounded-full blur-3xl pointer-events-none" />
-            <div className="relative z-10">
+            <div className="relative z-10 max-w-xl">
               <span className="text-xs font-bold uppercase tracking-wider text-[#FF1475] block mb-1">
                 Explore Creator Partnerships
               </span>
-              <h3 className="text-2xl sm:text-3xl font-black text-white">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight">
                 Find creators and book verified packages
               </h3>
-              <p className="text-xs sm:text-sm text-zinc-400 mt-1.5 font-medium max-w-lg">
+              <p className="text-xs sm:text-sm text-zinc-400 mt-1.5 font-medium leading-relaxed">
                 Discover top creators with live rates in ₹, direct messaging, and secure campaign management.
               </p>
             </div>
-            <div className="flex items-center gap-3 flex-shrink-0 relative z-10">
+            <div className="w-full sm:w-auto flex items-center justify-start sm:justify-end gap-3 flex-shrink-0 relative z-10">
               <Link
                 to="/creator-discovery"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#FF1475] to-purple-600 hover:from-[#e00f65] hover:to-purple-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-pink-500/20 transition active:scale-95 cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl sm:rounded-full bg-gradient-to-r from-[#FF1475] to-purple-600 hover:from-[#e00f65] hover:to-purple-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-pink-500/20 transition active:scale-95 cursor-pointer"
               >
                 <span>Browse Creators</span>
                 <ArrowRight size={14} />
