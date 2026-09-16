@@ -1,5 +1,5 @@
 import React from "react";
-import { Send, Check, Clock, MessageCircle } from "lucide-react";
+import { Send, Check, Clock, MessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
 import Avatar from "../influencer/Avatar";
 
@@ -71,7 +71,7 @@ export default function CreatorSearchCard({ profile, requestStatus, sending, onS
           to={`/messages?with=${profile.user?._id}`}
           className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-background)] transition"
         >
-          <MessageCircle size={14} /> Message
+          <MessageSquare size={14} /> Message
         </Link>
       </div>
     </div>

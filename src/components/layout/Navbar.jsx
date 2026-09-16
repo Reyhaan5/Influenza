@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, LayoutDashboard, LogOut, Mail } from "lucide-react";
+import { Menu, X, LayoutDashboard, LogOut, MessageSquare } from "lucide-react";
 import { megaMenu } from "../../constants/navMenu";
 import { ShiftingDropDown } from "../ui/ShiftingDropDown";
 import { useAuth } from "../../context/AuthContext";
@@ -76,7 +76,7 @@ function ProfileMenu({ user, logout }) {
             onClick={() => setOpen(false)}
             className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-semibold text-zinc-800 hover:bg-zinc-50 hover:text-zinc-950 transition-colors"
           >
-            <Mail size={16} className="text-zinc-500" />
+            <MessageSquare size={16} className="text-zinc-500" />
             Messages
           </Link>
 
@@ -224,7 +224,7 @@ function Navbar() {
                   onClick={() => setIsOpen(false)}
                   className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold text-zinc-800 hover:bg-zinc-50"
                 >
-                  <Mail size={16} className="text-zinc-500" />
+                  <MessageSquare size={16} className="text-zinc-500" />
                   Messages
                 </Link>
                 <button

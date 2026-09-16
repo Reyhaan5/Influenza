@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { Megaphone, Users, Sparkles, Plus, Search } from "lucide-react";
+import { Megaphone, Users, Sparkles, Plus, Search, Handshake } from "lucide-react";
 
 import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 import StatCard from "../components/dashboard/influencer/StatCard";
@@ -319,7 +319,7 @@ export default function BrandDashboard() {
         <div className="lg:col-span-2 flex flex-col gap-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <StatCard icon={Megaphone} label="Active Campaigns" value={stats.activeCampaigns} />
-            <StatCard icon={Users} label="Collaborations" value={stats.collaborations} />
+            <StatCard icon={Handshake} label="Collaborations" value={stats.collaborations} />
           </div>
 
           {companyFormVisible ? (

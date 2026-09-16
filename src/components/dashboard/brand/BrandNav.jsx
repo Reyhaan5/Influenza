@@ -1,13 +1,13 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Megaphone, Search, Users, Send } from "lucide-react";
+import { LayoutDashboard, Megaphone, Compass, Handshake, Send } from "lucide-react";
 
 const links = [
   { to: "/brand-dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/brand-dashboard/campaigns", label: "Campaigns", icon: Megaphone },
-  { to: "/creator-discovery", label: "Search Creators", icon: Search },
+  { to: "/creator-discovery", label: "Search Creators", icon: Compass },
   { to: "/collaboration-requests", label: "Requests", icon: Send },
-  { to: "/brand-dashboard/collaborations", label: "Collaborations", icon: Users },
+  { to: "/brand-dashboard/collaborations", label: "Collaborations", icon: Handshake },
 ];
 
 export default function BrandNav() {

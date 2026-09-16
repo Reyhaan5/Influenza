@@ -6,7 +6,6 @@ import {
   Sparkles,
   Camera,
   Image as ImageIcon,
-  Edit2,
   CheckCircle2,
   AlertCircle,
   HelpCircle,
