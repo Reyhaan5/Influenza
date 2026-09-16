@@ -33,6 +33,7 @@ import { FaInstagram as InstagramIcon } from "react-icons/fa";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/footer/Footer";
 import ArrowFillButton from "../components/common/ArrowFillButton";
+import CountUp from "../components/ui/CountUp";
 import { QualityPill } from "../components/ui/QualityBadge";
 import { calculateInfluRate } from "../utils/influRateCalculator";
 import { API_URL } from "../config/api";
@@ -129,6 +130,34 @@ export default function PricingCalculator() {
   const basePrice = calculated?.rateCard.deliverables.reel.price || (profile?.followers ? profile.followers * 0.1 : 0);
   const minEarnings = Math.round(basePrice * 0.75);
   const maxEarnings = Math.round(basePrice * 1.35);
+
+  const currSymbol = currency === "USD" ? "$" : "₹";
+  const minVal = currency === "USD" ? Math.round(minEarnings / 85) : Math.round(minEarnings);
+  const maxVal = currency === "USD" ? Math.round(maxEarnings / 85) : Math.round(maxEarnings);
+
+  const reelPriceVal = calculated
+    ? currency === "USD"
+      ? Math.round(calculated.rateCard.deliverables.reel.price / 85)
+      : Math.round(calculated.rateCard.deliverables.reel.price)
+    : 0;
+
+  const postPriceVal = calculated
+    ? currency === "USD"
+      ? Math.round(calculated.rateCard.deliverables.post.price / 85)
+      : Math.round(calculated.rateCard.deliverables.post.price)
+    : 0;
+
+  const storyPriceVal = calculated
+    ? currency === "USD"
+      ? Math.round(calculated.rateCard.deliverables.story.price / 85)
+      : Math.round(calculated.rateCard.deliverables.story.price)
+    : 0;
+
+  const bundlePriceVal = calculated
+    ? currency === "USD"
+      ? Math.round(calculated.rateCard.deliverables.reelBundle.price / 85)
+      : Math.round(calculated.rateCard.deliverables.reelBundle.price)
+    : 0;
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] flex flex-col font-sans relative overflow-hidden">
@@ -518,78 +547,173 @@ export default function PricingCalculator() {
               </div>
 
               {/* 3. HIGH-IMPACT ESTIMATED PRICING VALUATION BANNER */}
-              <div className="relative overflow-hidden rounded-3xl bg-zinc-950 text-white p-6 sm:p-8 shadow-xl border border-zinc-800">
-                {/* Ambient glow inside dark card */}
-                <div className="absolute top-0 right-0 w-80 h-80 bg-pink-500/15 rounded-full blur-3xl pointer-events-none -z-10" />
-                <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl pointer-events-none -z-10" />
+              {(() => {
+                const isUsd = currency === "USD";
+                const currSymbol = isUsd ? "$" : "₹";
+                const minVal = Math.round(isUsd ? (calculated.rateCard?.minEarnings || 0) / 85 : (calculated.rateCard?.minEarnings || 0));
+                const maxVal = Math.round(isUsd ? (calculated.rateCard?.maxEarnings || 0) / 85 : (calculated.rateCard?.maxEarnings || 0));
+                const reelPrice = Math.round(isUsd ? (calculated.rateCard?.deliverables?.reel?.price || 0) / 85 : (calculated.rateCard?.deliverables?.reel?.price || 0));
+                const postPrice = Math.round(isUsd ? (calculated.rateCard?.deliverables?.post?.price || 0) / 85 : (calculated.rateCard?.deliverables?.post?.price || 0));
+                const storyPrice = Math.round(isUsd ? (calculated.rateCard?.deliverables?.story?.price || 0) / 85 : (calculated.rateCard?.deliverables?.story?.price || 0));
+                const bundlePrice = Math.round(isUsd ? (calculated.rateCard?.deliverables?.reelBundle?.price || 0) / 85 : (calculated.rateCard?.deliverables?.reelBundle?.price || 0));
 
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
-                  <div>
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-500/20 text-[#FF1475] border border-pink-500/30 text-[11px] font-bold uppercase tracking-wider mb-2">
-                      <Sparkles size={12} />
-                      InfluRate™ Commercial Rate Card
-                    </span>
-                    <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
-                      {formatCurrency(minEarnings, currency)} - {formatCurrency(maxEarnings, currency)}
+                return (
+                  <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0B0F17] via-[#111724] to-[#0B0F17] text-white p-6 sm:p-8 md:p-10 shadow-2xl border border-zinc-800/80">
+                    {/* Dynamic Ambient Background Glows */}
+                    <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-[#FF1475]/25 to-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-gradient-to-tr from-purple-600/20 to-pink-500/15 rounded-full blur-3xl pointer-events-none" />
+
+                    <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                      <div className="space-y-2 max-w-2xl">
+                        {/* Eyebrow / Live Calibration Pill */}
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                          </span>
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-300">
+                            Live Estimated Valuation
+                          </span>
+                          <span className="text-zinc-600">•</span>
+                          <span className="text-[11px] font-medium text-pink-400">
+                            Market Calibrated
+                          </span>
+                        </div>
+
+                        {/* Valuation CountUp Numbers */}
+                        <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight flex flex-wrap items-baseline gap-2">
+                          <span className="bg-gradient-to-r from-white via-zinc-100 to-zinc-300 bg-clip-text text-transparent">
+                            {currSymbol}
+                            <CountUp
+                              key={`min-${currency}-${minVal}`}
+                              to={minVal}
+                              separator=","
+                              duration={1.6}
+                              className="font-black"
+                            />
+                          </span>
+                          <span className="text-zinc-500 font-bold text-2xl sm:text-3xl">-</span>
+                          <span className="bg-gradient-to-r from-pink-400 via-[#FF1475] to-purple-400 bg-clip-text text-transparent">
+                            {currSymbol}
+                            <CountUp
+                              key={`max-${currency}-${maxVal}`}
+                              to={maxVal}
+                              separator=","
+                              duration={1.8}
+                              className="font-black"
+                            />
+                          </span>
+                        </div>
+
+                        <p className="text-xs sm:text-sm text-zinc-400 font-medium leading-relaxed">
+                          Suggested benchmark per Post / Reel based on <strong className="text-white font-semibold">{formatCompact(profile.followers)}</strong> verified followers, <strong className="text-pink-400 font-semibold">{calculated.metrics.engagementRate}%</strong> ER, and current Indian creator market demand.
+                        </p>
+                      </div>
+
+                      {/* Rating Score Badge */}
+                      <div className="flex items-center gap-3.5 self-start md:self-center bg-zinc-900/80 border border-zinc-800/90 backdrop-blur-md p-3.5 sm:p-4 rounded-2xl shadow-lg flex-shrink-0">
+                        <div className="text-right">
+                          <span className="text-xs font-bold text-white block">
+                            Score: <CountUp key={`score-${calculated.overallRating.score}`} to={calculated.overallRating.score} duration={1.2} />/100 ({calculated.overallRating.grade})
+                          </span>
+                          <span className="text-[11px] text-zinc-400 font-medium block mt-0.5">
+                            Reach ({calculated.overallRating.breakdown.reachScore.score}/35) • Eng ({calculated.overallRating.breakdown.engagementScore.score}/35)
+                          </span>
+                        </div>
+                        <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-gradient-to-br from-[#FF1475] to-purple-600 text-white font-black text-lg sm:text-xl flex items-center justify-center shadow-lg shadow-pink-500/25 flex-shrink-0">
+                          <CountUp
+                            key={`badge-${calculated.overallRating.score}`}
+                            to={calculated.overallRating.score}
+                            duration={1.2}
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-xs sm:text-sm text-zinc-400 mt-1.5 font-medium max-w-xl">
-                      Suggested benchmark per Post / Reel based on {formatCompact(profile.followers)} verified followers, {calculated.metrics.engagementRate}% ER, and current Indian creator market demand.
-                    </p>
-                  </div>
 
-                  {/* Rating Score Badge */}
-                  <div className="flex items-center gap-3.5 self-start md:self-center bg-zinc-900/90 border border-zinc-800 p-3 rounded-2xl">
-                    <div className="text-right">
-                      <span className="text-xs font-bold text-white block">
-                        Score: {calculated.overallRating.score}/100 ({calculated.overallRating.grade})
-                      </span>
-                      <span className="text-[11px] text-zinc-400 font-medium">
-                        Reach ({calculated.overallRating.breakdown.reachScore.score}/35) • Eng ({calculated.overallRating.breakdown.engagementScore.score}/35)
-                      </span>
+                    {/* Deliverable Breakdown Grid */}
+                    <div className="mt-8 pt-6 border-t border-zinc-800/80 grid grid-cols-2 sm:grid-cols-4 gap-3.5 relative z-10">
+                      {/* Reel */}
+                      <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xs hover:border-zinc-700 transition group">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                            1x Reel
+                          </span>
+                          <Video size={12} className="text-pink-400 group-hover:scale-110 transition" />
+                        </div>
+                        <div className="text-base sm:text-lg font-black text-white">
+                          {currSymbol}
+                          <CountUp
+                            key={`reel-${currency}-${reelPrice}`}
+                            to={reelPrice}
+                            separator=","
+                            duration={1.4}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Post */}
+                      <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xs hover:border-zinc-700 transition group">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                            1x Feed Post
+                          </span>
+                          <Sparkles size={12} className="text-purple-400 group-hover:scale-110 transition" />
+                        </div>
+                        <div className="text-base sm:text-lg font-black text-white">
+                          {currSymbol}
+                          <CountUp
+                            key={`post-${currency}-${postPrice}`}
+                            to={postPrice}
+                            separator=","
+                            duration={1.4}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Story */}
+                      <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-xs hover:border-zinc-700 transition group">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                            Story (Set of 2)
+                          </span>
+                          <Zap size={12} className="text-amber-400 group-hover:scale-110 transition" />
+                        </div>
+                        <div className="text-base sm:text-lg font-black text-white">
+                          {currSymbol}
+                          <CountUp
+                            key={`story-${currency}-${storyPrice}`}
+                            to={storyPrice}
+                            separator=","
+                            duration={1.4}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Bundle */}
+                      <div className="p-3.5 rounded-2xl bg-gradient-to-br from-pink-950/40 via-zinc-900/70 to-purple-950/40 border border-pink-500/40 backdrop-blur-xs hover:border-pink-500/70 transition group relative">
+                        <span className="absolute -top-2.5 right-2 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-[#FF1475] to-purple-600 text-[9px] font-black uppercase text-white tracking-wider shadow-xs">
+                          Best Value
+                        </span>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-pink-300">
+                            3-Reel Bundle
+                          </span>
+                          <Flame size={12} className="text-pink-400 group-hover:scale-110 transition" />
+                        </div>
+                        <div className="text-base sm:text-lg font-black text-pink-400">
+                          {currSymbol}
+                          <CountUp
+                            key={`bundle-${currency}-${bundlePrice}`}
+                            to={bundlePrice}
+                            separator=","
+                            duration={1.5}
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-r from-[#FF1475] to-purple-600 text-white font-black text-lg flex items-center justify-center shadow-md flex-shrink-0">
-                      {calculated.overallRating.score}
-                    </div>
                   </div>
-                </div>
-
-                {/* Deliverable Breakdown Grid */}
-                <div className="mt-6 pt-6 border-t border-zinc-800/80 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
-                      1x Reel
-                    </span>
-                    <span className="text-sm sm:text-base font-black text-white mt-1 block">
-                      {formatCurrency(calculated.rateCard.deliverables.reel.price, currency)}
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
-                      1x Feed Post
-                    </span>
-                    <span className="text-sm sm:text-base font-black text-white mt-1 block">
-                      {formatCurrency(calculated.rateCard.deliverables.post.price, currency)}
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
-                      Story (Set of 2)
-                    </span>
-                    <span className="text-sm sm:text-base font-black text-white mt-1 block">
-                      {formatCurrency(calculated.rateCard.deliverables.story.price, currency)}
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
-                      3-Reel Bundle
-                    </span>
-                    <span className="text-sm sm:text-base font-black text-pink-400 mt-1 block">
-                      {formatCurrency(calculated.rateCard.deliverables.reelBundle.price, currency)}
-                    </span>
-                  </div>
-                </div>
-
-              </div>
+                );
+              })()}
 
             </motion.div>
           )}
