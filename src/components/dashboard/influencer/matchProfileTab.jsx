@@ -9,7 +9,7 @@ const PAYMENT_OPTIONS = [
   {
     id: "gifted",
     title: "Gifted",
-    desc: "You'll work with brands on just a gifted product and no payments. Social Cat is mainly a gifted influencer platform and we've only recently started testing paid and affiliate options.",
+    desc: "Collaborate with brands on gifted product campaigns without upfront fixed cash fees.",
   },
   {
     id: "paid",
@@ -30,20 +30,20 @@ function SectionLayout({ title, description, children, onSave, saving }) {
   return (
     <div className="grid md:grid-cols-[1fr_2.5fr] gap-6 items-start">
       <div>
-        <h3 className="font-bold text-[var(--color-text)] text-base">{title}</h3>
+        <h3 className="font-bold text-gray-900 text-sm tracking-tight">{title}</h3>
         {description && (
-          <p className="mt-1 text-xs text-[var(--color-text-light)] leading-relaxed">{description}</p>
+          <p className="mt-1 text-xs text-gray-500 leading-relaxed">{description}</p>
         )}
       </div>
-      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 shadow-[var(--shadow-card)] flex flex-col gap-5">
+      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xs flex flex-col gap-5">
         {children}
         {onSave && (
-          <div className="flex justify-end pt-2 border-t border-[var(--color-border)]">
+          <div className="flex justify-end pt-3 border-t border-gray-100">
             <button
               type="button"
               onClick={onSave}
               disabled={saving}
-              className="bg-black hover:bg-black/80 text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold shadow-xs transition active:scale-95 disabled:opacity-50 cursor-pointer"
             >
               {saving ? "Saving..." : "Save"}
             </button>
@@ -58,7 +58,7 @@ export default function MatchProfileTab({ profile, onUpdated }) {
   const [data, setData] = useState({
     campaignActive: profile?.matchProfile?.campaignActive ?? true,
     invitationsActive: profile?.matchProfile?.invitationsActive ?? true,
-    collaborationFormats: profile?.matchProfile?.collaborationFormats || ["Instagram Reels", "Instagram Stories", "Instagram Post"],
+    collaborationFormats: profile?.matchProfile?.collaborationFormats || [],
     paymentType: profile?.matchProfile?.paymentType || "gifted",
     minAskingPrice: profile?.matchProfile?.minAskingPrice ?? "",
     maxAskingPrice: profile?.matchProfile?.maxAskingPrice ?? "",
@@ -66,15 +66,15 @@ export default function MatchProfileTab({ profile, onUpdated }) {
     accountNiche:
       (Array.isArray(profile?.matchProfile?.niche) && profile.matchProfile.niche[0]) ||
       profile?.matchProfile?.accountNiche ||
-      "Lifestyle",
+      "",
     topics: profile?.matchProfile?.topics || [],
     leadTimeDays: profile?.matchProfile?.leadTimeDays ?? "",
-    preferredCompanies: profile?.matchProfile?.preferredCompanies || ["Software"],
-    audience: profile?.matchProfile?.audience || ["Men (25-44)"],
+    preferredCompanies: profile?.matchProfile?.preferredCompanies || [],
+    audience: profile?.matchProfile?.audience || [],
     followersLocations:
       profile?.matchProfile?.followersLocations ||
       profile?.matchProfile?.followersLocation ||
-      ["United States 🇺🇸"],
+      [],
   });
 
   // Sync state if profile prop updates after mounting
@@ -83,7 +83,7 @@ export default function MatchProfileTab({ profile, onUpdated }) {
       setData({
         campaignActive: profile.matchProfile.campaignActive ?? true,
         invitationsActive: profile.matchProfile.invitationsActive ?? true,
-        collaborationFormats: profile.matchProfile.collaborationFormats || ["Instagram Reels", "Instagram Stories", "Instagram Post"],
+        collaborationFormats: profile.matchProfile.collaborationFormats || [],
         paymentType: profile.matchProfile.paymentType || "gifted",
         minAskingPrice: profile.matchProfile.minAskingPrice ?? "",
         maxAskingPrice: profile.matchProfile.maxAskingPrice ?? "",
@@ -91,15 +91,15 @@ export default function MatchProfileTab({ profile, onUpdated }) {
         accountNiche:
           (Array.isArray(profile.matchProfile.niche) && profile.matchProfile.niche[0]) ||
           profile.matchProfile.accountNiche ||
-          "Lifestyle",
+          "",
         topics: profile.matchProfile.topics || [],
         leadTimeDays: profile.matchProfile.leadTimeDays ?? "",
-        preferredCompanies: profile.matchProfile.preferredCompanies || ["Software"],
-        audience: profile.matchProfile.audience || ["Men (25-44)"],
+        preferredCompanies: profile.matchProfile.preferredCompanies || [],
+        audience: profile.matchProfile.audience || [],
         followersLocations:
           profile.matchProfile.followersLocations ||
           profile.matchProfile.followersLocation ||
-          ["United States 🇺🇸"],
+          [],
       });
     }
   }, [profile]);

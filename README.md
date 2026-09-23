@@ -1,37 +1,49 @@
+Here's updated content for your README, filling in gaps between what's documented and what's actually built (based on the codebase — deliverable workflows, campaign wizard, org/team management, saved creator lists, etc. weren't reflected before):
+
+```markdown
 # Influenza
 
-A full-stack influencer marketing platform that connects brands and creators — discovery, campaign management, collaboration workflows, real-time messaging, and data-backed pricing, all in one workspace.
+A full-stack influencer marketing platform that connects brands and creators — discovery, campaign management, collaboration workflows, deliverable review, real-time messaging, and data-backed pricing, all in one workspace.
 
-Influenza gives **brands** the tools to launch campaigns, search and vet creators, and manage collaborations end-to-end, while giving **influencers** a dashboard to build their profile, manage a public portfolio, price their content fairly, and track their reputation — all backed by live data with no hardcoded placeholders.
+Influenza gives **brands** the tools to launch multi-step campaigns, search and vet creators, manage collaborations end-to-end (including deliverable review and revisions), and organize multiple sub-brands and team members — while giving **influencers** a dashboard to build their profile, manage a public portfolio, price their content fairly, submit and track deliverables, and build their reputation — all backed by live data with no hardcoded placeholders.
 
 ---
 
 ## Features
 
 ### For Brands
-- Company & product profile management (multiple products per brand)
-- Campaign (Opportunity) creation, editing, and status tracking
-- Creator search and discovery, filterable by platform and follower count
-- Collaboration request workflow (send, accept/reject, track)
-- Collaboration lifecycle tracking — deliverables, payment status, stage
+- Multi-brand organization support — manage several sub-brands under one account, each with its own logo, category, and campaigns
+- Team management — invite teammates with role-based access (Full Access, Campaign Manager, Reviewer, Viewer)
+- Product catalog management (multiple products per brand, physical or digital, image galleries)
+- **Campaign Wizard** — guided multi-step campaign creation: core details → campaign info (goal, platform, visibility) → creator targeting → deliverable specs (format, length, content type, creative guide) → payment terms & commissions
+- Creator search and discovery, filterable by platform, follower count, location, price, gender, age, ethnicity, and language
+- Saved Creators / Creator Lists — bookmark creators into favorites for later outreach
+- Collaboration request workflow (send, accept/reject, track) plus direct-invite and campaign-application flows
+- **Deliverable review workflow** — approve drafts, request revisions with feedback, approve live posts, auto-progress collaboration stage (application → content creation → review → posting → completed)
+- Kanban-style collaboration pipeline with drag-and-drop stage management, plus a table view
+- Creative Library — browse all campaign deliverables and product assets in one place
+- Leave ratings & reviews for creators after completed collaborations
 - Real-time dashboard stats (active campaigns, total collaborations)
 
 ### For Influencers
 - Persistent dashboard with live stats, no fabricated data
-- Multi-platform social account management (Instagram, YouTube, Twitter)
-- Up-to-3 niche/category selection for discoverability
-- **Match Profile** — collaboration formats, payment preferences, audience targeting, bio
+- Guided **Creator Onboarding** wizard — profile & demographics, pricing packages, payout setup, in three steps
+- Multi-platform social account management (currently Instagram, via live Apify scraping for follower/engagement sync)
+- Up-to-10 niche/category selection for discoverability (public category browse pages included)
+- **Match Profile** — collaboration formats, payment preferences (gifted/paid/affiliate), audience targeting, bio
 - **Rate Card Calculator** — data-driven pricing engine based on follower tier, engagement rate, niche, format, and market (India ₹ / Global $)
-- **Insider Rate** — a performance-adjusted rate multiplier calculated from real completed collaborations, ratings, and response time
+- **Insider Rate / Market Rate Benchmark** — a performance-adjusted rate multiplier calculated from real completed collaborations, ratings, and response time, with one-click "apply to packages"
+- **Deliverable submission workflow** — submit draft previews or live post URLs, receive brand feedback/revision requests, resubmit
 - **Content Gallery / Portfolio** — upload photos & videos, highlight up to 10 items, publicly browsable with no login required
 - **Reviews** — aggregate rating and individual brand reviews after completed collaborations
-- Campaign browsing and one-click applications
+- Campaign browsing and one-click applications (with profile-completeness gating)
 
 ### Platform-wide
 - JWT-based authentication with role-based protected routing (`brand` / `influencer`)
-- Real-time messaging between brands and influencers (Socket.IO)
+- Real-time messaging between brands and influencers (Socket.IO), with typing indicators, read receipts, and conversation deletion
 - Public, no-login Content Gallery and Category browsing
-- Instagram handle lookup for auto-filling rate card stats (via Apify)
+- Instagram handle lookup for auto-filling rate card stats (via Apify, with MongoDB-backed caching and fallback data for resilience)
+- Unified Partnerships Hub — a single, role-adapted view of invitations, active deals, and completed collaborations
 - Fully responsive, custom design system built on Tailwind CSS v4
 
 ---
@@ -46,6 +58,7 @@ Influenza gives **brands** the tools to launch campaigns, search and vet creator
 - Socket.IO Client
 - Framer Motion
 - Lucide React / React Icons
+- Radix UI (Avatar primitive)
 
 **Backend**
 - Node.js + Express
@@ -54,6 +67,7 @@ Influenza gives **brands** the tools to launch campaigns, search and vet creator
 - JWT (`jsonwebtoken`) authentication + `bcryptjs` password hashing
 - Multer (file uploads)
 - Apify Client (Instagram profile scraping)
+- `express-rate-limit` + `express-mongo-sanitize` for API hardening
 
 **Deployment**
 - Frontend: [Vercel](https://vercel.com/)
@@ -70,15 +84,16 @@ influenza/
 │   ├── components/
 │   │   ├── dashboard/
 │   │   │   ├── influencer/     # Influencer dashboard components
-│   │   │   └── brand/          # Brand dashboard components
+│   │   │   ├── brand/          # Brand dashboard components (incl. campaign-wizard/)
+│   │   │   └── common/         # Shared dashboard components (deliverable workflow, etc.)
 │   │   ├── auth/, common/, ui/, layout/, hero/, howItWorks/
 │   │   ├── product/, trust/, FAQ/, footer/, gallery/, pricing/
-│   │   └── creators/, categories/
+│   │   └── creators/, categories/, chat/, showscase/
 │   ├── pages/                  # Route-level pages
-│   ├── context/                # AuthContext, SocketContext
+│   ├── context/                # AuthContext, SocketContext, BrandContext
 │   ├── routes/                 # AppRoutes, ProtectedRoute
-│   ├── constants/               # Static data (niches, nav menu, etc.)
-│   ├── utils/                   # pricingEngine.js and other helpers
+│   ├── constants/               # Static data (niches, nav menu, taxonomy, etc.)
+│   ├── utils/                   # pricingEngine.js, influRateCalculator.js and other helpers
 │   ├── config/api.js            # Centralized API URL config
 │   └── theme/                   # colors.css, typography.css design tokens
 │
@@ -87,7 +102,7 @@ influenza/
 │   ├── controllers/             # Route handlers
 │   ├── routes/                  # Express routers
 │   ├── middleware/               # Auth + file upload middleware
-│   ├── services/                # Stats computation, Instagram scraping
+│   ├── services/                # Stats computation, Instagram scraping (Apify)
 │   ├── socket/                  # Socket.IO server (real-time messaging)
 │   └── server.js                # App entry point
 │
@@ -124,6 +139,8 @@ Fill in `backend/.env`:
 MONGO_URI=mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/influenza
 JWT_SECRET=replace_this_with_a_long_random_string
 PORT=5000
+CLIENT_URL=http://localhost:5173
+APIFY_TOKEN=your_apify_api_token_here
 IG_BUSINESS_ACCOUNT_ID=your_facebook_page_linked_ig_business_account_id
 FB_PAGE_ACCESS_TOKEN=your_long_lived_page_access_token
 ```
@@ -187,6 +204,7 @@ npm run dev      # starts Vite dev server, default http://localhost:5173
 | `MONGO_URI` | MongoDB Atlas connection string |
 | `JWT_SECRET` | Secret used to sign JWTs |
 | `PORT` | Port the API server runs on (default `5000`) |
+| `CLIENT_URL` | Frontend origin(s) allowed by CORS |
 | `IG_BUSINESS_ACCOUNT_ID` | Instagram Business Account ID (for the Instagram lookup feature) |
 | `FB_PAGE_ACCESS_TOKEN` | Long-lived Facebook Page access token |
 | `APIFY_TOKEN` | Apify API token, used to scrape public Instagram profile stats |
@@ -205,12 +223,13 @@ All routes are mounted under `/api`.
 
 | Base path | Purpose |
 |---|---|
-| `/api/auth` | Register, login, get current user |
+| `/api/auth` | Register, login, get current user, update password |
 | `/api/influencer` | Influencer profile, match profile, dashboard stats, rate cards, insider rate, gallery/portfolio, reviews, opportunities |
-| `/api/brand` | Brand profile, company info, products, campaigns, creator search, collaborations |
+| `/api/brand` | Brand profile, company info, brands (multi-brand), products, campaigns, creator search, collaborations, team, saved creators, creative library |
 | `/api/collaboration-requests` | Send/accept/reject collaboration requests (shared by both roles) |
+| `/api/collaborations/:collabId/deliverables` | Submit deliverables (influencer) and review/approve/request revisions (brand) |
 | `/api/messages` | Conversations and message history (real-time delivery via Socket.IO) |
-| `/api/public` | Public, no-auth endpoints — Instagram lookup, creators by category, content gallery |
+| `/api/public` | Public, no-auth endpoints — Instagram lookup, creators by category, creator discovery, creator profiles, content gallery, InfluRate calculator |
 
 Authenticated routes expect a bearer token:
 
@@ -243,7 +262,9 @@ Influenza uses a token-based design system rather than hardcoded styles:
 
 - [ ] Brand dashboard sidebar parity with the influencer sidebar
 - [ ] Migrate uploaded media from local disk to persistent cloud storage
-- [ ] Expand supported platforms beyond Instagram/YouTube/Twitter
+- [ ] Expand supported platforms beyond Instagram (YouTube, TikTok, Twitter fields already modeled but not fully wired)
+- [ ] Real payment/escrow processing (currently payment status is manually toggled by brands)
+- [ ] Google OAuth (UI stub present, not yet wired to a real provider)
 - [ ] Verified account badges and brand verification flow
 
 ---
@@ -252,8 +273,3 @@ Influenza uses a token-based design system rather than hardcoded styles:
 
 This project does not yet specify a license. Add a `LICENSE` file to declare one (e.g. MIT, Apache-2.0) before open-sourcing or distributing.
 
----
-
-## Acknowledgments
-
-- Design and UX inspired by [Social Cat](https://thesocialcat.com)

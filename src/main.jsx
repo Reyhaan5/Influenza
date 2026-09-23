@@ -5,13 +5,16 @@ import "./index.css";
 import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { SocketProvider } from "./context/SocketContext.jsx";
+import { BrandProvider } from "./context/BrandContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
       <SocketProvider>
-        <App />
+        <BrandProvider>
+          <App />
+        </BrandProvider>
       </SocketProvider>
     </AuthProvider>
   </StrictMode>
-);
+);

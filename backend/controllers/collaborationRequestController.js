@@ -1,17 +1,19 @@
+import mongoose from "mongoose";
 import CollaborationRequest from "../models/CollaborationRequest.js";
 import Opportunity from "../models/Opportunity.js";
 import Collaboration from "../models/Collaboration.js";
 import InfluencerProfile from "../models/InfluencerProfile.js";
+import User from "../models/User.js";
 
 // ======================================
 // CREATE A COLLABORATION REQUEST
 // Works both directions:
-//   - Brand -> Influencer: body { influencerId, opportunityId? }
+//   - Brand -> Influencer: body { influencerId, opportunityId?, message?, packageSelected? }
 //   - Influencer -> Brand: body { opportunityId }  (applying to an open campaign)
 // ======================================
 export const createRequest = async (req, res) => {
   try {
-    const { influencerId, opportunityId } = req.body;
+    const { influencerId, opportunityId, message, packageSelected } = req.body;
     const role = req.user.role;
 
     let brandId;
@@ -34,7 +36,40 @@ export const createRequest = async (req, res) => {
         return res.status(400).json({ message: "influencerId is required." });
       }
       brandId = req.user._id;
+
+      // Resolve target influencer User ID
       targetInfluencerId = influencerId;
+      if (mongoose.Types.ObjectId.isValid(influencerId)) {
+        const userDoc = await User.findById(influencerId);
+        if (userDoc) {
+          targetInfluencerId = userDoc._id;
+        } else {
+          const profileDoc = await InfluencerProfile.findById(influencerId);
+          if (profileDoc && profileDoc.user) {
+            targetInfluencerId = profileDoc.user;
+          }
+        }
+      } else {
+        const clean = String(influencerId).replace(/^@+/, "");
+        const profileDoc = await InfluencerProfile.findOne({
+          $or: [{ handle: influencerId }, { handle: `@${clean}` }, { handle: clean }],
+        });
+        if (profileDoc && profileDoc.user) {
+          targetInfluencerId = profileDoc.user;
+        }
+      }
+
+      // If target user is not in User collection (e.g. demo creator), ensure a valid placeholder
+      let targetUser = await User.findById(targetInfluencerId);
+      if (!targetUser) {
+        const demoEmail = `creator_${String(influencerId).slice(-6)}@influenza.ai`;
+        targetUser = await User.findOneAndUpdate(
+          { email: demoEmail },
+          { name: req.body.creatorName || "Featured Creator", role: "influencer" },
+          { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
+        targetInfluencerId = targetUser._id;
+      }
 
       if (opportunity && String(opportunity.brand) !== String(req.user._id)) {
         return res.status(403).json({ message: "That campaign doesn't belong to you." });
@@ -90,6 +125,8 @@ export const createRequest = async (req, res) => {
       brand: brandId,
       influencer: targetInfluencerId,
       initiatedBy: role,
+      message: message || undefined,
+      packageSelected: packageSelected || undefined,
       status: "pending",
       requestedAt: new Date(),
     });

@@ -80,7 +80,7 @@ export async function scrapeInstagram(username) {
 
     if (!tokens || tokens.length === 0) {
         throw new Error(
-            "No valid Apify API token configured. Please set APIFY_TOKENS or APIFY_TOKEN_1 in backend/.env"
+            "No valid Apify API token configured. Please set APIFY_TOKENS or APIFY_TOKEN_1 in backend/.env or your environment variables on Render."
         );
     }
 
@@ -155,6 +155,6 @@ export async function scrapeInstagram(username) {
 
     console.error("===== ALL APIFY ACCOUNTS EXHAUSTED / FAILED =====");
     throw new Error(
-        `All ${totalTokens} configured Apify account(s) failed or ran out of credits. Last error: ${lastError?.message || "Unknown error"}`
+        `All ${totalTokens} configured Apify account(s) failed or ran out of credits. Please update your APIFY_TOKENS in Render or backend/.env. Last error: ${lastError?.message || "Unknown error"}`
     );
 }

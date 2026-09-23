@@ -42,8 +42,8 @@ const influencerProfileSchema = new mongoose.Schema(
       birthday: { type: Date },
       gender: { type: String, default: "" },
       ethnicity: { type: String, default: "" },
-      languages: { type: [String], default: ["English"] },
-      petOwner: { type: String, enum: ["Yes", "No", "I have a cat", "I have a dog", "I have another pet"], default: "No" },
+      languages: { type: [String], default: [] },
+      petOwner: { type: String, enum: ["Yes", "No", "I have a cat", "I have a dog", "I have another pet", ""], default: "" },
     },
 
     address: {

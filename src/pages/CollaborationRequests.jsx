@@ -3,17 +3,15 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { Check, X, Clock, ArrowUpRight } from "lucide-react";
 
-import Navbar from "../components/layout/Navbar";
-import Section from "../components/common/Section";
-import BrandNav from "../components/dashboard/brand/BrandNav";
+import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../config/api";
 
 const STATUS_STYLES = {
-  pending: "bg-[var(--color-warning)]/10 text-[var(--color-warning)]",
-  accepted: "bg-[var(--color-success)]/10 text-[var(--color-success)]",
-  rejected: "bg-[var(--color-danger)]/10 text-[var(--color-danger)]",
+  pending: "bg-amber-50 text-amber-700 border border-amber-200/60",
+  accepted: "bg-emerald-50 text-emerald-700 border border-emerald-200/60",
+  rejected: "bg-red-50 text-red-700 border border-red-200/60",
 };
 
 function RequestRow({ request, isMyTurnToRespond, onRespond, responding }) {
@@ -25,27 +23,27 @@ function RequestRow({ request, isMyTurnToRespond, onRespond, responding }) {
       : "Unknown";
 
   return (
-    <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 shadow-[var(--shadow-card)] flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <p className="font-bold text-[var(--color-text)]">{otherPartyName}</p>
-        <p className="text-xs text-[var(--color-text-light)] mt-1">
+        <p className="font-bold text-gray-900 text-sm">{otherPartyName}</p>
+        <p className="text-xs text-gray-500 mt-1">
           {request.opportunity?.title || "Direct outreach"}
           {request.opportunity?.rewardValue ? ` · ${request.opportunity.rewardValue}` : ""}
         </p>
-        <p className="text-xs text-[var(--color-text-light)] mt-1">
+        <p className="text-[11px] text-gray-400 mt-1">
           {request.initiatedBy === "brand" ? "Brand reached out" : "Influencer applied"} ·{" "}
           {new Date(request.requestedAt || request.createdAt).toLocaleDateString()}
         </p>
       </div>
 
-      <div className="flex items-center gap-3 flex-shrink-0">
+      <div className="flex items-center gap-3 shrink-0">
         <span
-          className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full ${STATUS_STYLES[request.status]}`}
+          className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full ${STATUS_STYLES[request.status] || "bg-gray-100 text-gray-700"}`}
         >
-          {request.status === "pending" && <Clock size={13} />}
-          {request.status === "accepted" && <Check size={13} />}
-          {request.status === "rejected" && <X size={13} />}
-          {request.status}
+          {request.status === "pending" && <Clock size={12} />}
+          {request.status === "accepted" && <Check size={12} />}
+          {request.status === "rejected" && <X size={12} />}
+          <span className="capitalize">{request.status}</span>
         </span>
 
         {isMyTurnToRespond && request.status === "pending" && (
@@ -53,14 +51,14 @@ function RequestRow({ request, isMyTurnToRespond, onRespond, responding }) {
             <button
               onClick={() => onRespond(request._id, "accepted")}
               disabled={responding}
-              className="px-3 py-1.5 rounded-lg bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white text-xs font-semibold transition disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 disabled:opacity-50 cursor-pointer"
             >
               Accept
             </button>
             <button
               onClick={() => onRespond(request._id, "rejected")}
               disabled={responding}
-              className="px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text)] text-xs font-semibold hover:bg-[var(--color-background)] transition disabled:opacity-60"
+              className="px-3 py-1.5 rounded-xl border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition disabled:opacity-60 cursor-pointer"
             >
               Decline
             </button>
@@ -111,36 +109,36 @@ export default function CollaborationRequests() {
 
   const isBrand = user?.role === "brand";
 
-  const body = (
-    <>
-      {isBrand && <BrandNav />}
-
+  const content = (
+    <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">Collaboration Requests</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Collaboration Requests</h1>
+          <p className="text-xs text-gray-500 mt-1">Review incoming partnership applications and direct creator outreach.</p>
+        </div>
         {!isBrand && (
           <Link
             to="/opportunities"
-            className="flex items-center gap-1.5 text-sm font-bold text-[var(--color-primary-hover)] hover:underline"
+            className="flex items-center gap-1.5 text-xs font-bold text-[#c026d3] hover:underline"
           >
-            Browse open campaigns <ArrowUpRight size={16} />
+            Browse open campaigns <ArrowUpRight size={15} />
           </Link>
         )}
       </div>
 
       {loading ? (
-        <p className="text-[var(--color-text-light)]">Loading requests...</p>
+        <div className="py-20 text-center text-xs text-gray-400">Loading requests...</div>
       ) : requests.length === 0 ? (
-        <div className="text-center py-16 border border-dashed border-[var(--color-border)] rounded-2xl">
-          <p className="text-[var(--color-text-light)]">
+        <div className="text-center py-20 border border-dashed border-gray-200 rounded-3xl bg-white">
+          <p className="text-xs text-gray-500 font-medium">
             {isBrand
-              ? "No requests yet — send one from Search Creators."
+              ? "No requests yet — find and invite creators from Creator Discovery."
               : "No requests yet — brands you match with will show up here, or apply to a campaign."}
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           {requests.map((r) => {
-            // The viewer can respond if they did NOT initiate the request.
             const isMyTurnToRespond = r.initiatedBy !== user?.role;
             return (
               <RequestRow
@@ -154,17 +152,12 @@ export default function CollaborationRequests() {
           })}
         </div>
       )}
-    </>
+    </div>
   );
 
   if (isBrand) {
-    return (
-      <>
-        <Navbar />
-        <Section className="pt-32">{body}</Section>
-      </>
-    );
+    return <BrandDashboardLayout>{content}</BrandDashboardLayout>;
   }
 
-  return <InfluencerDashboardLayout>{body}</InfluencerDashboardLayout>;
+  return <InfluencerDashboardLayout>{content}</InfluencerDashboardLayout>;
 }

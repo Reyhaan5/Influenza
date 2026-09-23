@@ -11,6 +11,7 @@ import publicRoutes from "./routes/publicRoutes.js";
 import brandRoutes from "./routes/brandRoutes.js";
 import collaborationRequestRoutes from "./routes/collaborationRequestRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import deliverableRoutes from "./routes/deliverableRoutes.js";
 import { initSocket } from "./socket/index.js";
 
 // Registering every model here ensures Mongoose knows about them before
@@ -21,42 +22,50 @@ import "./models/InfluencerProfile.js";
 import "./models/Opportunity.js";
 import "./models/CollaborationRequest.js";
 import "./models/Collaboration.js";
+import "./models/Deliverable.js";
 import "./models/ContentPost.js";
 import "./models/Review.js";
+import "./models/Brand.js";
 import "./models/Product.js";
 import "./models/Conversation.js";
 import "./models/Message.js";
 import "./models/GalleryContent.js";
+import "./models/InstagramCache.js";
 
-dotenv.config(); // loads variables from .env into process.env
+import path from "path";
+import { fileURLToPath } from "url";
+import { corsOptions } from "./config/cors.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.join(__dirname, ".env") });
+dotenv.config(); // fallback
 connectDB(); // connect to MongoDB Atlas (see config/db.js)
 
 const app = express();
 
+// Trust reverse proxy (needed for Render / Heroku / Vercel to correctly identify client IP)
+app.set("trust proxy", 1);
+
 // ---------- Security Middleware ----------
 
-// CORS — only allow requests from the frontend origin
-const allowedOrigins = [
-  process.env.CLIENT_URL,
-  "http://localhost:5173",
-].filter(Boolean);
+// CORS — support dynamic Vercel preview URLs, localhost, and CLIENT_URL
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
-app.use(cors({ origin: allowedOrigins, credentials: true }));
-
-// Global rate limiter — 100 requests per 15 minutes per IP
+// Global rate limiter — generous threshold for SPA navigation & multi-endpoint dashboards
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: process.env.NODE_ENV === "production" ? 1000 : 5000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many requests, please try again later." },
 });
 app.use(globalLimiter);
 
-// Stricter rate limiter for auth routes — 10 requests per 15 minutes
+// Rate limiter for auth routes
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 50,
   message: { error: "Too many login attempts, please try again later." },
 });
 
@@ -66,8 +75,9 @@ app.use(express.json());
 // Sanitize user input — prevents NoSQL injection via $gt, $ne, etc.
 app.use(mongoSanitize());
 
-// Serves uploaded product images statically
+// Serves uploaded product images statically (both /uploads and /api/uploads)
 app.use("/uploads", express.static("uploads"));
+app.use("/api/uploads", express.static("uploads"));
 
 // ---------- Routes ----------
 
@@ -82,6 +92,8 @@ app.use("/api/brand", brandRoutes);
 app.use("/api/collaboration-requests", collaborationRequestRoutes);
 // Every URL starting with /api/messages goes to messageRoutes.js
 app.use("/api/messages", messageRoutes);
+// Deliverables workflow
+app.use("/api/collaborations/:collabId/deliverables", deliverableRoutes);
 
 // Simple health check — visit http://localhost:5000/ to confirm it's running
 app.get("/", (req, res) => {

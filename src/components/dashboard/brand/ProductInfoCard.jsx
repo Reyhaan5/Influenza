@@ -13,33 +13,35 @@ export default function ProductInfoCard({
   onCancelEdit,
 }) {
   return (
-    <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 shadow-[var(--shadow-card)]">
+    <div className="bg-white border border-zinc-200/90 rounded-3xl p-6 sm:p-7 shadow-sm">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-2xl bg-zinc-100/90 border border-zinc-200/80 text-zinc-900 flex items-center justify-center">
+            <Package size={18} />
+          </div>
 
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-2">
-          <Package
-            size={18}
-            className="text-[var(--color-primary)]"
-          />
-
-          <h3 className="text-lg font-bold text-[var(--color-text)]">
-            {isEditing ? "Edit Product" : "Add a Product"}
-          </h3>
+          <div>
+            <h3 className="text-lg font-black text-zinc-950">
+              {isEditing ? "Edit Product" : "Add a Product"}
+            </h3>
+            <p className="text-xs text-zinc-500 font-medium">
+              Configure product details, target demographics, and pricing.
+            </p>
+          </div>
         </div>
 
         {isEditing && (
           <button
             onClick={onCancelEdit}
-            className="flex items-center gap-1 text-xs font-semibold text-[var(--color-text-light)] hover:text-[var(--color-text)]"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-zinc-200 text-xs font-bold text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50 transition cursor-pointer"
           >
             <X size={14} />
-            Cancel
+            <span>Cancel</span>
           </button>
         )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
         <Input
           label="Product / Brand Name"
           value={details.productName}
@@ -50,36 +52,36 @@ export default function ProductInfoCard({
         <Input
           label="Product Category"
           value={details.productCategory}
-          placeholder="Fashion, Electronics..."
+          placeholder="Fashion, Electronics, Food..."
           onChange={(e) => onChange("productCategory", e.target.value)}
         />
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2">
             Product Description
           </label>
-          <p className="text-xs text-[var(--color-text-light)] mb-2">
+          <p className="text-xs text-zinc-400 font-medium mb-2">
             One point per line — each line becomes a separate bullet point.
           </p>
 
           <textarea
-            rows={6}
+            rows={5}
             value={details.productDescription}
             placeholder={"Premium 100% cotton fabric\nHandcrafted by local artisans\nMachine washable, colorfast dye"}
             onChange={(e) => onChange("productDescription", e.target.value)}
-            className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+            className="w-full rounded-2xl border border-zinc-200 bg-zinc-50/60 px-4 py-3 text-xs font-medium text-zinc-950 resize-none focus:outline-none focus:border-zinc-950 focus:bg-white"
           />
         </div>
 
         {/* Target Gender */}
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2">
             Target Gender
           </label>
           <select
             value={details.targetGender}
             onChange={(e) => onChange("targetGender", e.target.value)}
-            className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+            className="w-full rounded-2xl border border-zinc-200 bg-zinc-50/60 px-4 py-3 text-xs font-semibold text-zinc-900 focus:outline-none focus:border-zinc-950 focus:bg-white"
           >
             {GENDER_OPTIONS.map((g) => (
               <option key={g} value={g}>{g}</option>
@@ -89,13 +91,13 @@ export default function ProductInfoCard({
 
         {/* Target Age Group */}
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2">
             Target Age Group
           </label>
           <select
             value={details.targetAgeGroup}
             onChange={(e) => onChange("targetAgeGroup", e.target.value)}
-            className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+            className="w-full rounded-2xl border border-zinc-200 bg-zinc-50/60 px-4 py-3 text-xs font-semibold text-zinc-900 focus:outline-none focus:border-zinc-950 focus:bg-white"
           >
             {AGE_OPTIONS.map((a) => (
               <option key={a} value={a}>{a}</option>
@@ -106,7 +108,7 @@ export default function ProductInfoCard({
         {/* Custom Age — only shown when "Custom" is picked above */}
         {details.targetAgeGroup === "Custom" && (
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+            <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2">
               Custom Age Range
             </label>
             <input
@@ -114,13 +116,13 @@ export default function ProductInfoCard({
               value={details.targetAgeCustom}
               placeholder="e.g. 28-52 or 60+"
               onChange={(e) => onChange("targetAgeCustom", e.target.value)}
-              className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+              className="w-full rounded-2xl border border-zinc-200 bg-zinc-50/60 px-4 py-3 text-xs font-semibold text-zinc-950 focus:outline-none focus:border-zinc-950 focus:bg-white"
             />
           </div>
         )}
 
         <Input
-          label="Product Price"
+          label="Product Price (₹ INR)"
           type="number"
           value={details.productPrice}
           placeholder="999"
@@ -128,7 +130,7 @@ export default function ProductInfoCard({
         />
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2">
             Product Image {isEditing && "(leave empty to keep current image)"}
           </label>
 
@@ -136,17 +138,16 @@ export default function ProductInfoCard({
             type="file"
             accept="image/*"
             onChange={(e) => onChange("productImageFile", e.target.files[0])}
-            className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-2"
+            className="w-full rounded-2xl border border-zinc-200 bg-zinc-50/60 px-4 py-2.5 text-xs text-zinc-700 file:mr-4 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-zinc-950 file:text-white hover:file:bg-zinc-800 cursor-pointer"
           />
         </div>
-
       </div>
 
       <div className="flex justify-end gap-3 mt-8">
         {isEditing && (
           <button
             onClick={onCancelEdit}
-            className="px-6 py-3 rounded-xl border border-[var(--color-border)] text-[var(--color-text)] font-semibold hover:bg-[var(--color-background)] transition"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-900 text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer"
           >
             Cancel
           </button>
@@ -155,14 +156,13 @@ export default function ProductInfoCard({
         <button
           onClick={onSave}
           disabled={saving}
-          className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white font-semibold px-8 py-3 rounded-xl transition disabled:opacity-60"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm transition active:scale-95 cursor-pointer disabled:opacity-60"
         >
           {saving
             ? (isEditing ? "Updating..." : "Adding...")
             : (isEditing ? "Update Product" : "Add Product")}
         </button>
       </div>
-
     </div>
   );
 }
@@ -170,7 +170,7 @@ export default function ProductInfoCard({
 function Input({ label, value, onChange, placeholder, type = "text" }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+      <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2">
         {label}
       </label>
 
@@ -179,7 +179,7 @@ function Input({ label, value, onChange, placeholder, type = "text" }) {
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+        className="w-full rounded-2xl border border-zinc-200 bg-zinc-50/60 px-4 py-3 text-xs font-semibold text-zinc-950 focus:outline-none focus:border-zinc-950 focus:bg-white"
       />
     </div>
   );
