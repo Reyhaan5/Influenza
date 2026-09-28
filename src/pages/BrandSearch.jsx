@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { Search as SearchIcon } from "lucide-react";
-
 import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 import CreatorSearchCard from "../components/dashboard/brand/CreatorSearchCard";
-import { API_URL } from "../config/api";
+import api from "../config/api";
 
 const PLATFORMS = ["Instagram"];
 
@@ -18,16 +16,13 @@ export default function BrandSearch() {
   const [requestStatuses, setRequestStatuses] = useState({});
   const [sendingId, setSendingId] = useState(null);
 
-  const token = localStorage.getItem("token");
-  const authHeader = { headers: { Authorization: `Bearer ${token}` } };
-
   const handleSendRequest = async (profile) => {
     const influencerId = profile.user?._id;
     if (!influencerId) return;
 
     setSendingId(influencerId);
     try {
-      await axios.post(`${API_URL}/collaboration-requests`, { influencerId }, authHeader);
+      await api.post("/collaboration-requests", { influencerId });
       setRequestStatuses((prev) => ({ ...prev, [influencerId]: "pending" }));
     } catch (error) {
       console.error(error);
@@ -46,10 +41,7 @@ export default function BrandSearch() {
       if (platform) params.platform = platform;
       if (minFollowers) params.minFollowers = minFollowers;
 
-      const res = await axios.get(`${API_URL}/brand/search-creators`, {
-        ...authHeader,
-        params,
-      });
+      const res = await api.get("/brand/search-creators", { params });
       setResults(res.data.creators || []);
     } catch (error) {
       console.error(error);
@@ -93,7 +85,7 @@ export default function BrandSearch() {
         <button
           onClick={handleSearch}
           disabled={loading}
-          className="flex items-center justify-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white font-semibold px-5 py-2.5 rounded-xl transition disabled:opacity-60"
+          className="flex items-center justify-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white font-semibold px-5 py-2.5 rounded-xl transition disabled:opacity-60 cursor-pointer"
         >
           <SearchIcon size={16} /> {loading ? "Searching..." : "Search"}
         </button>

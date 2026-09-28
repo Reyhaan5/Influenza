@@ -1,36 +1,14 @@
-// src/pages/PricingCalculator.jsx — Modern Influenza Engagement & Pricing Calculator
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Users,
-  Heart,
-  MessageCircle,
-  TrendingUp,
-  Play,
-  CheckCircle2,
-  RefreshCw,
-  ExternalLink,
-  ShieldCheck,
-  ArrowRight,
-  Sparkles,
-  Layers,
-  AlertCircle,
-  HelpCircle,
-  Video,
-  Flame,
-  Zap,
-  DollarSign,
-  Award,
-  Check,
-  BarChart3,
+  Heart, MessageCircle, TrendingUp, Play, CheckCircle2,
+  RefreshCw, ArrowRight, Sparkles, AlertCircle, HelpCircle,
+  Video, Flame, Zap, Award, BarChart3,
 } from "lucide-react";
 import { FaInstagram as InstagramIcon } from "react-icons/fa";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/footer/Footer";
-import ArrowFillButton from "../components/common/ArrowFillButton";
-import CountUp from "../components/ui/CountUp";
-import { QualityPill } from "../components/ui/QualityBadge";
 import { calculateInfluRate, formatCompact } from "../utils/influRateCalculator";
 import api from "../config/api";
 
@@ -44,22 +22,10 @@ const POPULAR_PROFILES = [
 ];
 
 const FAQS = [
-  {
-    q: "How does Influenza calculate estimated pricing?",
-    a: "Our algorithm blends real-time follower counts, median engagement rates, audience quality score (AQS), and recent Reel performance benchmarks tailored to the Indian and global creator market.",
-  },
-  {
-    q: "Is the profile lookup live and accurate?",
-    a: "Yes. When you enter a public handle, Influenza pulls live public Instagram engagement metrics and runs quality audits directly.",
-  },
-  {
-    q: "How should creators use this rate card?",
-    a: "Creators can quote these fair-market estimates to brands, ensuring they are not undercharging for high-retention content formats.",
-  },
-  {
-    q: "Can brands use this to negotiate?",
-    a: "Absolutely. Brands use our AQS (Audience Quality Score) and InfluRate benchmarks to ensure transparent ROI and fair creator compensation.",
-  },
+  { q: "How does Influenza calculate estimated pricing?", a: "Our algorithm blends real-time follower counts, median engagement rates, audience quality score (AQS), and recent Reel performance benchmarks tailored to the Indian and global creator market." },
+  { q: "Is the profile lookup live and accurate?", a: "Yes. When you enter a public handle, Influenza pulls live public Instagram engagement metrics and runs quality audits directly." },
+  { q: "How should creators use this rate card?", a: "Creators can quote these fair-market estimates to brands, ensuring they are not undercharging for high-retention content formats." },
+  { q: "Can brands use this to negotiate?", a: "Absolutely. Brands use our AQS (Audience Quality Score) and InfluRate benchmarks to ensure transparent ROI and fair creator compensation." },
 ];
 
 export default function PricingCalculator() {
@@ -72,7 +38,6 @@ export default function PricingCalculator() {
   const handleSearch = async (targetHandle) => {
     const rawHandle = (targetHandle || handleInput || "").trim().replace(/^@/, "").toLowerCase();
     if (!rawHandle) return;
-
     setSearching(true);
     setErrorNotice("");
 
@@ -123,32 +88,18 @@ export default function PricingCalculator() {
 
   const deliverables = calculated
     ? [
-        {
-          name: "1x Dedicated Instagram Reel",
-          desc: "Full dedicated 30-60s Reel with audio overlay, caption CTA & profile tag",
-          price: toCurr(calculated.rateCard.deliverables.reel.price),
-          badge: "Most Popular",
-          icon: <Video size={18} className="text-[#FF1475]" />,
-        },
-        {
-          name: "1x In-Feed Photo Post / Carousel",
-          desc: "High-resolution product showcase photo or carousel with brand tag",
-          price: toCurr(calculated.rateCard.deliverables.post.price),
-          icon: <Heart size={18} className="text-pink-500" />,
-        },
-        {
-          name: "2x Instagram Stories with Link",
-          desc: "2x 24hr sequential Stories with clickable Link sticker & swipe-up CTA",
-          price: toCurr(calculated.rateCard.deliverables.story.price),
-          icon: <Zap size={18} className="text-amber-500" />,
-        },
-        {
-          name: "Full Campaign Power Bundle",
-          desc: "1x Reel + 1x In-Feed Post + 2x Stories (15% integrated bundle savings)",
-          price: toCurr(calculated.rateCard.deliverables.bundle.price),
-          badge: "Best Value",
-          icon: <Award size={18} className="text-purple-600" />,
-        },
+        { name: "1x Dedicated Instagram Reel", desc: "Full dedicated 30-60s Reel with audio overlay, caption CTA & profile tag", price: toCurr(calculated.rateCard.deliverables.reel.price), badge: "Most Popular", icon: <Video size={18} className="text-[#FF1475]" /> },
+        { name: "1x In-Feed Photo Post / Carousel", desc: "High-resolution product showcase photo or carousel with brand tag", price: toCurr(calculated.rateCard.deliverables.post.price), icon: <Heart size={18} className="text-pink-500" /> },
+        { name: "2x Instagram Stories with Link", desc: "2x 24hr sequential Stories with clickable Link sticker & swipe-up CTA", price: toCurr(calculated.rateCard.deliverables.story.price), icon: <Zap size={18} className="text-amber-500" /> },
+        { name: "Full Campaign Power Bundle", desc: "1x Reel + 1x In-Feed Post + 2x Stories (15% integrated bundle savings)", price: toCurr(calculated.rateCard.deliverables.bundle.price), badge: "Best Value", icon: <Award size={18} className="text-purple-600" /> },
+      ]
+    : [];
+
+  const statCards = profile
+    ? [
+        { label: "Avg Likes", icon: Heart, iconClass: "text-[#FF1475] fill-[#FF1475]", bgClass: "bg-pink-50", value: formatCompact(profile.avgLikes), sub: "per post" },
+        { label: "Avg Comments", icon: MessageCircle, iconClass: "text-purple-600 fill-purple-600", bgClass: "bg-purple-50", value: formatCompact(profile.avgComments), sub: "per post" },
+        { label: "Avg Reel Plays", icon: Play, iconClass: "text-blue-600 fill-blue-600", bgClass: "bg-blue-50", value: formatCompact(profile.avgViews), sub: "per Reel" },
       ]
     : [];
 
@@ -182,7 +133,7 @@ export default function PricingCalculator() {
             className="mt-8 flex flex-col sm:flex-row items-center gap-2 max-w-xl mx-auto bg-white border border-zinc-200/90 rounded-2xl sm:rounded-full p-2 pl-5 shadow-lg shadow-zinc-200/50"
           >
             <div className="flex items-center flex-1 w-full px-2">
-              <span className="text-zinc-400 font-bold text-base mr-1.5 flex-shrink-0">@</span>
+              <span className="text-zinc-400 font-bold text-base mr-1.5 shrink-0">@</span>
               <input
                 type="text"
                 value={handleInput}
@@ -194,7 +145,7 @@ export default function PricingCalculator() {
             <button
               type="submit"
               disabled={searching}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 rounded-xl sm:rounded-full bg-gradient-to-r from-[#FF1475] to-purple-600 hover:from-[#e00f65] hover:to-purple-700 text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95 disabled:opacity-50 flex-shrink-0 cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 rounded-xl sm:rounded-full bg-gradient-to-r from-[#FF1475] to-purple-600 hover:from-[#e00f65] hover:to-purple-700 text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95 disabled:opacity-50 shrink-0 cursor-pointer"
             >
               {searching ? (
                 <>
@@ -233,7 +184,7 @@ export default function PricingCalculator() {
 
           {errorNotice && (
             <div className="mt-5 inline-flex items-center gap-2 text-xs font-semibold text-red-700 bg-red-50 border border-red-200 px-4 py-2.5 rounded-2xl text-left shadow-xs">
-              <AlertCircle size={15} className="flex-shrink-0 text-red-600" />
+              <AlertCircle size={15} className="shrink-0 text-red-600" />
               <span>{errorNotice}</span>
             </div>
           )}
@@ -242,7 +193,6 @@ export default function PricingCalculator() {
         {/* Dynamic Profile Results */}
         {profile && calculated && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-            {/* Currency Toggle */}
             <div className="flex items-center justify-between sm:justify-end gap-2.5">
               <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Currency:</span>
               <div className="inline-flex rounded-full p-1 bg-white border border-zinc-200/90 text-xs font-bold shadow-xs">
@@ -263,9 +213,8 @@ export default function PricingCalculator() {
 
             {/* Top Stats Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-              {/* Profile Card */}
               <div className="col-span-2 sm:col-span-2 lg:col-span-1 rounded-2xl border border-zinc-200/90 bg-white p-4 shadow-xs flex items-center gap-3.5">
-                <div className="relative flex-shrink-0">
+                <div className="relative shrink-0">
                   <img
                     src={profile.avatar}
                     alt={profile.handle}
@@ -283,7 +232,7 @@ export default function PricingCalculator() {
                 <div className="min-w-0 flex-1">
                   <h3 className="font-bold text-sm text-zinc-950 truncate flex items-center gap-1">
                     <span className="truncate">{profile.fullName}</span>
-                    <InstagramIcon size={12} className="text-pink-500 flex-shrink-0" />
+                    <InstagramIcon size={12} className="text-pink-500 shrink-0" />
                   </h3>
                   <p className="text-xs text-zinc-500 font-semibold truncate mt-0.5">
                     {formatCompact(profile.followers)} Followers
@@ -295,7 +244,7 @@ export default function PricingCalculator() {
               <div className="col-span-1 rounded-2xl border border-pink-200 bg-gradient-to-br from-pink-50/80 via-white to-purple-50/80 p-4 shadow-xs flex flex-col justify-between">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-zinc-600">Engagement</span>
-                  <div className="h-6 w-6 rounded-lg bg-gradient-to-r from-[#FF1475] to-purple-600 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+                  <div className="h-6 w-6 rounded-lg bg-gradient-to-r from-[#FF1475] to-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs">
                     <TrendingUp size={13} />
                   </div>
                 </div>
@@ -309,47 +258,20 @@ export default function PricingCalculator() {
                 </div>
               </div>
 
-              {/* Avg Likes */}
-              <div className="col-span-1 rounded-2xl border border-zinc-200/90 bg-white p-4 shadow-xs flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-zinc-500">Avg Likes</span>
-                  <div className="h-6 w-6 rounded-lg bg-pink-50 text-[#FF1475] flex items-center justify-center flex-shrink-0">
-                    <Heart size={13} className="fill-[#FF1475]" />
+              {statCards.map((sc, i) => (
+                <div key={i} className="col-span-1 rounded-2xl border border-zinc-200/90 bg-white p-4 shadow-xs flex flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-zinc-500">{sc.label}</span>
+                    <div className={`h-6 w-6 rounded-lg ${sc.bgClass} flex items-center justify-center shrink-0`}>
+                      <sc.icon size={13} className={sc.iconClass} />
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <span className="text-2xl font-black text-zinc-950 tracking-tight">{sc.value}</span>
+                    <span className="block text-[11px] text-zinc-400 font-medium mt-0.5">{sc.sub}</span>
                   </div>
                 </div>
-                <div className="mt-2">
-                  <span className="text-2xl font-black text-zinc-950 tracking-tight">{formatCompact(profile.avgLikes)}</span>
-                  <span className="block text-[11px] text-zinc-400 font-medium mt-0.5">per post</span>
-                </div>
-              </div>
-
-              {/* Avg Comments */}
-              <div className="col-span-1 rounded-2xl border border-zinc-200/90 bg-white p-4 shadow-xs flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-zinc-500">Avg Comments</span>
-                  <div className="h-6 w-6 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center flex-shrink-0">
-                    <MessageCircle size={13} className="fill-purple-600" />
-                  </div>
-                </div>
-                <div className="mt-2">
-                  <span className="text-2xl font-black text-zinc-950 tracking-tight">{formatCompact(profile.avgComments)}</span>
-                  <span className="block text-[11px] text-zinc-400 font-medium mt-0.5">per post</span>
-                </div>
-              </div>
-
-              {/* Avg Reel Plays */}
-              <div className="col-span-1 rounded-2xl border border-zinc-200/90 bg-white p-4 shadow-xs flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-zinc-500">Avg Reel Plays</span>
-                  <div className="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
-                    <Play size={13} className="fill-blue-600" />
-                  </div>
-                </div>
-                <div className="mt-2">
-                  <span className="text-2xl font-black text-zinc-950 tracking-tight">{formatCompact(profile.avgViews)}</span>
-                  <span className="block text-[11px] text-zinc-400 font-medium mt-0.5">per Reel</span>
-                </div>
-              </div>
+              ))}
             </div>
 
             {/* Estimated Earnings Spotlight Banner */}
@@ -367,7 +289,7 @@ export default function PricingCalculator() {
               </div>
               <Link
                 to={`/creator-discovery?q=${profile.handle}`}
-                className="px-6 py-3 rounded-2xl bg-white hover:bg-zinc-100 text-zinc-900 font-bold text-xs shadow-lg transition active:scale-95 flex-shrink-0"
+                className="px-6 py-3 rounded-2xl bg-white hover:bg-zinc-100 text-zinc-900 font-bold text-xs shadow-lg transition active:scale-95 shrink-0"
               >
                 Find Similar Creators
               </Link>
@@ -381,10 +303,7 @@ export default function PricingCalculator() {
               </h2>
               <div className="grid sm:grid-cols-2 gap-4">
                 {deliverables.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs flex flex-col justify-between hover:border-zinc-300 transition"
-                  >
+                  <div key={idx} className="rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs flex flex-col justify-between hover:border-zinc-300 transition">
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
@@ -392,18 +311,14 @@ export default function PricingCalculator() {
                           <h4 className="font-extrabold text-sm text-zinc-950">{item.name}</h4>
                         </div>
                         {item.badge && (
-                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-pink-100 text-[#FF1475]">
-                            {item.badge}
-                          </span>
+                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-pink-100 text-[#FF1475]">{item.badge}</span>
                         )}
                       </div>
                       <p className="text-xs text-zinc-500 leading-relaxed">{item.desc}</p>
                     </div>
                     <div className="mt-4 pt-3 border-t border-zinc-100 flex items-center justify-between">
                       <span className="text-xs text-zinc-400 font-semibold">Suggested Rate</span>
-                      <span className="text-xl font-black text-zinc-950">
-                        {currSymbol}{item.price.toLocaleString()}
-                      </span>
+                      <span className="text-xl font-black text-zinc-950">{currSymbol}{item.price.toLocaleString()}</span>
                     </div>
                   </div>
                 ))}
@@ -419,7 +334,7 @@ export default function PricingCalculator() {
             {FAQS.map((faq, i) => (
               <div key={i} className="bg-white border border-zinc-200/80 rounded-2xl p-5 shadow-xs">
                 <h4 className="font-bold text-sm text-zinc-900 mb-1.5 flex items-center gap-2">
-                  <HelpCircle size={15} className="text-[#FF1475] flex-shrink-0" />
+                  <HelpCircle size={15} className="text-[#FF1475] shrink-0" />
                   <span>{faq.q}</span>
                 </h4>
                 <p className="text-xs text-zinc-600 leading-relaxed pl-6">{faq.a}</p>

@@ -1,19 +1,22 @@
 import React, { useEffect, useState, useMemo } from "react";
 import {
-  Search,
-  ChevronDown,
-  Info,
-  Pencil,
-  Plus,
-  ExternalLink,
-  Trash2,
-  RefreshCw,
-  Building2,
+  Search, ChevronDown, Info, Pencil, Plus, Trash2, RefreshCw, Building2
 } from "lucide-react";
-
 import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 import BrandModal from "../components/dashboard/brand/campaign-wizard/BrandModal";
-import api, { API_URL } from "../config/api";
+import api, { API_ORIGIN } from "../config/api";
+
+function BrandAvatar({ brand, className = "w-9 h-9 rounded-full" }) {
+  if (brand?.logo) {
+    const src = brand.logo.startsWith("http") ? brand.logo : `${API_ORIGIN}${brand.logo}`;
+    return <img src={src} alt={brand.name} className={`${className} object-cover border border-gray-200 shrink-0`} onError={(e) => { e.target.style.display = "none"; }} />;
+  }
+  return (
+    <div className={`${className} bg-amber-500 text-white font-bold flex items-center justify-center text-xs shrink-0`}>
+      {brand?.name?.substring(0, 3).toUpperCase()}
+    </div>
+  );
+}
 
 export default function BrandOrganizationBrands() {
   const [brands, setBrands] = useState([]);
@@ -44,9 +47,7 @@ export default function BrandOrganizationBrands() {
     const newStatus = brand.status === "inactive" ? "active" : "inactive";
     try {
       const res = await api.put(`/brand/brands/${brand._id}`, { status: newStatus });
-      setBrands((prev) =>
-        prev.map((b) => (b._id === brand._id ? res.data.brand : b))
-      );
+      setBrands((prev) => prev.map((b) => (b._id === brand._id ? res.data.brand : b)));
     } catch (err) {
       console.error(err);
       alert("Failed to update status.");
@@ -56,10 +57,7 @@ export default function BrandOrganizationBrands() {
   const handleBrandSaved = (savedBrand) => {
     setBrands((prev) => {
       const exists = prev.some((b) => b._id === savedBrand._id);
-      if (exists) {
-        return prev.map((b) => (b._id === savedBrand._id ? savedBrand : b));
-      }
-      return [savedBrand, ...prev];
+      return exists ? prev.map((b) => (b._id === savedBrand._id ? savedBrand : b)) : [savedBrand, ...prev];
     });
     setShowBrandModal(false);
     setEditingBrand(null);
@@ -67,9 +65,7 @@ export default function BrandOrganizationBrands() {
 
   const handleDeleteBrand = async (brandId, e) => {
     if (e) e.stopPropagation();
-    const confirmed = window.confirm("Are you sure you want to remove this brand?");
-    if (!confirmed) return;
-
+    if (!window.confirm("Are you sure you want to remove this brand?")) return;
     try {
       await api.delete(`/brand/brands/${brandId}`);
       setBrands((prev) => prev.filter((b) => b._id !== brandId));
@@ -82,11 +78,8 @@ export default function BrandOrganizationBrands() {
   const filteredBrands = useMemo(() => {
     return brands.filter((b) => {
       if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase();
-        const matchesName = b.name?.toLowerCase().includes(query);
-        const matchesLink = b.websiteOrSocialLink?.toLowerCase().includes(query);
-        const matchesCat = b.category?.toLowerCase().includes(query);
-        if (!matchesName && !matchesLink && !matchesCat) return false;
+        const q = searchQuery.toLowerCase();
+        if (!b.name?.toLowerCase().includes(q) && !b.websiteOrSocialLink?.toLowerCase().includes(q) && !b.category?.toLowerCase().includes(q)) return false;
       }
       if (statusFilter) {
         const isInactive = b.status === "inactive";
@@ -100,15 +93,11 @@ export default function BrandOrganizationBrands() {
   return (
     <BrandDashboardLayout>
       <div className="max-w-7xl mx-auto pb-12">
-        {/* Header matching Screenshot 1 */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Brands</h1>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => {
-                setEditingBrand(null);
-                setShowBrandModal(true);
-              }}
+              onClick={() => { setEditingBrand(null); setShowBrandModal(true); }}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer"
             >
               <Plus size={14} />
@@ -126,10 +115,7 @@ export default function BrandOrganizationBrands() {
         {/* Filter Bar */}
         <div className="flex items-center gap-3 mb-6">
           <div className="relative flex-1 max-w-sm">
-            <Search
-              size={15}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-            />
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Search by brand name"
@@ -149,10 +135,7 @@ export default function BrandOrganizationBrands() {
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
             </select>
-            <ChevronDown
-              size={14}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-            />
+            <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
         </div>
 
@@ -169,14 +152,9 @@ export default function BrandOrganizationBrands() {
                 <Building2 size={24} />
               </div>
               <h3 className="text-sm font-bold text-gray-900 mb-1">No brands found</h3>
-              <p className="text-xs text-gray-500 mb-5">
-                Register multiple brands to manage campaigns under separate brand profiles.
-              </p>
+              <p className="text-xs text-gray-500 mb-5">Register multiple brands to manage campaigns under separate brand profiles.</p>
               <button
-                onClick={() => {
-                  setEditingBrand(null);
-                  setShowBrandModal(true);
-                }}
+                onClick={() => { setEditingBrand(null); setShowBrandModal(true); }}
                 className="bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-xs transition"
               >
                 + Add your first brand
@@ -196,29 +174,14 @@ export default function BrandOrganizationBrands() {
                 <tbody className="divide-y divide-gray-100">
                   {filteredBrands.map((b) => {
                     const isActive = b.status !== "inactive";
-                    const brandLogo = b.logo;
                     const website = b.websiteOrSocialLink || "No website specified";
                     const cleanWebsite = website.replace(/^https?:\/\//i, "").replace(/\/$/, "");
 
                     return (
                       <tr key={b._id} className="hover:bg-gray-50/70 transition-colors">
-                        {/* Brand Column */}
                         <td className="py-4 px-6">
                           <div className="flex items-center gap-3.5">
-                            {brandLogo ? (
-                              <img
-                                src={brandLogo.startsWith("http") ? brandLogo : `${API_URL}${brandLogo}`}
-                                alt={b.name}
-                                className="w-9 h-9 rounded-full object-cover border border-gray-200 shrink-0"
-                                onError={(e) => {
-                                  e.target.style.display = "none";
-                                }}
-                              />
-                            ) : (
-                              <div className="w-9 h-9 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center text-xs shrink-0">
-                                {b.name.substring(0, 3).toUpperCase()}
-                              </div>
-                            )}
+                            <BrandAvatar brand={b} />
                             <div>
                               <p className="font-bold text-gray-900 text-xs">{b.name}</p>
                               <a
@@ -233,52 +196,23 @@ export default function BrandOrganizationBrands() {
                           </div>
                         </td>
 
-                        {/* Number of Campaigns */}
-                        <td className="py-4 px-6 text-center font-medium text-gray-700">
-                          {b.campaignCount || 0}
-                        </td>
+                        <td className="py-4 px-6 text-center font-medium text-gray-700">{b.campaignCount || 0}</td>
 
-                        {/* Status */}
                         <td className="py-4 px-6">
-                          <span
-                            className={`inline-flex items-center gap-1.5 text-xs font-medium ${
-                              isActive ? "text-gray-700" : "text-gray-400"
-                            }`}
-                          >
-                            <span
-                              className={`w-2 h-2 rounded-full ${
-                                isActive ? "bg-emerald-500" : "bg-gray-300"
-                              }`}
-                            />
+                          <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${isActive ? "text-gray-700" : "text-gray-400"}`}>
+                            <span className={`w-2 h-2 rounded-full ${isActive ? "bg-emerald-500" : "bg-gray-300"}`} />
                             {isActive ? "Active" : "Inactive"}
                           </span>
                         </td>
 
-                        {/* Actions matching Screenshot 1 */}
                         <td className="py-4 px-6 text-right">
                           <div className="flex items-center justify-end gap-3.5">
-                            {/* Info icon */}
-                            <button
-                              onClick={() => setActiveInfoBrand(b)}
-                              className="text-gray-400 hover:text-gray-700 transition p-1 cursor-pointer"
-                              title="Brand details"
-                            >
+                            <button onClick={() => setActiveInfoBrand(b)} className="text-gray-400 hover:text-gray-700 transition p-1 cursor-pointer" title="Brand details">
                               <Info size={15} />
                             </button>
-
-                            {/* Edit Pencil icon */}
-                            <button
-                              onClick={() => {
-                                setEditingBrand(b);
-                                setShowBrandModal(true);
-                              }}
-                              className="text-gray-400 hover:text-gray-700 transition p-1 cursor-pointer"
-                              title="Edit brand"
-                            >
+                            <button onClick={() => { setEditingBrand(b); setShowBrandModal(true); }} className="text-gray-400 hover:text-gray-700 transition p-1 cursor-pointer" title="Edit brand">
                               <Pencil size={14} />
                             </button>
-
-                            {/* Active Toggle Switch */}
                             <button
                               onClick={() => handleToggleStatus(b)}
                               className={`relative inline-flex h-5.5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
@@ -286,19 +220,9 @@ export default function BrandOrganizationBrands() {
                               }`}
                               title={isActive ? "Disable brand" : "Enable brand"}
                             >
-                              <span
-                                className={`pointer-events-none inline-block h-4.5 w-4.5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                                  isActive ? "translate-x-4.5" : "translate-x-0"
-                                }`}
-                              />
+                              <span className={`pointer-events-none inline-block h-4.5 w-4.5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${isActive ? "translate-x-4.5" : "translate-x-0"}`} />
                             </button>
-
-                            {/* Delete brand button */}
-                            <button
-                              onClick={(e) => handleDeleteBrand(b._id, e)}
-                              className="text-gray-300 hover:text-red-600 transition p-1 cursor-pointer"
-                              title="Delete brand"
-                            >
+                            <button onClick={(e) => handleDeleteBrand(b._id, e)} className="text-gray-300 hover:text-red-600 transition p-1 cursor-pointer" title="Delete brand">
                               <Trash2 size={14} />
                             </button>
                           </div>
@@ -317,21 +241,7 @@ export default function BrandOrganizationBrands() {
           <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
             <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
               <div className="flex items-center gap-3">
-                {activeInfoBrand.logo ? (
-                  <img
-                    src={
-                      activeInfoBrand.logo.startsWith("http")
-                        ? activeInfoBrand.logo
-                        : `${API_URL}${activeInfoBrand.logo}`
-                    }
-                    alt={activeInfoBrand.name}
-                    className="w-12 h-12 rounded-2xl object-cover border border-gray-200"
-                  />
-                ) : (
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500 text-white font-bold flex items-center justify-center text-sm">
-                    {activeInfoBrand.name.substring(0, 3).toUpperCase()}
-                  </div>
-                )}
+                <BrandAvatar brand={activeInfoBrand} className="w-12 h-12 rounded-2xl" />
                 <div>
                   <h3 className="font-bold text-gray-900 text-base">{activeInfoBrand.name}</h3>
                   <p className="text-xs text-gray-500">{activeInfoBrand.category || "General Brand"}</p>
@@ -342,11 +252,7 @@ export default function BrandOrganizationBrands() {
                 <p>
                   <strong className="text-gray-900">Website:</strong>{" "}
                   <a
-                    href={
-                      activeInfoBrand.websiteOrSocialLink?.startsWith("http")
-                        ? activeInfoBrand.websiteOrSocialLink
-                        : `https://${activeInfoBrand.websiteOrSocialLink}`
-                    }
+                    href={activeInfoBrand.websiteOrSocialLink?.startsWith("http") ? activeInfoBrand.websiteOrSocialLink : `https://${activeInfoBrand.websiteOrSocialLink}`}
                     target="_blank"
                     rel="noreferrer"
                     className="text-zinc-900 font-bold underline"
@@ -354,21 +260,12 @@ export default function BrandOrganizationBrands() {
                     {activeInfoBrand.websiteOrSocialLink || "N/A"}
                   </a>
                 </p>
-                <p>
-                  <strong className="text-gray-900">Description:</strong>{" "}
-                  {activeInfoBrand.description || "No description provided."}
-                </p>
-                <p>
-                  <strong className="text-gray-900">Campaigns:</strong>{" "}
-                  {activeInfoBrand.campaignCount || 0} active/draft campaigns
-                </p>
+                <p><strong className="text-gray-900">Description:</strong> {activeInfoBrand.description || "No description provided."}</p>
+                <p><strong className="text-gray-900">Campaigns:</strong> {activeInfoBrand.campaignCount || 0} active/draft campaigns</p>
               </div>
 
               <div className="flex justify-end pt-2">
-                <button
-                  onClick={() => setActiveInfoBrand(null)}
-                  className="px-5 py-2 bg-gray-900 text-white text-xs font-semibold rounded-xl hover:bg-black transition cursor-pointer"
-                >
+                <button onClick={() => setActiveInfoBrand(null)} className="px-5 py-2 bg-gray-900 text-white text-xs font-semibold rounded-xl hover:bg-black transition cursor-pointer">
                   Close
                 </button>
               </div>
@@ -376,14 +273,10 @@ export default function BrandOrganizationBrands() {
           </div>
         )}
 
-        {/* Brand Create/Edit Modal */}
         {showBrandModal && (
           <BrandModal
             brand={editingBrand}
-            onClose={() => {
-              setShowBrandModal(false);
-              setEditingBrand(null);
-            }}
+            onClose={() => { setShowBrandModal(false); setEditingBrand(null); }}
             onBrandSaved={handleBrandSaved}
           />
         )}

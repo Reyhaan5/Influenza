@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import { API_URL } from "../config/api";
+import api from "../config/api";
 import { useAuth } from "./AuthContext";
 
 const BrandContext = createContext(null);
@@ -12,13 +11,10 @@ export function BrandProvider({ children }) {
   const [loading, setLoading] = useState(false);
 
   const fetchBrands = useCallback(async () => {
-    const token = localStorage.getItem("token");
-    if (!token || user?.role !== "brand") return;
+    if (!localStorage.getItem("token") || user?.role !== "brand") return;
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/brand/brands`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await api.get("/brand/brands");
       const brandList = res.data.brands || [];
       setBrands(brandList);
 
@@ -35,14 +31,12 @@ export function BrandProvider({ children }) {
         setActiveBrandState(brandList[0]);
         localStorage.setItem("activeBrandId", brandList[0]._id);
       } else {
-        // Fallback default brand representation for single-brand user
-        const fallback = {
+        setActiveBrandState({
           _id: "default",
           name: user?.name || "My Brand",
           category: "General",
           isDefault: true,
-        };
-        setActiveBrandState(fallback);
+        });
       }
     } catch (err) {
       console.warn("BrandContext fetch error:", err.message);

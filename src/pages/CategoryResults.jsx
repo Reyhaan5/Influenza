@@ -1,12 +1,10 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import axios from "axios";
-
 import Navbar from "../components/layout/Navbar";
 import Section from "../components/common/Section";
 import PublicCreatorCard from "../components/creators/PublicCreatorCard";
-import { API_URL } from "../config/api";
+import api from "../config/api";
 
 export default function CategoryResults() {
   const { category } = useParams();
@@ -20,8 +18,8 @@ export default function CategoryResults() {
     setLoading(true);
     setError("");
 
-    axios
-      .get(`${API_URL}/public/creators-by-category`, { params: { category: decodedCategory } })
+    api
+      .get("/public/creators-by-category", { params: { category: decodedCategory } })
       .then((res) => setCreators(res.data.creators || []))
       .catch(() => setError("Unable to load creators for this category."))
       .finally(() => setLoading(false));

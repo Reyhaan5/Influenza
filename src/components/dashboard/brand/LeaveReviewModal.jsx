@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Star, X, CheckCircle2, MessageSquare, Sparkles } from "lucide-react";
-import { API_URL } from "../../../config/api";
+import { Star, X } from "lucide-react";
+import api from "../../../config/api";
 
-export default function LeaveReviewModal({
-  isOpen,
-  onClose,
-  collaboration,
-  onReviewSubmitted,
-}) {
+const RATING_LABELS = {
+  5: "⭐⭐⭐⭐⭐ Outstanding / Exceeded Expectations",
+  4: "⭐⭐⭐⭐ Great / Very Professional",
+  3: "⭐⭐⭐ Good / Met Requirements",
+  2: "⭐⭐ Fair / Minor Issues",
+  1: "⭐ Poor / Did Not Meet Standards",
+};
+
+export default function LeaveReviewModal({ isOpen, onClose, collaboration, onReviewSubmitted }) {
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -16,29 +18,16 @@ export default function LeaveReviewModal({
   const [existingReview, setExistingReview] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const token = localStorage.getItem("token");
-  const authHeader = {
-    headers: { Authorization: `Bearer ${token}` },
-  };
-
-  const creatorName =
-    collaboration?.influencerProfile?.displayName ||
-    collaboration?.influencer?.name ||
-    "Creator";
+  const creatorName = collaboration?.influencerProfile?.displayName || collaboration?.influencer?.name || "Creator";
 
   useEffect(() => {
-    if (isOpen && collaboration?._id) {
-      fetchExistingReview();
-    }
+    if (isOpen && collaboration?._id) fetchExistingReview();
   }, [isOpen, collaboration?._id]);
 
   const fetchExistingReview = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(
-        `${API_URL}/brand/reviews/${collaboration._id}`,
-        authHeader
-      );
+      const res = await api.get(`/brand/reviews/${collaboration._id}`);
       if (res.data?.review) {
         setExistingReview(res.data.review);
         setRating(res.data.review.rating);
@@ -58,22 +47,14 @@ export default function LeaveReviewModal({
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!rating) return;
-
     setSubmitting(true);
     try {
-      const res = await axios.post(
-        `${API_URL}/brand/reviews`,
-        {
-          collaborationId: collaboration._id,
-          rating,
-          comment,
-        },
-        authHeader
-      );
-
-      if (onReviewSubmitted) {
-        onReviewSubmitted(res.data.review);
-      }
+      const res = await api.post("/brand/reviews", {
+        collaborationId: collaboration._id,
+        rating,
+        comment,
+      });
+      if (onReviewSubmitted) onReviewSubmitted(res.data.review);
       onClose();
     } catch (err) {
       console.error("Error submitting review:", err);
@@ -100,12 +81,8 @@ export default function LeaveReviewModal({
             <Star size={20} className="fill-amber-500 text-amber-500" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-900">
-              {existingReview ? "Update Review" : "Rate & Review Creator"}
-            </h3>
-            <p className="text-xs text-gray-500">
-              Collaboration with <span className="font-semibold text-gray-800">{creatorName}</span>
-            </p>
+            <h3 className="text-xl font-bold text-gray-900">{existingReview ? "Update Review" : "Rate & Review Creator"}</h3>
+            <p className="text-xs text-gray-500">Collaboration with <span className="font-semibold text-gray-800">{creatorName}</span></p>
           </div>
         </div>
 
@@ -129,28 +106,16 @@ export default function LeaveReviewModal({
                   >
                     <Star
                       size={32}
-                      className={`${
-                        (hoverRating || rating) >= star
-                          ? "fill-amber-400 text-amber-400"
-                          : "text-gray-300"
-                      } transition-colors`}
+                      className={`${(hoverRating || rating) >= star ? "fill-amber-400 text-amber-400" : "text-gray-300"} transition-colors`}
                     />
                   </button>
                 ))}
               </div>
-              <span className="inline-block mt-2 text-sm font-bold text-gray-800">
-                {rating === 5 && "⭐⭐⭐⭐⭐ Outstanding / Exceeded Expectations"}
-                {rating === 4 && "⭐⭐⭐⭐ Great / Very Professional"}
-                {rating === 3 && "⭐⭐⭐ Good / Met Requirements"}
-                {rating === 2 && "⭐⭐ Fair / Minor Issues"}
-                {rating === 1 && "⭐ Poor / Did Not Meet Standards"}
-              </span>
+              <span className="inline-block mt-2 text-sm font-bold text-gray-800">{RATING_LABELS[rating]}</span>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Feedback & Review Comment
-              </label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Feedback & Review Comment</label>
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
