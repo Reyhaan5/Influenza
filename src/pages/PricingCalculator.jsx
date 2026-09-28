@@ -16,7 +16,7 @@ const POPULAR_PROFILES = [
   { name: "Virat Kohli", handle: "virat.kohli" },
   { name: "Tech Burner", handle: "techburner" },
   { name: "Leo Messi", handle: "leomessi" },
-  { name: "Will Smith", handle: "willsmith" },
+  { name: "Bhuvan Bam", handle: "bhuvan.bam22" },
   { name: "Zendaya", handle: "zendaya" },
   { name: "The Rock", handle: "therock" },
 ];
@@ -79,19 +79,24 @@ export default function PricingCalculator() {
       })
     : null;
 
-  const toCurr = (val) => (currency === "USD" ? Math.round(val / 85) : Math.round(val));
+  const toCurr = (val) => (currency === "USD" ? Math.round(Number(val || 0) / 85) : Math.round(Number(val || 0)));
   const currSymbol = currency === "USD" ? "$" : "₹";
 
-  const basePrice = calculated?.rateCard.deliverables.reel.price || (profile?.followers ? profile.followers * 0.1 : 0);
+  const reelPrice = calculated?.rateCard?.deliverables?.reel?.price || (profile?.followers ? Math.round(profile.followers * 0.1) : 0);
+  const postPrice = calculated?.rateCard?.deliverables?.post?.price || Math.round(reelPrice * 0.7);
+  const storyPrice = calculated?.rateCard?.deliverables?.story?.price || Math.round(reelPrice * 0.3);
+  const bundlePrice = calculated?.rateCard?.deliverables?.reelBundle?.price || calculated?.rateCard?.deliverables?.bundle?.price || Math.round(reelPrice * 3 * 0.85);
+
+  const basePrice = reelPrice;
   const minVal = toCurr(basePrice * 0.75);
   const maxVal = toCurr(basePrice * 1.35);
 
   const deliverables = calculated
     ? [
-        { name: "1x Dedicated Instagram Reel", desc: "Full dedicated 30-60s Reel with audio overlay, caption CTA & profile tag", price: toCurr(calculated.rateCard.deliverables.reel.price), badge: "Most Popular", icon: <Video size={18} className="text-[#FF1475]" /> },
-        { name: "1x In-Feed Photo Post / Carousel", desc: "High-resolution product showcase photo or carousel with brand tag", price: toCurr(calculated.rateCard.deliverables.post.price), icon: <Heart size={18} className="text-pink-500" /> },
-        { name: "2x Instagram Stories with Link", desc: "2x 24hr sequential Stories with clickable Link sticker & swipe-up CTA", price: toCurr(calculated.rateCard.deliverables.story.price), icon: <Zap size={18} className="text-amber-500" /> },
-        { name: "Full Campaign Power Bundle", desc: "1x Reel + 1x In-Feed Post + 2x Stories (15% integrated bundle savings)", price: toCurr(calculated.rateCard.deliverables.bundle.price), badge: "Best Value", icon: <Award size={18} className="text-purple-600" /> },
+        { name: "1x Dedicated Instagram Reel", desc: "Full dedicated 30-60s Reel with audio overlay, caption CTA & profile tag", price: toCurr(reelPrice), badge: "Most Popular", icon: <Video size={18} className="text-[#FF1475]" /> },
+        { name: "1x In-Feed Photo Post / Carousel", desc: "High-resolution product showcase photo or carousel with brand tag", price: toCurr(postPrice), icon: <Heart size={18} className="text-pink-500" /> },
+        { name: "2x Instagram Stories with Link", desc: "2x 24hr sequential Stories with clickable Link sticker & swipe-up CTA", price: toCurr(storyPrice), icon: <Zap size={18} className="text-amber-500" /> },
+        { name: "Full Campaign Power Bundle", desc: "1x Reel + 1x In-Feed Post + 2x Stories (15% integrated bundle savings)", price: toCurr(bundlePrice), badge: "Best Value", icon: <Award size={18} className="text-purple-600" /> },
       ]
     : [];
 
@@ -250,10 +255,10 @@ export default function PricingCalculator() {
                 </div>
                 <div className="mt-2">
                   <span className="text-2xl sm:text-3xl font-black text-zinc-950 tracking-tight">
-                    {calculated.metrics.engagementRate}%
+                    {calculated?.metrics?.engagementRate ?? 0}%
                   </span>
                   <span className="block text-[11px] font-semibold text-[#FF1475] mt-0.5">
-                    {calculated.overallRating.breakdown.qualityScore.qualityLabel} ER
+                    {calculated?.overallRating?.breakdown?.qualityScore?.qualityLabel || "Good"} ER
                   </span>
                 </div>
               </div>
@@ -284,7 +289,7 @@ export default function PricingCalculator() {
                   {currSymbol}{minVal.toLocaleString()} — {currSymbol}{maxVal.toLocaleString()}
                 </h3>
                 <p className="text-xs sm:text-sm text-pink-100 font-medium mt-2 max-w-md">
-                  Calculated based on {formatCompact(profile.followers)} followers, {calculated.metrics.engagementRate}% ER, and fair CPM benchmarks.
+                  Calculated based on {formatCompact(profile.followers)} followers, {calculated?.metrics?.engagementRate ?? 0}% ER, and fair CPM benchmarks.
                 </p>
               </div>
               <Link
@@ -318,7 +323,7 @@ export default function PricingCalculator() {
                     </div>
                     <div className="mt-4 pt-3 border-t border-zinc-100 flex items-center justify-between">
                       <span className="text-xs text-zinc-400 font-semibold">Suggested Rate</span>
-                      <span className="text-xl font-black text-zinc-950">{currSymbol}{item.price.toLocaleString()}</span>
+                      <span className="text-xl font-black text-zinc-950">{currSymbol}{Number(item.price || 0).toLocaleString()}</span>
                     </div>
                   </div>
                 ))}
