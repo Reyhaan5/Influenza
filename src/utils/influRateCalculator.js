@@ -28,6 +28,14 @@ export const CREATOR_TIERS = [
   { name: "Celebrity", min: 1000000, max: Infinity, baseRatePerFollower: 0.08 },
 ];
 
+export function formatCompact(num) {
+  if (typeof num !== "number" || isNaN(num)) return "0";
+  if (num >= 1000000000) return (num / 1000000000).toFixed(1).replace(/\.0$/, "") + "B";
+  if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+  if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, "") + "k";
+  return num.toLocaleString();
+}
+
 export function formatINR(val) {
   if (typeof val !== "number" || isNaN(val)) return "₹0";
   return new Intl.NumberFormat("en-IN", {
@@ -35,6 +43,26 @@ export function formatINR(val) {
     currency: "INR",
     maximumFractionDigits: 0,
   }).format(val);
+}
+
+export function formatCurrency(num, currency = "INR") {
+  if (typeof num !== "number" || isNaN(num)) return "0";
+  if (currency === "USD") {
+    return "$" + Math.round(num / 85).toLocaleString("en-US");
+  }
+  return "₹" + Math.round(num).toLocaleString("en-IN");
+}
+
+export function calculateEngagementRate(avgLikes = 0, avgComments = 0, followers = 1) {
+  if (!followers || followers <= 0) return 0;
+  return Number((((Number(avgLikes) || 0) + (Number(avgComments) || 0)) / followers * 100).toFixed(2));
+}
+
+export function getAudienceQuality(engagementRatePct) {
+  if (engagementRatePct >= 6) return "Excellent";
+  if (engagementRatePct >= 3) return "Good";
+  if (engagementRatePct >= 1) return "Average";
+  return "Low";
 }
 
 function roundToCleanINR(val) {

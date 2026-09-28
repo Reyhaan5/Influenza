@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
   Search,
   ChevronDown,
@@ -18,7 +17,7 @@ import {
 
 import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 import CampaignWizard from "../components/dashboard/brand/campaign-wizard/CampaignWizard";
-import { API_URL } from "../config/api";
+import api from "../config/api";
 
 export default function BrandCampaigns() {
   const [campaigns, setCampaigns] = useState([]);
@@ -37,11 +36,6 @@ export default function BrandCampaigns() {
   const [selectedHiredFilter, setSelectedHiredFilter] = useState("");
   const [selectedStatusFilter, setSelectedStatusFilter] = useState("");
 
-  const token = localStorage.getItem("token");
-  const authHeader = useMemo(() => ({
-    headers: { Authorization: `Bearer ${token}` },
-  }), [token]);
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -50,8 +44,8 @@ export default function BrandCampaigns() {
     setLoading(true);
     try {
       const [campRes, brandsRes] = await Promise.allSettled([
-        axios.get(`${API_URL}/brand/campaigns`, authHeader),
-        axios.get(`${API_URL}/brand/brands`, authHeader),
+        api.get("/brand/campaigns"),
+        api.get("/brand/brands"),
       ]);
 
       if (campRes.status === "fulfilled") {
@@ -94,7 +88,7 @@ export default function BrandCampaigns() {
     if (!confirmed) return;
 
     try {
-      await axios.delete(`${API_URL}/brand/campaigns/${id}`, authHeader);
+      await api.delete(`/brand/campaigns/${id}`);
       setCampaigns((prev) => prev.filter((c) => c._id !== id));
     } catch (error) {
       console.error(error);
@@ -105,11 +99,7 @@ export default function BrandCampaigns() {
   const handleCloseCampaign = async (id, e) => {
     if (e) e.stopPropagation();
     try {
-      const res = await axios.put(
-        `${API_URL}/brand/campaigns/${id}`,
-        { status: "closed" },
-        authHeader
-      );
+      const res = await api.put(`/brand/campaigns/${id}`, { status: "closed" });
       setCampaigns((prev) =>
         prev.map((c) => (c._id === id ? res.data.campaign : c))
       );
@@ -122,11 +112,7 @@ export default function BrandCampaigns() {
   const handleReopenCampaign = async (id, e) => {
     if (e) e.stopPropagation();
     try {
-      const res = await axios.put(
-        `${API_URL}/brand/campaigns/${id}`,
-        { status: "open" },
-        authHeader
-      );
+      const res = await api.put(`/brand/campaigns/${id}`, { status: "open" });
       setCampaigns((prev) =>
         prev.map((c) => (c._id === id ? res.data.campaign : c))
       );

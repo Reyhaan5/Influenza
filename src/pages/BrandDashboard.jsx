@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import { Megaphone, Users, Sparkles, Plus, Search, Handshake } from "lucide-react";
 
@@ -11,7 +10,7 @@ import CompanyInfoCard from "../components/dashboard/brand/CompanyInfoCard";
 import CompanySavedBar from "../components/dashboard/brand/CompanySavedBar";
 import ProductInfoCard from "../components/dashboard/brand/ProductInfoCard";
 
-import { API_URL, API_ORIGIN } from "../config/api";
+import api, { API_ORIGIN } from "../config/api";
 
 const loggedInUser = JSON.parse(localStorage.getItem("user"));
 
@@ -48,9 +47,6 @@ export default function BrandDashboard() {
   const [companyFormVisible, setCompanyFormVisible] = useState(true);
   const [stats, setStats] = useState({ activeCampaigns: 0, collaborations: 0 });
 
-  const token = localStorage.getItem("token");
-  const authHeader = { headers: { Authorization: `Bearer ${token}` } };
-
   useEffect(() => {
     fetchProfile();
     fetchStats();
@@ -59,7 +55,7 @@ export default function BrandDashboard() {
 
   const fetchProfile = async () => {
     try {
-      const res = await axios.get(`${API_URL}/brand/profile`, authHeader);
+      const res = await api.get("/brand/profile");
       const profile = res.data;
 
       setCompanyDetails({
@@ -82,7 +78,7 @@ export default function BrandDashboard() {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get(`${API_URL}/brand/dashboard`, authHeader);
+      const res = await api.get("/brand/dashboard");
       setStats(res.data.stats);
     } catch (error) {
       console.error(error);
@@ -91,7 +87,7 @@ export default function BrandDashboard() {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(`${API_URL}/brand/products`, authHeader);
+      const res = await api.get("/brand/products");
       const fetched = res.data.products || [];
       setProducts(fetched);
       if (fetched.length > 0) {
@@ -119,16 +115,12 @@ export default function BrandDashboard() {
   const handleSaveCompany = async () => {
     setSavingCompany(true);
     try {
-      await axios.put(
-        `${API_URL}/brand/profile/company`,
-        {
-          companyName: companyDetails.companyName,
-          industry: companyDetails.industry,
-          website: companyDetails.website,
-          location: companyDetails.location,
-        },
-        authHeader
-      );
+      await api.put("/brand/profile/company", {
+        companyName: companyDetails.companyName,
+        industry: companyDetails.industry,
+        website: companyDetails.website,
+        location: companyDetails.location,
+      });
 
       setCompanyFormVisible(false);
     } catch (error) {
@@ -179,16 +171,7 @@ export default function BrandDashboard() {
       }
 
       if (editingProductId) {
-        const res = await axios.put(
-          `${API_URL}/brand/products/${editingProductId}`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        const res = await api.put(`/brand/products/${editingProductId}`, formData);
 
         const updatedProduct = res.data.product;
 
@@ -198,12 +181,7 @@ export default function BrandDashboard() {
         setSelectedProductId(updatedProduct._id);
         setEditingProductId(null);
       } else {
-        const res = await axios.post(`${API_URL}/brand/products`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const res = await api.post("/brand/products", formData);
 
         const newProduct = res.data.product;
 
@@ -228,7 +206,7 @@ export default function BrandDashboard() {
 
     setRemovingProduct(true);
     try {
-      await axios.delete(`${API_URL}/brand/products/${productId}`, authHeader);
+      await api.delete(`/brand/products/${productId}`);
 
       setProducts((prev) => {
         const updated = prev.filter((p) => p._id !== productId);

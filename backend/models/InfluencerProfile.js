@@ -6,6 +6,10 @@ const socialAccountSchema = new mongoose.Schema(
     handle: { type: String, required: true },
     followers: { type: Number, default: 0 },
     verified: { type: Boolean, default: false },
+    connected: { type: Boolean, default: true },
+    engagementRate: { type: Number, default: 0 },
+    avgLikes: { type: Number, default: 0 },
+    avgComments: { type: Number, default: 0 },
   },
   { _id: false }
 );

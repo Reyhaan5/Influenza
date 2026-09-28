@@ -1,21 +1,16 @@
 import React from "react";
 
-function BackgroundGlow() {
+const GLOWS = [
+  { cls: "-top-20 -left-24 w-96 h-96 blur-[120px] opacity-30", bg: "var(--color-primary)" },
+  { cls: "top-40 -right-20 w-80 h-80 blur-[100px] opacity-25", bg: "var(--color-primary-hover)" },
+];
+
+export default function BackgroundGlow() {
   return (
     <>
-      {/* Left Glow */}
-      <div
-        className="absolute -top-20 -left-24 w-96 h-96 rounded-full blur-[120px] opacity-30"
-        style={{ backgroundColor: "var(--color-primary)" }}
-      />
-
-      {/* Right Glow */}
-      <div
-        className="absolute top-40 -right-20 w-80 h-80 rounded-full blur-[100px] opacity-25"
-        style={{ backgroundColor: "var(--color-primary-hover)" }}
-      />
+      {GLOWS.map(({ cls, bg }, i) => (
+        <div key={i} className={`absolute rounded-full ${cls}`} style={{ backgroundColor: bg }} />
+      ))}
     </>
   );
 }
-
-export default BackgroundGlow;

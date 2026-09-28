@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo } from "react";
-import axios from "axios";
 import {
   Search,
   ChevronDown,
@@ -14,7 +13,7 @@ import {
 
 import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 import BrandModal from "../components/dashboard/brand/campaign-wizard/BrandModal";
-import { API_URL } from "../config/api";
+import api, { API_URL } from "../config/api";
 
 export default function BrandOrganizationBrands() {
   const [brands, setBrands] = useState([]);
@@ -25,14 +24,6 @@ export default function BrandOrganizationBrands() {
   const [editingBrand, setEditingBrand] = useState(null);
   const [activeInfoBrand, setActiveInfoBrand] = useState(null);
 
-  const token = localStorage.getItem("token");
-  const authHeader = useMemo(
-    () => ({
-      headers: { Authorization: `Bearer ${token}` },
-    }),
-    [token]
-  );
-
   useEffect(() => {
     fetchBrands();
   }, []);
@@ -40,7 +31,7 @@ export default function BrandOrganizationBrands() {
   const fetchBrands = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/brand/brands`, authHeader);
+      const res = await api.get("/brand/brands");
       setBrands(res.data.brands || []);
     } catch (err) {
       console.error("Error fetching brands:", err);
@@ -52,11 +43,7 @@ export default function BrandOrganizationBrands() {
   const handleToggleStatus = async (brand) => {
     const newStatus = brand.status === "inactive" ? "active" : "inactive";
     try {
-      const res = await axios.put(
-        `${API_URL}/brand/brands/${brand._id}`,
-        { status: newStatus },
-        authHeader
-      );
+      const res = await api.put(`/brand/brands/${brand._id}`, { status: newStatus });
       setBrands((prev) =>
         prev.map((b) => (b._id === brand._id ? res.data.brand : b))
       );
@@ -84,7 +71,7 @@ export default function BrandOrganizationBrands() {
     if (!confirmed) return;
 
     try {
-      await axios.delete(`${API_URL}/brand/brands/${brandId}`, authHeader);
+      await api.delete(`/brand/brands/${brandId}`);
       setBrands((prev) => prev.filter((b) => b._id !== brandId));
     } catch (err) {
       console.error(err);

@@ -2,37 +2,33 @@ import React from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, ChevronRight, Home } from "lucide-react";
 
+const ROUTE_TITLES = [
+  [["organization/brands"], "Organization / Brands"],
+  [["organization/team"], "Organization / Team"],
+  [["collaboration-requests"], "Requests & Invitations"],
+  [["rate-benchmark", "insider-rate"], "Market Rate Benchmark"],
+  [["creator-discovery"], "Creator Discovery"],
+  [["opportunities"], "Explore Opportunities"],
+  [["partnerships", "collaborations"], "Partnerships"],
+  [["campaigns"], "Campaigns"],
+  [["lists"], "Creator Lists"],
+  [["creatives"], "Creative Library"],
+  [["messages"], "Messages & Inbox"],
+  [["account"], "My Account"],
+];
+
 export function DashboardTopBar({ role = "brand" }) {
-  const location = useLocation();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const isHomeDashboard =
-    location.pathname === "/brand-dashboard" ||
-    location.pathname === "/influencer-dashboard";
-
-  const getBreadcrumbTitle = (path) => {
-    if (path.includes("campaigns")) return "Campaigns";
-    if (path.includes("organization/brands")) return "Organization / Brands";
-    if (path.includes("organization/team")) return "Organization / Team";
-    if (path.includes("lists")) return "Creator Lists";
-    if (path.includes("creatives")) return "Creative Library";
-    if (path.includes("partnerships") || path.includes("collaborations")) return "Partnerships";
-    if (path.includes("collaboration-requests")) return "Requests & Invitations";
-    if (path.includes("messages")) return "Messages & Inbox";
-    if (path.includes("rate-benchmark") || path.includes("insider-rate")) return "Market Rate Benchmark";
-    if (path.includes("account")) return "My Account";
-    if (path.includes("opportunities")) return "Explore Opportunities";
-    if (path.includes("creator-discovery")) return "Creator Discovery";
-    return null;
-  };
-
-  const currentTitle = getBreadcrumbTitle(location.pathname);
-  const homeUrl = role === "brand" ? "/brand-dashboard" : "/influencer-dashboard";
+  const isHome = ["/brand-dashboard", "/influencer-dashboard"].includes(pathname);
+  const currentTitle = ROUTE_TITLES.find(([keys]) => keys.some((k) => pathname.includes(k)))?.[1];
+  const isBrand = role === "brand";
 
   return (
     <div className="flex items-center justify-between pb-5 mb-6 border-b border-[var(--color-border)] text-xs text-[var(--color-text-light)]">
       <div className="flex items-center gap-3">
-        {!isHomeDashboard && (
+        {!isHome && (
           <button
             type="button"
             onClick={() => navigate(-1)}
@@ -46,11 +42,11 @@ export function DashboardTopBar({ role = "brand" }) {
 
         <div className="flex items-center gap-1.5 font-semibold">
           <Link
-            to={homeUrl}
+            to={isBrand ? "/brand-dashboard" : "/influencer-dashboard"}
             className="hover:text-[var(--color-text)] transition flex items-center gap-1"
           >
             <Home size={13} />
-            <span>{role === "brand" ? "Brand Dashboard" : "Creator Dashboard"}</span>
+            <span>{isBrand ? "Brand Dashboard" : "Creator Dashboard"}</span>
           </Link>
           {currentTitle && (
             <>

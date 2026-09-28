@@ -264,10 +264,7 @@ export default function InfluenzeAuth() {
     }
   };
 
-  const handleGoogleAuth = () => {
-    setError("");
-    alert("Google OAuth is enabled in production with Google Identity Services Client ID.");
-  };
+  
 
   const handleResetPassword = (e) => {
     e.preventDefault();
@@ -646,17 +643,7 @@ export default function InfluenzeAuth() {
               </div>
             </div>
 
-            {/* Continue with Google Button */}
-            <motion.button
-              type="button"
-              whileHover={{ scale: 1.01, backgroundColor: "#fafafa" }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleGoogleAuth}
-              className="w-full py-2 px-4 rounded-xl bg-white border border-zinc-200 text-zinc-800 font-bold text-xs flex items-center justify-center gap-2 transition-all hover:border-zinc-300 shadow-2xs cursor-pointer"
-            >
-              <img src="/icons/google.svg" alt="Google" className="w-3.5 h-3.5" />
-              <span>Continue with Google</span>
-            </motion.button>
+            
           </form>
 
           {/* Bottom Switcher */}
