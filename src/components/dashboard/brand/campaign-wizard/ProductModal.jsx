@@ -7,19 +7,9 @@ import {
   ChevronUp,
   Lightbulb,
   Pin,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  Bold,
-  Italic,
-  Underline,
-  Strikethrough,
-  List,
-  ListOrdered,
-  Link2,
 } from "lucide-react";
-import axios from "axios";
-import { API_URL } from "../../../../config/api";
+import api, { API_ORIGIN } from "../../../../config/api";
+import RichTextarea from "../../../common/RichTextarea";
 
 const PRODUCT_CATEGORIES = [
   "Activewear & Sportswear",
@@ -60,10 +50,6 @@ export default function ProductModal({
   const [error, setError] = useState("");
 
   const fileInputRef = useRef(null);
-  const textareaRef = useRef(null);
-
-  const token = localStorage.getItem("token");
-  const authHeader = { headers: { Authorization: `Bearer ${token}` } };
 
   useEffect(() => {
     if (initialProduct) {
@@ -93,7 +79,7 @@ export default function ProductModal({
           : []
       ).map((imgUrl) => ({
         file: null,
-        url: imgUrl.startsWith("http") ? imgUrl : `${API_URL.replace("/api", "")}${imgUrl}`,
+        url: imgUrl.startsWith("http") ? imgUrl : `${API_ORIGIN}${imgUrl}`,
         rawPath: imgUrl,
         isExisting: true,
       }));
@@ -132,29 +118,6 @@ export default function ProductModal({
 
   const handleRemoveImage = (index) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleFormatText = (type) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selected = productDescription.substring(start, end);
-
-    let formatted = selected;
-    if (type === "bold") formatted = `**${selected || "bold text"}**`;
-    if (type === "italic") formatted = `*${selected || "italic text"}*`;
-    if (type === "underline") formatted = `<u>${selected || "underlined text"}</u>`;
-    if (type === "strike") formatted = `~~${selected || "struck text"}~~`;
-    if (type === "bullet") formatted = `\n• ${selected || "item"}`;
-    if (type === "numbered") formatted = `\n1. ${selected || "item"}`;
-    if (type === "link") formatted = `[${selected || "link text"}](https://)`;
-
-    const newText =
-      productDescription.substring(0, start) + formatted + productDescription.substring(end);
-    if (newText.length <= 500) {
-      setProductDescription(newText);
-    }
   };
 
   const handleSave = async (e) => {
@@ -197,13 +160,9 @@ export default function ProductModal({
 
       let res;
       if (initialProduct?._id) {
-        res = await axios.put(
-          `${API_URL}/brand/products/${initialProduct._id}`,
-          formData,
-          authHeader
-        );
+        res = await api.put(`/brand/products/${initialProduct._id}`, formData);
       } else {
-        res = await axios.post(`${API_URL}/brand/products`, formData, authHeader);
+        res = await api.post("/brand/products", formData);
       }
 
       onProductSaved(res.data.product);
@@ -455,108 +414,12 @@ export default function ProductModal({
             <label className="block text-sm font-semibold text-gray-900 mb-1.5">
               Product Description
             </label>
-            <div className="border border-gray-200 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-fuchsia-500 transition">
-              <div className="p-3 relative">
-                <textarea
-                  ref={textareaRef}
-                  rows={3}
-                  maxLength={500}
-                  value={productDescription}
-                  onChange={(e) => setProductDescription(e.target.value)}
-                  placeholder="Describe key highlights, standout features, or problem solved..."
-                  className="w-full text-sm bg-transparent text-gray-900 focus:outline-none resize-none"
-                />
-                <div className="text-right text-[11px] text-gray-400 mt-1">
-                  {productDescription.length}/500
-                </div>
-              </div>
-
-              {/* Formatting Toolbar */}
-              <div className="bg-gray-50 border-t border-gray-200 px-3 py-2 flex items-center gap-1.5 text-gray-600 overflow-x-auto">
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("left")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 transition"
-                  title="Align Left"
-                >
-                  <AlignLeft size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("center")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 transition"
-                  title="Align Center"
-                >
-                  <AlignCenter size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("right")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 transition"
-                  title="Align Right"
-                >
-                  <AlignRight size={16} />
-                </button>
-                <div className="h-4 w-[1px] bg-gray-300 mx-1" />
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("bold")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 font-bold transition"
-                  title="Bold"
-                >
-                  <Bold size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("italic")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 italic transition"
-                  title="Italic"
-                >
-                  <Italic size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("underline")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 underline transition"
-                  title="Underline"
-                >
-                  <Underline size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("strike")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 line-through transition"
-                  title="Strikethrough"
-                >
-                  <Strikethrough size={16} />
-                </button>
-                <div className="h-4 w-[1px] bg-gray-300 mx-1" />
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("bullet")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 transition"
-                  title="Bullet List"
-                >
-                  <List size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("numbered")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 transition"
-                  title="Numbered List"
-                >
-                  <ListOrdered size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("link")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 transition"
-                  title="Insert Link"
-                >
-                  <Link2 size={16} />
-                </button>
-              </div>
-            </div>
+            <RichTextarea
+              value={productDescription}
+              onChange={setProductDescription}
+              maxLength={500}
+              placeholder="Describe key highlights, standout features, or problem solved..."
+            />
           </div>
 
           {/* Product Price */}

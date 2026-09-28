@@ -95,10 +95,10 @@ app.use("/api/messages", messageRoutes);
 // Deliverables workflow
 app.use("/api/collaborations/:collabId/deliverables", deliverableRoutes);
 
-// Simple health check — visit http://localhost:5000/ to confirm it's running
-app.get("/", (req, res) => {
-  res.send("Influenza API is running.");
-});
+import errorHandler from "./middleware/errorHandler.js";
+
+// Global Error Handler
+app.use(errorHandler);
 
 // Wrap Express in a raw HTTP server so Socket.IO can attach to the same port
 const httpServer = http.createServer(app);

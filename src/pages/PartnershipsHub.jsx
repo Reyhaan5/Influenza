@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import axios from "axios";
 import {
   Send,
   CheckCircle2,
@@ -19,7 +18,7 @@ import InfluencerDashboardLayout from "../components/dashboard/influencer/Influe
 import DeliverableWorkflowModal from "../components/dashboard/common/DeliverableWorkflowModal";
 import LeaveReviewModal from "../components/dashboard/brand/LeaveReviewModal";
 import { useAuth } from "../context/AuthContext";
-import { API_URL } from "../config/api";
+import api from "../config/api";
 
 const STATUS_STYLES = {
   pending: "bg-amber-50 text-amber-700 border border-amber-200/60",
@@ -48,16 +47,12 @@ export default function PartnershipsHub() {
   const [workflowCollab, setWorkflowCollab] = useState(null);
   const [reviewCollab, setReviewCollab] = useState(null);
 
-  const authHeader = () => ({
-    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-  });
-
   const fetchData = async () => {
     setLoading(true);
     try {
       const [requestsRes, collabsRes] = await Promise.allSettled([
-        axios.get(`${API_URL}/collaboration-requests`, authHeader()),
-        axios.get(`${API_URL}/${isBrand ? "brand" : "influencer"}/collaborations`, authHeader()),
+        api.get("/collaboration-requests"),
+        api.get(`/${isBrand ? "brand" : "influencer"}/collaborations`),
       ]);
 
       if (requestsRes.status === "fulfilled") {
@@ -67,7 +62,7 @@ export default function PartnershipsHub() {
         setCollaborations(collabsRes.value.data?.collaborations || []);
       }
     } catch (error) {
-      console.error("Error fetching partnerships data:", error);
+      console.error("Error loading partnerships hub data:", error);
     } finally {
       setLoading(false);
     }
@@ -80,7 +75,7 @@ export default function PartnershipsHub() {
   const handleRespondRequest = async (id, status) => {
     setRespondingId(id);
     try {
-      await axios.put(`${API_URL}/collaboration-requests/${id}`, { status }, authHeader());
+      await api.put(`/collaboration-requests/${id}`, { status });
       await fetchData();
     } catch (error) {
       console.error("Error updating request:", error);
@@ -93,7 +88,7 @@ export default function PartnershipsHub() {
   const handleUpdateCollaboration = async (id, updates) => {
     setUpdatingCollabId(id);
     try {
-      await axios.put(`${API_URL}/brand/collaborations/${id}`, updates, authHeader());
+      await api.put(`/brand/collaborations/${id}`, updates);
       await fetchData();
     } catch (error) {
       console.error("Error updating collaboration:", error);

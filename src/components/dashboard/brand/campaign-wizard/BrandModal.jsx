@@ -1,21 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  X,
-  Globe,
-  Pencil,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  Bold,
-  Italic,
-  Underline,
-  Strikethrough,
-  List,
-  ListOrdered,
-  Link2,
-} from "lucide-react";
-import axios from "axios";
-import { API_URL } from "../../../../config/api";
+import { X, Globe, Pencil } from "lucide-react";
+import api, { API_ORIGIN } from "../../../../config/api";
+import RichTextarea from "../../../common/RichTextarea";
 
 const CATEGORIES = [
   "Apparel",
@@ -42,10 +28,6 @@ export default function BrandModal({ isOpen, onClose, onBrandSaved, initialBrand
   const [error, setError] = useState("");
 
   const fileInputRef = useRef(null);
-  const textareaRef = useRef(null);
-
-  const token = localStorage.getItem("token");
-  const authHeader = { headers: { Authorization: `Bearer ${token}` } };
 
   useEffect(() => {
     if (initialBrand) {
@@ -57,7 +39,7 @@ export default function BrandModal({ isOpen, onClose, onBrandSaved, initialBrand
         initialBrand.logo
           ? initialBrand.logo.startsWith("http")
             ? initialBrand.logo
-            : `${API_URL.replace("/api", "")}${initialBrand.logo}`
+            : `${API_ORIGIN}${initialBrand.logo}`
           : ""
       );
       setLogoFile(null);
@@ -79,28 +61,6 @@ export default function BrandModal({ isOpen, onClose, onBrandSaved, initialBrand
     if (file) {
       setLogoFile(file);
       setLogoPreview(URL.createObjectURL(file));
-    }
-  };
-
-  const handleFormatText = (type) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selected = description.substring(start, end);
-
-    let formatted = selected;
-    if (type === "bold") formatted = `**${selected || "bold text"}**`;
-    if (type === "italic") formatted = `*${selected || "italic text"}*`;
-    if (type === "underline") formatted = `<u>${selected || "underlined text"}</u>`;
-    if (type === "strike") formatted = `~~${selected || "struck text"}~~`;
-    if (type === "bullet") formatted = `\n• ${selected || "item"}`;
-    if (type === "numbered") formatted = `\n1. ${selected || "item"}`;
-    if (type === "link") formatted = `[${selected || "link text"}](https://)`;
-
-    const newText = description.substring(0, start) + formatted + description.substring(end);
-    if (newText.length <= 500) {
-      setDescription(newText);
     }
   };
 
@@ -126,9 +86,9 @@ export default function BrandModal({ isOpen, onClose, onBrandSaved, initialBrand
 
       let res;
       if (initialBrand?._id) {
-        res = await axios.put(`${API_URL}/brand/brands/${initialBrand._id}`, formData, authHeader);
+        res = await api.put(`/brand/brands/${initialBrand._id}`, formData);
       } else {
-        res = await axios.post(`${API_URL}/brand/brands`, formData, authHeader);
+        res = await api.post("/brand/brands", formData);
       }
 
       onBrandSaved(res.data.brand);
@@ -265,108 +225,12 @@ export default function BrandModal({ isOpen, onClose, onBrandSaved, initialBrand
             <label className="block text-sm font-semibold text-gray-900 mb-1.5">
               Brand description
             </label>
-            <div className="border border-gray-200 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-fuchsia-500 transition">
-              <div className="p-3 relative">
-                <textarea
-                  ref={textareaRef}
-                  rows={3}
-                  maxLength={500}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe your brand values, mission, or aesthetic..."
-                  className="w-full text-sm bg-transparent text-gray-900 focus:outline-none resize-none"
-                />
-                <div className="text-right text-[11px] text-gray-400 mt-1">
-                  {description.length}/500
-                </div>
-              </div>
-
-              {/* Formatting Toolbar */}
-              <div className="bg-gray-50 border-t border-gray-200 px-3 py-2 flex items-center gap-1.5 text-gray-600 overflow-x-auto">
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("left")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 transition"
-                  title="Align Left"
-                >
-                  <AlignLeft size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("center")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 transition"
-                  title="Align Center"
-                >
-                  <AlignCenter size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("right")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 transition"
-                  title="Align Right"
-                >
-                  <AlignRight size={16} />
-                </button>
-                <div className="h-4 w-[1px] bg-gray-300 mx-1" />
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("bold")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 font-bold transition"
-                  title="Bold"
-                >
-                  <Bold size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("italic")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 italic transition"
-                  title="Italic"
-                >
-                  <Italic size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("underline")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 underline transition"
-                  title="Underline"
-                >
-                  <Underline size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("strike")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 line-through transition"
-                  title="Strikethrough"
-                >
-                  <Strikethrough size={16} />
-                </button>
-                <div className="h-4 w-[1px] bg-gray-300 mx-1" />
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("bullet")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 transition"
-                  title="Bullet List"
-                >
-                  <List size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("numbered")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 transition"
-                  title="Numbered List"
-                >
-                  <ListOrdered size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleFormatText("link")}
-                  className="p-1 rounded hover:bg-gray-200 text-gray-600 transition"
-                  title="Insert Link"
-                >
-                  <Link2 size={16} />
-                </button>
-              </div>
-            </div>
+            <RichTextarea
+              value={description}
+              onChange={setDescription}
+              maxLength={500}
+              placeholder="Describe your brand values, mission, or aesthetic..."
+            />
           </div>
 
           {/* Save Button */}

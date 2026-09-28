@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import {
   Kanban,
   List,
@@ -22,7 +21,7 @@ import CollaborationRow from "../components/dashboard/brand/CollaborationRow";
 import KanbanBoard from "../components/dashboard/brand/KanbanBoard";
 import DeliverableWorkflowModal from "../components/dashboard/common/DeliverableWorkflowModal";
 import LeaveReviewModal from "../components/dashboard/brand/LeaveReviewModal";
-import { API_URL } from "../config/api";
+import api from "../config/api";
 
 export default function BrandCollaborations() {
   const [collaborations, setCollaborations] = useState([]);
@@ -40,14 +39,6 @@ export default function BrandCollaborations() {
   const [workflowCollab, setWorkflowCollab] = useState(null);
   const [reviewCollab, setReviewCollab] = useState(null);
 
-  const token = localStorage.getItem("token");
-  const authHeader = useMemo(
-    () => ({
-      headers: { Authorization: `Bearer ${token}` },
-    }),
-    [token]
-  );
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -56,9 +47,9 @@ export default function BrandCollaborations() {
     setLoading(true);
     try {
       const [collabsRes, brandsRes, campsRes] = await Promise.allSettled([
-        axios.get(`${API_URL}/brand/collaborations`, authHeader),
-        axios.get(`${API_URL}/brand/brands`, authHeader),
-        axios.get(`${API_URL}/brand/campaigns`, authHeader),
+        api.get("/brand/collaborations"),
+        api.get("/brand/brands"),
+        api.get("/brand/campaigns"),
       ]);
 
       if (collabsRes.status === "fulfilled") {
@@ -89,11 +80,7 @@ export default function BrandCollaborations() {
 
     // 2. Persist to MongoDB backend
     try {
-      const res = await axios.put(
-        `${API_URL}/brand/collaborations/${id}`,
-        { stage: newStage },
-        authHeader
-      );
+      const res = await api.put(`/brand/collaborations/${id}`, { stage: newStage });
       if (res.data?.collaboration) {
         setCollaborations((prev) =>
           prev.map((c) =>
@@ -109,11 +96,7 @@ export default function BrandCollaborations() {
 
   const handleUpdate = async (id, updates) => {
     try {
-      const res = await axios.put(
-        `${API_URL}/brand/collaborations/${id}`,
-        updates,
-        authHeader
-      );
+      const res = await api.put(`/brand/collaborations/${id}`, updates);
       if (res.data?.collaboration) {
         setCollaborations((prev) =>
           prev.map((c) =>

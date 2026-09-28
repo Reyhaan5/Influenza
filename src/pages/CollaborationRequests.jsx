@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { Check, X, Clock, ArrowUpRight } from "lucide-react";
 
 import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
 import { useAuth } from "../context/AuthContext";
-import { API_URL } from "../config/api";
+import api from "../config/api";
 
 const STATUS_STYLES = {
   pending: "bg-amber-50 text-amber-700 border border-amber-200/60",
@@ -75,13 +74,9 @@ export default function CollaborationRequests() {
   const [loading, setLoading] = useState(true);
   const [respondingId, setRespondingId] = useState(null);
 
-  const authHeader = () => ({
-    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-  });
-
   const fetchRequests = async () => {
     try {
-      const res = await axios.get(`${API_URL}/collaboration-requests`, authHeader());
+      const res = await api.get("/collaboration-requests");
       setRequests(res.data.requests || []);
     } catch (error) {
       console.error(error);
@@ -97,7 +92,7 @@ export default function CollaborationRequests() {
   const handleRespond = async (id, status) => {
     setRespondingId(id);
     try {
-      await axios.put(`${API_URL}/collaboration-requests/${id}`, { status }, authHeader());
+      await api.put(`/collaboration-requests/${id}`, { status });
       await fetchRequests();
     } catch (error) {
       console.error(error);

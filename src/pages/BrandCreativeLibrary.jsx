@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Image,
@@ -19,7 +18,7 @@ import {
 } from "lucide-react";
 
 import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
-import { API_URL } from "../config/api";
+import api, { API_URL } from "../config/api";
 
 export default function BrandCreativeLibrary() {
   const [creatives, setCreatives] = useState([]);
@@ -36,14 +35,6 @@ export default function BrandCreativeLibrary() {
   // Preview Modal
   const [previewCreative, setPreviewCreative] = useState(null);
 
-  const token = localStorage.getItem("token");
-  const authHeader = useMemo(
-    () => ({
-      headers: { Authorization: `Bearer ${token}` },
-    }),
-    [token]
-  );
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -52,9 +43,9 @@ export default function BrandCreativeLibrary() {
     setLoading(true);
     try {
       const [creatRes, brandRes, campRes] = await Promise.allSettled([
-        axios.get(`${API_URL}/brand/creatives`, authHeader),
-        axios.get(`${API_URL}/brand/brands`, authHeader),
-        axios.get(`${API_URL}/brand/campaigns`, authHeader),
+        api.get("/brand/creatives"),
+        api.get("/brand/brands"),
+        api.get("/brand/campaigns"),
       ]);
 
       if (creatRes.status === "fulfilled") {

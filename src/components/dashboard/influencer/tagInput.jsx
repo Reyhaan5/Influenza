@@ -6,8 +6,7 @@ export default function TagInput({ tags = [], onChange, placeholder = "Type and 
 
   const addTag = () => {
     const trimmed = value.trim();
-    if (!trimmed) return;
-    if (!tags.includes(trimmed)) onChange([...tags, trimmed]);
+    if (trimmed && !tags.includes(trimmed)) onChange([...tags, trimmed]);
     setValue("");
   };
 
@@ -20,17 +19,12 @@ export default function TagInput({ tags = [], onChange, placeholder = "Type and 
     }
   };
 
-  const removeTag = (tag) => onChange(tags.filter((t) => t !== tag));
-
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2.5 focus-within:ring-2 focus-within:ring-[var(--color-primary)]">
       {tags.map((tag) => (
-        <span
-          key={tag}
-          className="flex items-center gap-1 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary-hover)] text-xs font-semibold px-2.5 py-1"
-        >
+        <span key={tag} className="flex items-center gap-1 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary-hover)] text-xs font-semibold px-2.5 py-1">
           {tag}
-          <button type="button" onClick={() => removeTag(tag)} aria-label={`Remove ${tag}`}>
+          <button type="button" onClick={() => onChange(tags.filter((t) => t !== tag))} aria-label={`Remove ${tag}`} className="cursor-pointer">
             <X size={12} />
           </button>
         </span>

@@ -1,15 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
-import {
-  ReachDoodle,
-  ShortFormDoodle,
-  StickyNoteDoodle,
-  CommissionDoodle,
-} from "./HeroDoodles";
+import { ReachDoodle, ShortFormDoodle, StickyNoteDoodle, CommissionDoodle } from "./HeroDoodles";
 import HeroSearchBar from "./HeroSearchBar";
 import ArrowFillButton from "../common/ArrowFillButton";
+
+const DOODLES = [ReachDoodle, ShortFormDoodle, StickyNoteDoodle, CommissionDoodle];
+const CTA_LINKS = [
+  { to: "/signup?role=brand", text: "Start Hiring", cls: "bg-zinc-950 hover:bg-zinc-800 text-white" },
+  { to: "/signup?role=influencer", text: "Become a Creator", cls: "border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-900" },
+];
+const anim = (delay, y = 15) => ({ initial: { opacity: 0, y }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6, delay } });
 
 export default function Hero() {
   return (
@@ -22,45 +23,16 @@ export default function Hero() {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center relative z-20">
-        
-        {/* Top Trust Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/95 border border-pink-200/80 shadow-xs mb-8 hover:border-pink-300 transition-colors"
-        >
-          <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF1475] opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF1475]"></span>
-          </span>
-          
-        </motion.div>
-
         {/* Main Headline Container with Handwritten Doodles */}
         <div className="relative max-w-4xl mx-auto">
-          {/* Handwritten SVG Doodles */}
-          <ReachDoodle />
-          <ShortFormDoodle />
-          <StickyNoteDoodle />
-          <CommissionDoodle />
+          {DOODLES.map((Doodle, i) => <Doodle key={i} />)}
 
-          {/* Main Title */}
-          <motion.h1
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-zinc-950 tracking-tight leading-[1.12] sm:leading-[1.15]"
-          >
+          <motion.h1 {...anim(0.1)} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-zinc-950 tracking-tight leading-[1.12] sm:leading-[1.15]">
             <span>Hire </span>
-            <span className="bg-gradient-to-r from-[#FF1475] via-purple-600 to-[#FF1475] bg-clip-text text-transparent">
-              UGC Creators
-            </span>
+            <span className="bg-gradient-to-r from-[#FF1475] via-purple-600 to-[#FF1475] bg-clip-text text-transparent">UGC Creators</span>
             <span> & </span>
             <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-purple-600 to-[#FF1475] bg-clip-text text-transparent">
-              Influencers
-            </span>
+            <span className="bg-gradient-to-r from-purple-600 to-[#FF1475] bg-clip-text text-transparent">Influencers</span>
             <span> for </span>
             <span className="relative inline-block mt-1 sm:mt-0">
               <span className="absolute -inset-x-2 sm:-inset-x-3 -inset-y-1 bg-gradient-to-r from-pink-100/60 via-purple-50/70 to-pink-100/60 rounded-2xl -rotate-1 -z-10 transform scale-105 border border-pink-200/50" />
@@ -70,22 +42,12 @@ export default function Hero() {
         </div>
 
         {/* Subtitle Description */}
-        <motion.p
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-7 max-w-2xl mx-auto text-base sm:text-lg text-zinc-600 leading-relaxed font-normal"
-        >
+        <motion.p {...anim(0.2)} className="mt-7 max-w-2xl mx-auto text-base sm:text-lg text-zinc-600 leading-relaxed font-normal">
           Find top verified creators to produce authentic UGC videos and high-converting campaigns for your Brand or Agency. Run paid collaborations, product sampling, gifting, and seeding — all in one platform.
         </motion.p>
 
         {/* Action Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5"
-        >
+        <motion.div {...anim(0.3)} className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
           <ArrowFillButton
             btnText="Discover Creators"
             to="/creator-discovery"
@@ -95,31 +57,21 @@ export default function Hero() {
             size="md"
             className="w-full sm:w-auto shadow-lg shadow-pink-500/25"
           />
-
-          <Link
-            to="/signup?role=brand"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full bg-zinc-950 hover:bg-zinc-800 text-white text-sm font-bold shadow-sm transition-all hover:scale-105 active:scale-95 text-center cursor-pointer"
-          >
-            <span>Start Hiring</span>
-          </Link>
-
-          <Link
-            to="/signup?role=influencer"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-900 text-sm font-bold shadow-sm transition-all hover:scale-105 active:scale-95 text-center cursor-pointer"
-          >
-            <span>Become a Creator</span>
-          </Link>
+          {CTA_LINKS.map(({ to, text, cls }) => (
+            <Link
+              key={to}
+              to={to}
+              className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full text-sm font-bold shadow-sm transition-all hover:scale-105 active:scale-95 text-center cursor-pointer ${cls}`}
+            >
+              <span>{text}</span>
+            </Link>
+          ))}
         </motion.div>
 
         {/* Search & Filter Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
+        <motion.div {...anim(0.4, 20)}>
           <HeroSearchBar />
         </motion.div>
-
       </div>
     </section>
   );

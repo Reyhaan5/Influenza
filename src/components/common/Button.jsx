@@ -1,46 +1,19 @@
-import React from 'react';
+import React from "react";
 
 const variants = {
-  primary:
-    "bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm hover:shadow-md active:scale-95",
-
-  secondary:
-    "bg-[var(--color-surface)] text-[var(--color-text)] border border-[var(--color-border)] hover:bg-[var(--color-background)]",
-
-  outline:
-    "border border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white",
-
-  ghost:
-    "text-[var(--color-text)] hover:text-[var(--color-primary)]",
+  primary: "bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white text-xs font-bold shadow-sm hover:shadow-md active:scale-95",
+  secondary: "bg-[var(--color-surface)] text-[var(--color-text)] border border-[var(--color-border)] hover:bg-[var(--color-background)]",
+  outline: "border border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white",
+  ghost: "text-[var(--color-text)] hover:text-[var(--color-primary)]",
 };
 
-function Button({
-  children,
-  variant = "primary",
-  className = "",
-  ...props
-}) {
+export default function Button({ children, variant = "primary", className = "", ...props }) {
   return (
     <button
-      className={`
-        inline-flex
-        items-center
-        justify-center
-        rounded-xl
-        px-6
-        py-3
-        font-semibold
-        transition-all
-        duration-300
-        hover:scale-[1.02]
-        ${variants[variant]}
-        ${className}
-      `}
+      className={`inline-flex items-center justify-center rounded-xl px-6 py-3 font-semibold transition-all duration-300 hover:scale-[1.02] ${variants[variant] || variants.primary} ${className}`}
       {...props}
     >
       {children}
     </button>
   );
 }
-
-export default Button;

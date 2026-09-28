@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Bookmark,
@@ -18,21 +17,13 @@ import {
 
 import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
 import Avatar from "../components/dashboard/influencer/Avatar";
-import { API_URL } from "../config/api";
+import api from "../config/api";
 
 export default function BrandCreatorLists() {
   const [savedCreators, setSavedCreators] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-
-  const token = localStorage.getItem("token");
-  const authHeader = useMemo(
-    () => ({
-      headers: { Authorization: `Bearer ${token}` },
-    }),
-    [token]
-  );
 
   useEffect(() => {
     fetchSavedCreators();
@@ -41,7 +32,7 @@ export default function BrandCreatorLists() {
   const fetchSavedCreators = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/brand/saved-creators`, authHeader);
+      const res = await api.get("/brand/saved-creators");
       setSavedCreators(res.data.savedCreators || []);
     } catch (err) {
       console.error("Error loading saved creators:", err);
@@ -53,7 +44,7 @@ export default function BrandCreatorLists() {
   const handleRemoveSaved = async (creatorId, e) => {
     if (e) e.preventDefault();
     try {
-      await axios.delete(`${API_URL}/brand/saved-creators/${creatorId}`, authHeader);
+      await api.delete(`/brand/saved-creators/${creatorId}`);
       setSavedCreators((prev) => prev.filter((s) => s.creator?._id !== creatorId));
     } catch (err) {
       console.error("Error removing creator:", err);

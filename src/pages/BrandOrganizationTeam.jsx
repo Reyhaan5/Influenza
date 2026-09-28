@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
   Plus,
   Trash2,
@@ -12,7 +11,7 @@ import {
 } from "lucide-react";
 
 import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
-import { API_URL } from "../config/api";
+import api from "../config/api";
 
 export default function BrandOrganizationTeam() {
   const [members, setMembers] = useState([]);
@@ -25,14 +24,6 @@ export default function BrandOrganizationTeam() {
   });
   const [inviting, setInviting] = useState(false);
 
-  const token = localStorage.getItem("token");
-  const authHeader = useMemo(
-    () => ({
-      headers: { Authorization: `Bearer ${token}` },
-    }),
-    [token]
-  );
-
   useEffect(() => {
     fetchTeam();
   }, []);
@@ -40,7 +31,7 @@ export default function BrandOrganizationTeam() {
   const fetchTeam = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/brand/team`, authHeader);
+      const res = await api.get("/brand/team");
       setMembers(res.data.members || []);
     } catch (err) {
       console.error("Error fetching team:", err);
@@ -55,11 +46,7 @@ export default function BrandOrganizationTeam() {
 
     setInviting(true);
     try {
-      const res = await axios.post(
-        `${API_URL}/brand/team/invite`,
-        inviteForm,
-        authHeader
-      );
+      const res = await api.post("/brand/team/invite", inviteForm);
       setMembers((prev) => [...prev, res.data.member]);
       setShowInviteModal(false);
       setInviteForm({ name: "", email: "", access: "Full Access" });
@@ -76,7 +63,7 @@ export default function BrandOrganizationTeam() {
     if (!confirmed) return;
 
     try {
-      await axios.delete(`${API_URL}/brand/team/${memberId}`, authHeader);
+      await api.delete(`/brand/team/${memberId}`);
       setMembers((prev) => prev.filter((m) => m._id !== memberId));
     } catch (err) {
       console.error(err);

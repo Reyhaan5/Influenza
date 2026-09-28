@@ -1,66 +1,40 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { MapPin, ShieldCheck, ExternalLink, Pencil, Plus, X } from "lucide-react";
+import { MapPin, ShieldCheck, ExternalLink, Pencil, Plus } from "lucide-react";
 import Avatar from "./Avatar";
 import SegmentedProgressBar from "./SegmentedProgressBar";
 
-const platformLogos = {
-  Instagram: "/Instagram.svg",
-};
+const platformLogos = { Instagram: "/Instagram.svg" };
 
 export default function ProfileCard({
-  profile,
+  profile = {},
   handle,
   socialAccounts = [],
   categories = [],
   approved,
   packages = [],
   galleryItems = [],
-  onEditProfile,
-  onAddAccount,
-  onRemoveAccount,
-  onEditCategories,
 }) {
-  const p = profile || {};
-  const personalInfo = p.personalInfo || {};
-  const address = p.address || {};
+  const { personalInfo = {}, address = {}, matchProfile = {}, user } = profile || {};
   const fullName = [personalInfo.firstName, personalInfo.lastName].filter(Boolean).join(" ");
-  const displayName = fullName || p.user?.name || (handle && !handle.startsWith("@") ? handle : "Creator");
+  const displayName = fullName || user?.name || (handle && !handle.startsWith("@") ? handle : "Creator");
   const title = personalInfo.title || (categories.length > 0 ? `${categories[0]} Creator` : "Creator");
-  const coverPhotos =
-    Array.isArray(personalInfo.coverPhotos) && personalInfo.coverPhotos.length > 0
-      ? personalInfo.coverPhotos
-      : personalInfo.coverPhoto
-      ? [personalInfo.coverPhoto]
-      : [];
-  const avatarUrl =
-    personalInfo.avatar ||
-    p.user?.avatar ||
-    p.socialAccounts?.find((s) => s.platform?.toLowerCase() === "instagram")?.avatar;
+  const coverPhotos = Array.isArray(personalInfo.coverPhotos) && personalInfo.coverPhotos.length > 0
+    ? personalInfo.coverPhotos
+    : personalInfo.coverPhoto ? [personalInfo.coverPhoto] : [];
+  const avatarUrl = personalInfo.avatar || user?.avatar || profile.socialAccounts?.find((s) => s.platform?.toLowerCase() === "instagram")?.avatar;
   const locationStr = [address.city, address.state, address.country].filter(Boolean).join(", ");
-  const bio = p.matchProfile?.bio || personalInfo.description;
+  const bio = matchProfile.bio || personalInfo.description;
+  const gridClass = coverPhotos.length === 1 ? "grid-cols-1" : coverPhotos.length === 2 ? "grid-cols-2" : "grid-cols-3";
 
   return (
     <div className="bg-white border border-zinc-200/90 rounded-3xl overflow-hidden shadow-sm flex flex-col">
-      {/* Top Cover Banner */}
       <div className="relative h-36 sm:h-44 w-full bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 overflow-hidden">
         {coverPhotos.length > 0 ? (
-          <div
-            className={`grid h-full w-full gap-0.5 ${
-              coverPhotos.length === 1
-                ? "grid-cols-1"
-                : coverPhotos.length === 2
-                ? "grid-cols-2"
-                : "grid-cols-3"
-            }`}
-          >
+          <div className={`grid h-full w-full gap-0.5 ${gridClass}`}>
             {coverPhotos.slice(0, 3).map((photo, idx) => (
               <div key={idx} className="relative h-full w-full overflow-hidden bg-zinc-900">
-                <img
-                  src={photo}
-                  alt={`Cover Banner ${idx + 1}`}
-                  className="w-full h-full object-cover"
-                />
+                <img src={photo} alt={`Cover Banner ${idx + 1}`} className="w-full h-full object-cover" />
               </div>
             ))}
           </div>
@@ -72,7 +46,7 @@ export default function ProfileCard({
 
         <div className="absolute top-3 right-3 flex items-center gap-2">
           <Link
-            to={`/creators/${p.user?._id || p._id || ""}`}
+            to={`/creators/${user?._id || profile._id || ""}`}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-black/80 hover:bg-black text-white text-xs font-bold px-3 py-1.5 rounded-xl backdrop-blur-sm transition flex items-center gap-1.5 shadow-sm border border-zinc-700/50"
@@ -82,13 +56,10 @@ export default function ProfileCard({
         </div>
       </div>
 
-      {/* Card Content Body */}
       <div className="px-6 sm:px-7 pb-6 pt-0 flex flex-col gap-6">
-        {/* Creator Info Row with Overlapping Avatar */}
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex flex-wrap items-center gap-4 sm:gap-5">
-            {/* ONLY the avatar floats over the cover banner */}
-            <div className="-mt-12 sm:-mt-14 relative rounded-full ring-4 ring-white bg-white shadow-md flex-shrink-0 z-10">
+            <div className="-mt-12 sm:-mt-14 relative rounded-full ring-4 ring-white bg-white shadow-md shrink-0 z-10">
               <Avatar name={displayName} avatarUrl={avatarUrl} size={88} />
               {approved && (
                 <span className="absolute bottom-0 right-0 bg-blue-500 rounded-full p-1 border-2 border-white flex items-center justify-center shadow">
@@ -97,18 +68,15 @@ export default function ProfileCard({
               )}
             </div>
 
-            {/* Typography stays safely on the white card surface */}
             <div className="pt-2 sm:pt-3">
               <h2 className="font-extrabold text-xl sm:text-2xl text-zinc-950 flex items-center gap-2">
                 {displayName}
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                  Active
-                </span>
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Active</span>
               </h2>
               <p className="text-xs font-semibold text-zinc-500 mt-0.5">{title}</p>
               {locationStr && (
                 <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-600 mt-1.5">
-                  <MapPin size={13} className="text-zinc-900 flex-shrink-0" />
+                  <MapPin size={13} className="text-zinc-900 shrink-0" />
                   <span>{locationStr}</span>
                 </div>
               )}
@@ -124,118 +92,70 @@ export default function ProfileCard({
           </Link>
         </div>
 
-        {/* Sleek Segmented Progress Bar */}
         <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-200">
           <div className="flex items-center justify-between text-xs font-bold mb-2">
             <span className="text-zinc-900">Profile Completeness</span>
           </div>
-          <SegmentedProgressBar
-            profile={profile}
-            packages={packages}
-            galleryItems={galleryItems}
-            socialAccounts={socialAccounts}
-          />
+          <SegmentedProgressBar profile={profile} packages={packages} galleryItems={galleryItems} socialAccounts={socialAccounts} />
         </div>
 
-        {/* Bio Snippet */}
         {bio && (
           <div className="space-y-1">
             <span className="text-xs font-bold text-zinc-900">About</span>
-            <p className="text-xs text-zinc-600 leading-relaxed line-clamp-3">
-              {bio}
-            </p>
+            <p className="text-xs text-zinc-600 leading-relaxed line-clamp-3">{bio}</p>
           </div>
         )}
 
-        {/* Niches / Categories */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-zinc-900">Categories &amp; Niches</span>
-            <Link
-              to="/account?tab=match-profile"
-              className="text-xs font-bold text-zinc-900 hover:underline"
-            >
+            <Link to="/account?tab=match-profile" className="text-xs font-bold text-zinc-900 hover:underline">
               {categories.length > 0 ? "Edit in Account →" : "+ Add categories"}
             </Link>
           </div>
-
           {categories.length > 0 ? (
             <div className="flex flex-wrap gap-1.5">
               {categories.map((cat) => (
-                <span
-                  key={cat}
-                  className="text-xs font-bold px-3 py-1 rounded-xl bg-zinc-100 border border-zinc-200 text-zinc-900"
-                >
+                <span key={cat} className="text-xs font-bold px-3 py-1 rounded-xl bg-zinc-100 border border-zinc-200 text-zinc-900">
                   {cat}
                 </span>
               ))}
             </div>
           ) : (
-            <p className="text-xs text-zinc-500">
-              Add your niches in Account Settings so brands can discover you.
-            </p>
+            <p className="text-xs text-zinc-500">Add your niches in Account Settings so brands can discover you.</p>
           )}
         </div>
 
-        {/* Connected Instagram Profile */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-zinc-900">Connected Social Profiles</span>
-            <Link
-              to="/account?tab=account-settings"
-              className="text-[11px] font-bold text-zinc-900 hover:underline"
-            >
+            <Link to="/account?tab=account-settings" className="text-[11px] font-bold text-zinc-900 hover:underline">
               Manage Connection →
             </Link>
           </div>
-
-          {socialAccounts.length === 0 && (
-            <p className="text-xs text-zinc-500">
-              No Instagram account connected yet.
-            </p>
-          )}
-
-          {socialAccounts.map((acc) => {
-            const logoSrc = platformLogos[acc.platform] || "/Instagram.svg";
-
-            return (
-              <div
-                key={acc.platform}
-                className="flex items-center justify-between bg-zinc-50 rounded-2xl px-4 py-3 border border-zinc-200"
+          {socialAccounts.length === 0 ? (
+            <>
+              <p className="text-xs text-zinc-500">No Instagram account connected yet.</p>
+              <Link
+                to="/account?tab=account-settings"
+                className="mt-1 flex items-center justify-center gap-1.5 py-2.5 rounded-2xl border border-dashed border-zinc-300 text-xs font-bold text-zinc-900 hover:bg-zinc-50 transition-colors"
               >
+                <Plus size={14} /> Connect Account in Settings
+              </Link>
+            </>
+          ) : (
+            socialAccounts.map((acc) => (
+              <div key={acc.platform} className="flex items-center justify-between bg-zinc-50 rounded-2xl px-4 py-3 border border-zinc-200">
                 <div className="flex items-center gap-3">
-                  <img
-                    src={logoSrc}
-                    alt={`${acc.platform} logo`}
-                    className="w-5 h-5 object-contain"
-                  />
+                  <img src={platformLogos[acc.platform] || "/Instagram.svg"} alt={`${acc.platform} logo`} className="w-5 h-5 object-contain" />
                   <div>
-                    <span className="text-xs font-bold text-zinc-900 block">
-                      {acc.handle}
-                    </span>
-                    <span className="text-[10px] font-semibold text-zinc-500">
-                      {acc.platform}
-                    </span>
+                    <span className="text-xs font-bold text-zinc-900 block">{acc.handle}</span>
+                    <span className="text-[10px] font-semibold text-zinc-500">{acc.platform}</span>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-extrabold text-zinc-900">
-                    {acc.followers.toLocaleString()} followers
-                  </span>
-                </div>
+                <span className="text-xs font-extrabold text-zinc-900">{acc.followers.toLocaleString()} followers</span>
               </div>
-            );
-          })}
-
-          {socialAccounts.length === 0 && (
-            <Link
-              to="/account?tab=account-settings"
-              className="mt-1 flex items-center justify-center gap-1.5 py-2.5 rounded-2xl border border-dashed border-zinc-300 text-xs font-bold text-zinc-900 hover:bg-zinc-50 transition-colors"
-            >
-              <Plus size={14} />
-              Connect Account in Settings
-            </Link>
+            ))
           )}
         </div>
       </div>

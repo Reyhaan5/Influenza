@@ -2,343 +2,325 @@ import InfluencerProfile from "../models/InfluencerProfile.js";
 import Opportunity from "../models/Opportunity.js";
 import CollaborationRequest from "../models/CollaborationRequest.js";
 import RateCard from "../models/RateCard.js";
+import InstagramCache from "../models/InstagramCache.js";
+import { POPULAR_FALLBACKS } from "./instagramController.js";
 import { scrapeInstagram } from "../services/instagram/apifyService.js";
+import { asyncHandler } from "../middleware/asyncHandler.js";
 
 const MAX_CATEGORIES = 10;
 
 // GET /api/influencer/profile (protected)
-export const getMyProfile = async (req, res) => {
-  try {
-    const profile = await InfluencerProfile.findOne({ user: req.user._id })
-      .populate("savedOpportunities");
+export const getMyProfile = asyncHandler(async (req, res) => {
+  const profile = await InfluencerProfile.findOne({ user: req.user._id })
+    .populate("savedOpportunities");
 
-    if (!profile) {
-      return res.status(404).json({ message: "Profile not found." });
-    }
-
-    res.json(profile);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+  if (!profile) {
+    return res.status(404).json({ message: "Profile not found." });
   }
-};
+
+  res.json(profile);
+});
 
 // PUT /api/influencer/profile (protected)
 // "handle" and "categories" are directly editable here — social accounts have
 // their own dedicated endpoints below, and stats/challenges are computed elsewhere.
-export const updateMyProfile = async (req, res) => {
-  try {
-    const allowedUpdates = [
-      "handle",
-      "categories",
-      "personalInfo",
-      "address",
-      "notifications",
-      "payoutInfo",
-      "packages",
-      "isProfileComplete",
-    ];
-    const updates = {};
-    for (const key of allowedUpdates) {
-      if (req.body[key] !== undefined) updates[key] = req.body[key];
-    }
-
-    if (updates.categories !== undefined) {
-      if (!Array.isArray(updates.categories)) {
-        return res.status(400).json({ message: "categories must be an array." });
-      }
-
-      const cleaned = [
-        ...new Set(
-          updates.categories
-            .map((c) => String(c).trim())
-            .filter(Boolean)
-        ),
-      ];
-
-      if (cleaned.length > MAX_CATEGORIES) {
-        return res.status(400).json({ message: `You can select up to ${MAX_CATEGORIES} categories.` });
-      }
-
-      updates.categories = cleaned;
-    }
-
-    if (updates.personalInfo !== undefined && updates.personalInfo.birthday === "") {
-      delete updates.personalInfo.birthday;
-    }
-
-    if (updates.address !== undefined) {
-      if (updates.address.phone && !updates.address.phoneNumber) {
-        updates.address.phoneNumber = updates.address.phone;
-      }
-    }
-
-    // Force profile approval to true when updating profile
-    updates.approved = true;
-
-    const profile = await InfluencerProfile.findOneAndUpdate(
-      { user: req.user._id },
-      { $set: updates },
-      { new: true, runValidators: true }
-    );
-
-    if (!profile) {
-      return res.status(404).json({ message: "Profile not found." });
-    }
-
-    res.json(profile);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+export const updateMyProfile = asyncHandler(async (req, res) => {
+  const allowedUpdates = [
+    "handle",
+    "categories",
+    "personalInfo",
+    "address",
+    "notifications",
+    "payoutInfo",
+    "packages",
+    "isProfileComplete",
+  ];
+  const updates = {};
+  for (const key of allowedUpdates) {
+    if (req.body[key] !== undefined) updates[key] = req.body[key];
   }
-};
+
+  if (updates.categories !== undefined) {
+    if (!Array.isArray(updates.categories)) {
+      return res.status(400).json({ message: "categories must be an array." });
+    }
+
+    const cleaned = [
+      ...new Set(
+        updates.categories
+          .map((c) => String(c).trim())
+          .filter(Boolean)
+      ),
+    ];
+
+    if (cleaned.length > MAX_CATEGORIES) {
+      return res.status(400).json({ message: `You can select up to ${MAX_CATEGORIES} categories.` });
+    }
+
+    updates.categories = cleaned;
+  }
+
+  if (updates.personalInfo !== undefined && updates.personalInfo.birthday === "") {
+    delete updates.personalInfo.birthday;
+  }
+
+  if (updates.address !== undefined) {
+    if (updates.address.phone && !updates.address.phoneNumber) {
+      updates.address.phoneNumber = updates.address.phone;
+    }
+  }
+
+  // Force profile approval to true when updating profile
+  updates.approved = true;
+
+  const profile = await InfluencerProfile.findOneAndUpdate(
+    { user: req.user._id },
+    { $set: updates },
+    { new: true, runValidators: true }
+  );
+
+  if (!profile) {
+    return res.status(404).json({ message: "Profile not found." });
+  }
+
+  res.json(profile);
+});
 
 // PUT /api/influencer/match-profile (protected)
 // Powers the "Match Profile" tab. Uses dot-notation $set so each section
 // (Collaboration, Payment, Audience, etc.) can save independently without
 // wiping out fields from the other sections.
-export const updateMatchProfile = async (req, res) => {
-  try {
-    const allowedFields = [
-      "campaignActive",
-      "invitationsActive",
-      "collaborationFormats",
-      "paymentType",
-      "minAskingPrice",
-      "maxAskingPrice",
-      "bio",
-      "passions",
-      "topics",
-      "niche",
-      "leadTimeDays",
-      "preferredCompanies",
-      "interestedBrands",
-      "audienceGender",
-      "audienceAgeRange",
-      "followersLocations",
-      "audience",
-    ];
+export const updateMatchProfile = asyncHandler(async (req, res) => {
+  const allowedFields = [
+    "campaignActive",
+    "invitationsActive",
+    "collaborationFormats",
+    "paymentType",
+    "minAskingPrice",
+    "maxAskingPrice",
+    "bio",
+    "passions",
+    "topics",
+    "niche",
+    "leadTimeDays",
+    "preferredCompanies",
+    "interestedBrands",
+    "audienceGender",
+    "audienceAgeRange",
+    "followersLocations",
+    "audience",
+  ];
 
-    const set = {};
-    for (const key of allowedFields) {
-      if (req.body[key] !== undefined) {
-        set[`matchProfile.${key}`] = req.body[key];
-      }
+  const set = {};
+  for (const key of allowedFields) {
+    if (req.body[key] !== undefined) {
+      set[`matchProfile.${key}`] = req.body[key];
     }
-
-    // Normalizations for aliases and array structures:
-    if (req.body.accountNiche !== undefined) {
-      const nicheVal = Array.isArray(req.body.accountNiche)
-        ? req.body.accountNiche
-        : [req.body.accountNiche].filter(Boolean);
-      set["matchProfile.niche"] = nicheVal;
-    } else if (req.body.niche !== undefined) {
-      set["matchProfile.niche"] = Array.isArray(req.body.niche)
-        ? req.body.niche
-        : [req.body.niche].filter(Boolean);
-    }
-
-    if (req.body.followersLocation !== undefined && req.body.followersLocations === undefined) {
-      const locVal = Array.isArray(req.body.followersLocation)
-        ? req.body.followersLocation
-        : [req.body.followersLocation].filter(Boolean);
-      set["matchProfile.followersLocations"] = locVal;
-    } else if (req.body.followersLocations !== undefined) {
-      set["matchProfile.followersLocations"] = Array.isArray(req.body.followersLocations)
-        ? req.body.followersLocations
-        : [req.body.followersLocations].filter(Boolean);
-    }
-
-    if (req.body.minAskingPrice !== undefined) {
-      set["matchProfile.minAskingPrice"] = req.body.minAskingPrice === "" ? null : Number(req.body.minAskingPrice);
-    }
-    if (req.body.maxAskingPrice !== undefined) {
-      set["matchProfile.maxAskingPrice"] = req.body.maxAskingPrice === "" ? null : Number(req.body.maxAskingPrice);
-    }
-    if (req.body.leadTimeDays !== undefined) {
-      set["matchProfile.leadTimeDays"] = req.body.leadTimeDays === "" ? null : Number(req.body.leadTimeDays);
-    }
-
-    if (Object.keys(set).length === 0) {
-      return res.status(400).json({ message: "No valid fields provided." });
-    }
-
-    const profile = await InfluencerProfile.findOneAndUpdate(
-      { user: req.user._id },
-      { $set: set },
-      { new: true, runValidators: true }
-    );
-
-    if (!profile) {
-      return res.status(404).json({ message: "Profile not found." });
-    }
-
-    res.json(profile);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
   }
-};
+
+  // Normalizations for aliases and array structures:
+  if (req.body.accountNiche !== undefined) {
+    const nicheVal = Array.isArray(req.body.accountNiche)
+      ? req.body.accountNiche
+      : [req.body.accountNiche].filter(Boolean);
+    set["matchProfile.niche"] = nicheVal;
+  } else if (req.body.niche !== undefined) {
+    set["matchProfile.niche"] = Array.isArray(req.body.niche)
+      ? req.body.niche
+      : [req.body.niche].filter(Boolean);
+  }
+
+  if (req.body.followersLocation !== undefined && req.body.followersLocations === undefined) {
+    const locVal = Array.isArray(req.body.followersLocation)
+      ? req.body.followersLocation
+      : [req.body.followersLocation].filter(Boolean);
+    set["matchProfile.followersLocations"] = locVal;
+  } else if (req.body.followersLocations !== undefined) {
+    set["matchProfile.followersLocations"] = Array.isArray(req.body.followersLocations)
+      ? req.body.followersLocations
+      : [req.body.followersLocations].filter(Boolean);
+  }
+
+  if (req.body.minAskingPrice !== undefined) {
+    set["matchProfile.minAskingPrice"] = req.body.minAskingPrice === "" ? null : Number(req.body.minAskingPrice);
+  }
+  if (req.body.maxAskingPrice !== undefined) {
+    set["matchProfile.maxAskingPrice"] = req.body.maxAskingPrice === "" ? null : Number(req.body.maxAskingPrice);
+  }
+  if (req.body.leadTimeDays !== undefined) {
+    set["matchProfile.leadTimeDays"] = req.body.leadTimeDays === "" ? null : Number(req.body.leadTimeDays);
+  }
+
+  if (Object.keys(set).length === 0) {
+    return res.status(400).json({ message: "No valid fields provided." });
+  }
+
+  const profile = await InfluencerProfile.findOneAndUpdate(
+    { user: req.user._id },
+    { $set: set },
+    { new: true, runValidators: true }
+  );
+
+  if (!profile) {
+    return res.status(404).json({ message: "Profile not found." });
+  }
+
+  res.json(profile);
+});
 
 // POST /api/influencer/social-accounts (protected)
 // Body: { platform, handle } -> auto-scrapes followers & verification
-export const addSocialAccount = async (req, res) => {
-  try {
-    const { platform = "Instagram", handle } = req.body;
+export const addSocialAccount = asyncHandler(async (req, res) => {
+  const { platform = "Instagram", handle } = req.body;
 
-    if (!handle) {
-      return res.status(400).json({ message: "Social account handle is required." });
-    }
+  if (!handle) {
+    return res.status(400).json({ message: "Social account handle is required." });
+  }
 
-    const cleanHandle = handle.replace(/^@+/, "").trim();
-    let followers = 0;
-    let verified = false;
+  const cleanHandle = handle.replace(/^@+/, "").trim();
+  let followers = 0;
+  let verified = false;
 
-    // Live scrape via Apify if platform is Instagram
-    if (platform.toLowerCase() === "instagram") {
-      try {
+  // Live scrape via Apify if platform is Instagram, checking cache / fallbacks first
+  if (platform.toLowerCase() === "instagram") {
+    try {
+      const cached = await InstagramCache.findOne({ handle: cleanHandle.toLowerCase() });
+      if (cached && cached.followers) {
+        followers = cached.followers;
+        verified = Boolean(cached.verified);
+      } else if (POPULAR_FALLBACKS && POPULAR_FALLBACKS[cleanHandle.toLowerCase()]) {
+        const fb = POPULAR_FALLBACKS[cleanHandle.toLowerCase()];
+        followers = fb.followers;
+        verified = Boolean(fb.verified);
+      } else {
         const scraped = await scrapeInstagram(cleanHandle);
         if (scraped) {
           followers = scraped.followersCount ?? scraped.followers ?? 0;
           verified = Boolean(scraped.verified ?? scraped.isVerified);
         }
-      } catch (scrapeErr) {
-        console.warn("Apify auto-scrape on addSocialAccount note:", scrapeErr.message);
       }
+    } catch (scrapeErr) {
+      console.warn("Instagram data lookup note:", scrapeErr.message);
     }
-
-    const profile = await InfluencerProfile.findOne({ user: req.user._id });
-    if (!profile) {
-      return res.status(404).json({ message: "Profile not found." });
-    }
-
-    profile.handle = `@${cleanHandle}`;
-    if (followers > 0) {
-      profile.followers = followers;
-      if (profile.stats) profile.stats.followers = followers;
-    }
-
-    const existingIndex = profile.socialAccounts.findIndex(
-      (s) => s.platform.toLowerCase() === platform.toLowerCase()
-    );
-
-    if (existingIndex >= 0) {
-      profile.socialAccounts[existingIndex].handle = `@${cleanHandle}`;
-      profile.socialAccounts[existingIndex].followers = followers;
-      profile.socialAccounts[existingIndex].verified = verified;
-    } else {
-      profile.socialAccounts.push({
-        platform: "Instagram",
-        handle: `@${cleanHandle}`,
-        followers,
-        verified,
-      });
-    }
-
-    await profile.save();
-    res.status(201).json(profile);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
   }
-};
+
+  const profile = await InfluencerProfile.findOne({ user: req.user._id });
+  if (!profile) {
+    return res.status(404).json({ message: "Profile not found." });
+  }
+
+  profile.handle = `@${cleanHandle}`;
+  if (followers > 0) {
+    profile.followers = followers;
+    if (profile.stats) profile.stats.followers = followers;
+  }
+
+  const existingIndex = profile.socialAccounts.findIndex(
+    (s) => s.platform.toLowerCase() === platform.toLowerCase()
+  );
+
+  if (existingIndex >= 0) {
+    profile.socialAccounts[existingIndex].handle = `@${cleanHandle}`;
+    profile.socialAccounts[existingIndex].followers = followers;
+    profile.socialAccounts[existingIndex].verified = verified;
+    profile.socialAccounts[existingIndex].connected = true;
+  } else {
+    profile.socialAccounts.push({
+      platform: "Instagram",
+      handle: `@${cleanHandle}`,
+      followers,
+      verified,
+      connected: true,
+    });
+  }
+
+  await profile.save();
+  res.status(201).json(profile);
+});
 
 // DELETE /api/influencer/social-accounts/:platform (protected)
-export const removeSocialAccount = async (req, res) => {
-  try {
-    const { platform } = req.params;
+export const removeSocialAccount = asyncHandler(async (req, res) => {
+  const { platform } = req.params;
 
-    const profile = await InfluencerProfile.findOneAndUpdate(
-      { user: req.user._id },
-      {
-        $pull: { socialAccounts: { platform: new RegExp(`^${platform}$`, "i") } },
-      },
-      { new: true }
-    );
+  const profile = await InfluencerProfile.findOneAndUpdate(
+    { user: req.user._id },
+    {
+      $pull: { socialAccounts: { platform: new RegExp(`^${platform}$`, "i") } },
+    },
+    { new: true }
+  );
 
-    if (!profile) {
-      return res.status(404).json({ message: "Profile not found." });
-    }
-
-    res.json(profile);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+  if (!profile) {
+    return res.status(404).json({ message: "Profile not found." });
   }
-};
+
+  res.json(profile);
+});
 
 // POST /api/influencer/disconnect-instagram (protected)
 // Fully and cleanly disconnects Instagram, wipes all Apify retrieved data, resets handle, and clears rate card
-export const disconnectInstagramAccount = async (req, res) => {
-  try {
-    const profile = await InfluencerProfile.findOne({ user: req.user._id });
-    if (!profile) {
-      return res.status(404).json({ message: "Profile not found." });
-    }
-
-    // 1. Wipe all social accounts
-    profile.socialAccounts = [];
-
-    // 2. Clear handle & followers (do not synthesize a joined username)
-    profile.handle = "";
-    profile.followers = 0;
-    if (profile.stats) {
-      profile.stats.followers = 0;
-      profile.stats.engagementRate = 0;
-    }
-
-    await profile.save();
-
-    // 3. Wipe any generated RateCard data associated with that account
-    await RateCard.deleteMany({ influencer: req.user._id });
-
-    res.json({
-      message: "Instagram account disconnected and all retrieved profile data cleared successfully.",
-      profile,
-    });
-  } catch (error) {
-    console.error("Error disconnecting Instagram:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+export const disconnectInstagramAccount = asyncHandler(async (req, res) => {
+  const profile = await InfluencerProfile.findOne({ user: req.user._id });
+  if (!profile) {
+    return res.status(404).json({ message: "Profile not found." });
   }
-};
+
+  // 1. Wipe all social accounts
+  profile.socialAccounts = [];
+
+  // 2. Clear handle & followers (do not synthesize a joined username)
+  profile.handle = "";
+  profile.followers = 0;
+  if (profile.stats) {
+    profile.stats.followers = 0;
+    profile.stats.engagementRate = 0;
+  }
+
+  await profile.save();
+
+  // 3. Wipe any generated RateCard data associated with that account
+  await RateCard.deleteMany({ influencer: req.user._id });
+
+  res.json({
+    message: "Instagram account disconnected and all retrieved profile data cleared successfully.",
+    profile,
+  });
+});
 
 // GET /api/influencer/opportunities (protected)
 // Open campaigns an influencer can browse and apply to, annotated with
 // whether they've already sent a request for each one.
-export const getOpenOpportunities = async (req, res) => {
-  try {
-    const opportunities = await Opportunity.find({ status: "open" })
-      .populate("brand", "name")
-      .sort({ createdAt: -1 });
+export const getOpenOpportunities = asyncHandler(async (req, res) => {
+  const opportunities = await Opportunity.find({ status: "open" })
+    .populate("brand", "name")
+    .sort({ createdAt: -1 });
 
-    const myRequests = await CollaborationRequest.find({
-      influencer: req.user._id,
-      opportunity: { $ne: null },
-    }).select("opportunity status");
+  const myRequests = await CollaborationRequest.find({
+    influencer: req.user._id,
+    opportunity: { $ne: null },
+  }).select("opportunity status");
 
-    const requestByOpportunity = new Map(
-      myRequests.map((r) => [String(r.opportunity), r.status])
-    );
+  const requestByOpportunity = new Map(
+    myRequests.map((r) => [String(r.opportunity), r.status])
+  );
 
-    const withStatus = opportunities.map((o) => ({
-      ...o.toObject(),
-      myRequestStatus: requestByOpportunity.get(String(o._id)) || null,
-    }));
+  const withStatus = opportunities.map((o) => ({
+    ...o.toObject(),
+    myRequestStatus: requestByOpportunity.get(String(o._id)) || null,
+  }));
 
-    res.json({ opportunities: withStatus });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
+  res.json({ opportunities: withStatus });
+});
 
 // PATCH /api/influencer/approve-all (protected / admin)
 // Utility controller function to approve all unapproved profiles in one request
-export const approveAllInfluencers = async (req, res) => {
-  try {
-    const result = await InfluencerProfile.updateMany(
-      { approved: { $ne: true } },
-      { $set: { approved: true } }
-    );
-    res.json({
-      message: "Successfully auto-approved all existing profiles.",
-      modifiedCount: result.modifiedCount,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
+export const approveAllInfluencers = asyncHandler(async (req, res) => {
+  const result = await InfluencerProfile.updateMany(
+    { approved: { $ne: true } },
+    { $set: { approved: true } }
+  );
+  res.json({
+    message: "Successfully auto-approved all existing profiles.",
+    modifiedCount: result.modifiedCount,
+  });
+});
