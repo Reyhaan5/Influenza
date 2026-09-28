@@ -334,6 +334,82 @@ export default function InfluenzeAuth() {
             </AnimatePresence>
           </div>
 
+          {/* Quick Demo Access Badges (1-Click Fill) */}
+          {!isSignup && (
+            <div className="mb-3 p-2.5 rounded-2xl bg-zinc-50 border border-zinc-200/90 shadow-2xs">
+              <div className="flex items-center justify-between mb-2 px-1">
+                <span className="text-[11px] font-bold text-zinc-700 flex items-center gap-1.5">
+                  <Sparkles size={12} className="text-purple-600" />
+                  <span>Quick Demo Logins</span>
+                </span>
+                <span className="text-[10px] font-semibold text-zinc-500 bg-white px-2 py-0.5 rounded-full border border-zinc-200">
+                  Password: <code className="text-purple-600 font-bold">password123</code>
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setForm({ ...form, email: "brand1@demo.com", password: "password123" });
+                    setError("");
+                  }}
+                  className="text-left px-2.5 py-1.5 rounded-xl border border-zinc-200 bg-white hover:border-purple-300 hover:bg-purple-50/40 transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Building2 size={12} className="text-purple-600 group-hover:scale-110 transition-transform" />
+                    <span className="text-[11px] font-bold text-zinc-900 group-hover:text-purple-700">Brand 1: Luxe</span>
+                  </div>
+                  <p className="text-[9.5px] text-zinc-400 group-hover:text-zinc-500 font-mono mt-0.5 truncate">brand1@demo.com</p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setForm({ ...form, email: "brand2@demo.com", password: "password123" });
+                    setError("");
+                  }}
+                  className="text-left px-2.5 py-1.5 rounded-xl border border-zinc-200 bg-white hover:border-purple-300 hover:bg-purple-50/40 transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Building2 size={12} className="text-purple-600 group-hover:scale-110 transition-transform" />
+                    <span className="text-[11px] font-bold text-zinc-900 group-hover:text-purple-700">Brand 2: Apex</span>
+                  </div>
+                  <p className="text-[9.5px] text-zinc-400 group-hover:text-zinc-500 font-mono mt-0.5 truncate">brand2@demo.com</p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setForm({ ...form, email: "creator1@demo.com", password: "password123" });
+                    setError("");
+                  }}
+                  className="text-left px-2.5 py-1.5 rounded-xl border border-zinc-200 bg-white hover:border-indigo-300 hover:bg-indigo-50/40 transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Tv size={12} className="text-indigo-600 group-hover:scale-110 transition-transform" />
+                    <span className="text-[11px] font-bold text-zinc-900 group-hover:text-indigo-700">Creator 1: Aarav</span>
+                  </div>
+                  <p className="text-[9.5px] text-zinc-400 group-hover:text-zinc-500 font-mono mt-0.5 truncate">creator1@demo.com</p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setForm({ ...form, email: "creator2@demo.com", password: "password123" });
+                    setError("");
+                  }}
+                  className="text-left px-2.5 py-1.5 rounded-xl border border-zinc-200 bg-white hover:border-indigo-300 hover:bg-indigo-50/40 transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Tv size={12} className="text-indigo-600 group-hover:scale-110 transition-transform" />
+                    <span className="text-[11px] font-bold text-zinc-900 group-hover:text-indigo-700">Creator 2: Priya</span>
+                  </div>
+                  <p className="text-[9.5px] text-zinc-400 group-hover:text-zinc-500 font-mono mt-0.5 truncate">creator2@demo.com</p>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Role selector on signup (Creator vs Brand) */}
           <AnimatePresence>
             {isSignup && (
