@@ -10,6 +10,7 @@ const galleryContentSchema = new mongoose.Schema(
     mediaType: { type: String, enum: ["image", "video"], default: "image" },
     caption: { type: String, default: "", trim: true },
     platform: { type: String, default: "", trim: true }, // "Instagram", "YouTube", etc.
+    highlighted: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

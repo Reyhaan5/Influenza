@@ -44,9 +44,32 @@ export default function HeroSearchBar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSearch = () => {
-    navigate(`/creators?type=${encodeURIComponent(contentType)}&category=${encodeURIComponent(category)}&mode=${searchMode}`);
-  };
+ const handleSearch = () => {
+  const params = new URLSearchParams();
+
+  if (searchMode === "content") {
+    // Content Type dropdown -> contentType filter
+    const contentTypeMap = {
+      "UGC Videos": "video",
+      "Short-Form Reels": "reel",
+      "Product Reviews": "review",
+      "Product Unboxing": "video",
+      "Product Photography": "photo",
+      "Testimonials & Demos": "video",
+    };
+    if (contentType !== "All" && contentTypeMap[contentType]) {
+      params.set("contentType", contentTypeMap[contentType]);
+    }
+  } else {
+    // In "By Location" mode the first dropdown is labeled Location / Region
+    if (contentType !== "All") params.set("location", contentType);
+  }
+
+  if (category !== "Any") params.set("category", category);
+
+  const qs = params.toString();
+  navigate(`/creator-discovery${qs ? `?${qs}` : ""}`);
+};
 
   return (
     <div ref={searchBarRef} className="w-full max-w-3xl mx-auto mt-10 flex flex-col items-center relative z-40">
