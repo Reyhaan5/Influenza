@@ -24,6 +24,7 @@ Influenza gives **brands** the tools to launch multi-step campaigns, search and 
 - Creative Library — browse all campaign deliverables and product assets in one place
 - Leave ratings & reviews for creators after completed collaborations
 - Real-time dashboard stats (active campaigns, total collaborations)
+- Real-time Searching through Influencers
 
 ### For Influencers
 - Persistent dashboard with live stats, no fabricated data
