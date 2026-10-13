@@ -173,6 +173,19 @@ npm run dev      # starts Vite dev server, default http://localhost:5173
 
 > **Note:** If you're on a restricted network (e.g. certain campus/corporate Wi-Fi), MongoDB Atlas SRV DNS resolution can fail locally. `backend/config/db.js` already forces public DNS resolvers (`8.8.8.8`, `1.1.1.1`) to work around this. If issues persist, prefer deploying to Render/Vercel over local development.
 
+## Alternative For Runnig project
+##  Running the Project via Jenkins
+
+We can use **Jenkins** to automate the execution and environment setup for this project. 
+
+###  How to Run
+1. Navigate to the **Jenkins Dashboard**.
+2. Create a Pipeline and set Definition to Pipeline script from SCM.
+3. Select SCM: Git. Repository URL: "Your Repository URL".
+4. Click **Build Now** in the left-hand menu to execute the project.
+5. Open the latest build under the **Build History** and click **Console Output** to view the live execution logs.
+
+
 ---
 
 ## Available Scripts
