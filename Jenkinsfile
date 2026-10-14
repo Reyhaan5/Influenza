@@ -4,29 +4,38 @@ pipeline {
 
     environment {
         JENKINS_NODE_COOKIE = 'dontKillMe'
+        PATH = "C:\\Program Files\\nodejs;${env.PATH}"
     }
 
     stages {
         stage('Install') {
             steps {
                 bat '''
-                    node --version
-                    npm --version
-                    npm cache verify
-                    npm ci --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000
+                    echo ===== Node.js Version =====
+                    "C:\\Program Files\\nodejs\\node.exe" --version
+
+                    echo ===== npm Version =====
+                    call "C:\\Program Files\\nodejs\\npm.cmd" --version
+
+                    call "C:\\Program Files\\nodejs\\npm.cmd" cache verify
+                    call "C:\\Program Files\\nodejs\\npm.cmd" ci --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000
                 '''
             }
         }
 
         stage('Build') {
             steps {
-                bat 'npm run build'
+                bat '''
+                    call "C:\\Program Files\\nodejs\\npm.cmd" run build
+                '''
             }
         }
 
         stage('Run') {
             steps {
-                bat 'start /B npm run preview -- --host 127.0.0.1 --port 4173'
+                bat '''
+                    start "" /B "C:\\Program Files\\nodejs\\npm.cmd" run preview -- --host 127.0.0.1 --port 4173
+                '''
             }
         }
     }
