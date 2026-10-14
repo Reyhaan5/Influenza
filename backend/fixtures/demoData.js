@@ -918,3 +918,5 @@ export const CURATED_SHOWCASE_ITEMS = [
     createdAt: new Date("2026-08-28T19:00:00Z"),
   },
 ];
+
+export { POPULAR_FALLBACKS } from "./instagramFallbacks.js";

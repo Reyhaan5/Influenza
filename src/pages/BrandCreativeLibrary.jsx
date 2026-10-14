@@ -1,38 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
-  Image,
-  Video,
-  Play,
-  Download,
-  Filter,
-  Search,
-  ChevronDown,
-  ExternalLink,
-  Layers,
-  Sparkles,
-  RefreshCw,
-  Plus,
-  Eye,
-  X,
+  Image, Video, Play, Download, Search, ChevronDown, RefreshCw, Plus, Eye, X
 } from "lucide-react";
-
 import BrandDashboardLayout from "../components/layout/BrandDashBoardLayout";
-import api, { API_URL } from "../config/api";
+import api, { API_ORIGIN } from "../config/api";
+
+const getFullMediaUrl = (url) => (!url ? "" : url.startsWith("http") ? url : `${API_ORIGIN}${url}`);
 
 export default function BrandCreativeLibrary() {
   const [creatives, setCreatives] = useState([]);
   const [brands, setBrands] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedCampaign, setSelectedCampaign] = useState("");
   const [selectedMediaType, setSelectedMediaType] = useState("");
-
-  // Preview Modal
   const [previewCreative, setPreviewCreative] = useState(null);
 
   useEffect(() => {
@@ -47,16 +31,9 @@ export default function BrandCreativeLibrary() {
         api.get("/brand/brands"),
         api.get("/brand/campaigns"),
       ]);
-
-      if (creatRes.status === "fulfilled") {
-        setCreatives(creatRes.value.data.creatives || []);
-      }
-      if (brandRes.status === "fulfilled") {
-        setBrands(brandRes.value.data.brands || []);
-      }
-      if (campRes.status === "fulfilled") {
-        setCampaigns(campRes.value.data.campaigns || []);
-      }
+      if (creatRes.status === "fulfilled") setCreatives(creatRes.value.data.creatives || []);
+      if (brandRes.status === "fulfilled") setBrands(brandRes.value.data.brands || []);
+      if (campRes.status === "fulfilled") setCampaigns(campRes.value.data.campaigns || []);
     } catch (err) {
       console.error("Error loading creative library:", err);
     } finally {
@@ -67,25 +44,12 @@ export default function BrandCreativeLibrary() {
   const filteredCreatives = useMemo(() => {
     return creatives.filter((c) => {
       if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase();
-        const matchesTitle = c.title?.toLowerCase().includes(query);
-        const matchesCampaign = c.campaignTitle?.toLowerCase().includes(query);
-        const matchesBrand = c.brandName?.toLowerCase().includes(query);
-        if (!matchesTitle && !matchesCampaign && !matchesBrand) return false;
+        const q = searchQuery.toLowerCase();
+        if (!c.title?.toLowerCase().includes(q) && !c.campaignTitle?.toLowerCase().includes(q) && !c.brandName?.toLowerCase().includes(q)) return false;
       }
-
-      if (selectedBrand && String(c.brandId) !== String(selectedBrand)) {
-        return false;
-      }
-
-      if (selectedCampaign && String(c.campaignId) !== String(selectedCampaign)) {
-        return false;
-      }
-
-      if (selectedMediaType && c.mediaType !== selectedMediaType) {
-        return false;
-      }
-
+      if (selectedBrand && String(c.brandId) !== String(selectedBrand)) return false;
+      if (selectedCampaign && String(c.campaignId) !== String(selectedCampaign)) return false;
+      if (selectedMediaType && c.mediaType !== selectedMediaType) return false;
       return true;
     });
   }, [creatives, searchQuery, selectedBrand, selectedCampaign, selectedMediaType]);
@@ -93,7 +57,6 @@ export default function BrandCreativeLibrary() {
   return (
     <BrandDashboardLayout>
       <div className="max-w-7xl mx-auto pb-12">
-        {/* Header */}
         <div className="flex items-center justify-between mb-2">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Creative Library</h1>
@@ -113,10 +76,7 @@ export default function BrandCreativeLibrary() {
         {/* Filter Bar */}
         <div className="flex flex-wrap items-center gap-3 my-6">
           <div className="relative flex-1 min-w-[220px] max-w-sm">
-            <Search
-              size={15}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
-            />
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Search creatives by title, campaign, brand..."
@@ -126,7 +86,6 @@ export default function BrandCreativeLibrary() {
             />
           </div>
 
-          {/* Brand Filter */}
           <div className="relative">
             <select
               value={selectedBrand}
@@ -135,18 +94,12 @@ export default function BrandCreativeLibrary() {
             >
               <option value="">All Brands</option>
               {brands.map((b) => (
-                <option key={b._id} value={b._id}>
-                  {b.name}
-                </option>
+                <option key={b._id} value={b._id}>{b.name}</option>
               ))}
             </select>
-            <ChevronDown
-              size={14}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-            />
+            <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
 
-          {/* Campaign Filter */}
           <div className="relative">
             <select
               value={selectedCampaign}
@@ -155,18 +108,12 @@ export default function BrandCreativeLibrary() {
             >
               <option value="">All Campaigns</option>
               {campaigns.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.title}
-                </option>
+                <option key={c._id} value={c._id}>{c.title}</option>
               ))}
             </select>
-            <ChevronDown
-              size={14}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-            />
+            <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
 
-          {/* Media Type Filter */}
           <div className="relative">
             <select
               value={selectedMediaType}
@@ -177,14 +124,10 @@ export default function BrandCreativeLibrary() {
               <option value="Video">Video</option>
               <option value="Photo">Photo</option>
             </select>
-            <ChevronDown
-              size={14}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-            />
+            <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
         </div>
 
-        {/* Content Grid */}
         {loading ? (
           <div className="py-24 text-center text-gray-400 text-xs flex items-center justify-center gap-2">
             <RefreshCw size={16} className="animate-spin text-gray-400" />
@@ -208,26 +151,17 @@ export default function BrandCreativeLibrary() {
           <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredCreatives.map((item) => {
               const isVideo = item.mediaType === "Video";
-              const mediaUrl = item.mediaUrl || (item.referenceFiles && item.referenceFiles[0]);
+              const mediaUrl = item.mediaUrl || item.referenceFiles?.[0];
 
               return (
-                <div
-                  key={item.id}
-                  className="group bg-white rounded-2xl border border-gray-200/90 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col overflow-hidden text-left"
-                >
-                  {/* Media Preview Box */}
-                  <div
-                    onClick={() => setPreviewCreative(item)}
-                    className="relative h-60 w-full overflow-hidden bg-gray-950 flex items-center justify-center cursor-pointer group"
-                  >
+                <div key={item.id} className="group bg-white rounded-2xl border border-gray-200/90 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col overflow-hidden text-left">
+                  <div onClick={() => setPreviewCreative(item)} className="relative h-60 w-full overflow-hidden bg-gray-950 flex items-center justify-center cursor-pointer group">
                     {mediaUrl ? (
                       <img
-                        src={mediaUrl.startsWith("http") ? mediaUrl : `${API_URL}${mediaUrl}`}
+                        src={getFullMediaUrl(mediaUrl)}
                         alt={item.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                        }}
+                        onError={(e) => { e.target.style.display = "none"; }}
                       />
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-fuchsia-950 to-gray-950 text-white p-4 text-center">
@@ -236,13 +170,9 @@ export default function BrandCreativeLibrary() {
                         <span className="text-[10px] text-gray-400 mt-1">{item.rawOrReady}</span>
                       </div>
                     )}
-
-                    {/* Format Pill */}
                     <div className="absolute top-2.5 left-2.5 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
                       {item.format}
                     </div>
-
-                    {/* Play / View Overlay Icon */}
                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <div className="w-11 h-11 rounded-full bg-white/90 text-gray-900 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
                         {isVideo ? <Play size={18} className="fill-gray-900 ml-0.5" /> : <Eye size={18} />}
@@ -250,29 +180,18 @@ export default function BrandCreativeLibrary() {
                     </div>
                   </div>
 
-                  {/* Creative Details */}
                   <div className="p-4 flex-1 flex flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between text-[11px] text-gray-500 mb-1">
                         <span className="font-semibold text-zinc-900">{item.brandName}</span>
                         <span>{item.mediaType}</span>
                       </div>
-                      <h3 className="font-bold text-gray-900 text-xs truncate mb-1">
-                        {item.title}
-                      </h3>
-                      <p className="text-[11px] text-gray-500 truncate">
-                        Campaign: {item.campaignTitle}
-                      </p>
+                      <h3 className="font-bold text-gray-900 text-xs truncate mb-1">{item.title}</h3>
+                      <p className="text-[11px] text-gray-500 truncate">Campaign: {item.campaignTitle}</p>
                     </div>
-
                     <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs mt-3">
-                      <span className="text-[10px] text-gray-400 font-medium">
-                        {new Date(item.createdAt).toLocaleDateString()}
-                      </span>
-                      <button
-                        onClick={() => setPreviewCreative(item)}
-                        className="inline-flex items-center gap-1 text-zinc-900 hover:text-black font-semibold text-[11px] cursor-pointer"
-                      >
+                      <span className="text-[10px] text-gray-400 font-medium">{new Date(item.createdAt).toLocaleDateString()}</span>
+                      <button onClick={() => setPreviewCreative(item)} className="inline-flex items-center gap-1 text-zinc-900 hover:text-black font-semibold text-[11px] cursor-pointer">
                         <span>Preview</span>
                         <Eye size={12} />
                       </button>
@@ -284,66 +203,43 @@ export default function BrandCreativeLibrary() {
           </div>
         )}
 
-        {/* Media Preview Modal */}
+        {/* Modal */}
         {previewCreative && (
           <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
             <div className="bg-white rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl space-y-4">
               <div className="p-5 border-b border-gray-100 flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-gray-900 text-sm">{previewCreative.title}</h3>
-                  <p className="text-xs text-gray-500">
-                    {previewCreative.brandName} · {previewCreative.campaignTitle}
-                  </p>
+                  <p className="text-xs text-gray-500">{previewCreative.brandName} · {previewCreative.campaignTitle}</p>
                 </div>
-                <button
-                  onClick={() => setPreviewCreative(null)}
-                  className="text-gray-400 hover:text-gray-700 p-1 cursor-pointer"
-                >
+                <button onClick={() => setPreviewCreative(null)} className="text-gray-400 hover:text-gray-700 p-1 cursor-pointer">
                   <X size={18} />
                 </button>
               </div>
 
               <div className="p-6 bg-gray-950 flex items-center justify-center min-h-[320px] max-h-[480px]">
                 {previewCreative.mediaUrl ? (
-                  <img
-                    src={
-                      previewCreative.mediaUrl.startsWith("http")
-                        ? previewCreative.mediaUrl
-                        : `${API_URL}${previewCreative.mediaUrl}`
-                    }
-                    alt={previewCreative.title}
-                    className="max-h-96 max-w-full object-contain rounded-xl"
-                  />
+                  <img src={getFullMediaUrl(previewCreative.mediaUrl)} alt={previewCreative.title} className="max-h-96 max-w-full object-contain rounded-xl" />
                 ) : (
                   <div className="text-center text-white space-y-2 p-8">
                     <Video size={48} className="mx-auto text-gray-400" />
                     <h4 className="text-sm font-bold">{previewCreative.title}</h4>
-                    <p className="text-xs text-gray-400">
-                      Format: {previewCreative.format} | Placement: {previewCreative.rawOrReady}
-                    </p>
+                    <p className="text-xs text-gray-400">Format: {previewCreative.format} | Placement: {previewCreative.rawOrReady}</p>
                   </div>
                 )}
               </div>
 
               <div className="p-5 bg-gray-50 flex items-center justify-between border-t border-gray-100">
                 <div className="text-xs text-gray-600">
-                  <span className="font-semibold text-gray-900">Type:</span> {previewCreative.mediaType} (
-                  {previewCreative.format})
+                  <span className="font-semibold text-gray-900">Type:</span> {previewCreative.mediaType} ({previewCreative.format})
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setPreviewCreative(null)}
-                    className="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-xs font-semibold rounded-xl hover:bg-gray-100 transition cursor-pointer"
-                  >
+                  <button onClick={() => setPreviewCreative(null)} className="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-xs font-semibold rounded-xl hover:bg-gray-100 transition cursor-pointer">
                     Close
                   </button>
                   {previewCreative.mediaUrl && (
                     <a
-                      href={
-                        previewCreative.mediaUrl.startsWith("http")
-                          ? previewCreative.mediaUrl
-                          : `${API_URL}${previewCreative.mediaUrl}`
-                      }
+                      href={getFullMediaUrl(previewCreative.mediaUrl)}
                       download
                       target="_blank"
                       rel="noreferrer"

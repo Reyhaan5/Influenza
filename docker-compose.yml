@@ -1,0 +1,54 @@
+services:
+  # 1. This is used for MongoDb
+  mongodb:
+    image: mongo:7.0
+    container_name: influenza_mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - influenza_net
+
+  # 2. Backend Container (Authentication & DB connection)
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.backend
+    container_name: influenza_backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://mongodb:27017/influenza
+      - JWT_SECRET=${JWT_SECRET}
+      - CLIENT_URL=${CLIENT_URL:-http://localhost:3000}
+    depends_on:
+      - mongodb
+    networks:
+      - influenza_net
+
+  # 3. Frontend Container (Login / Register UI)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000/api}
+    container_name: influenza_frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - influenza_net
+
+volumes:
+  mongo_data:
+
+networks:
+  influenza_net:
+    driver: bridge

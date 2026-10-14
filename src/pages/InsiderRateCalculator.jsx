@@ -1,27 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import {
-  TrendingUp,
-  CheckCircle2,
-  Sparkles,
-  ArrowRight,
-  RefreshCw,
-  ExternalLink,
-  Layers,
-  Save,
-  Info,
-  Flame,
-  Star,
-  ShieldCheck,
-  Building2,
-  Video,
-  Image as ImageIcon,
-  Clock,
+  CheckCircle2, RefreshCw, ExternalLink, Layers, Save, Info,
+  ShieldCheck, Video, Image as ImageIcon, Clock
 } from "lucide-react";
 import InfluencerDashboardLayout from "../components/dashboard/influencer/InfluencerDashboardLayout";
 import Avatar from "../components/dashboard/influencer/Avatar";
-import { API_URL } from "../config/api";
+import api from "../config/api";
+
+const DELIVERABLE_CONFIGS = [
+  { tag: "Feed Post", tagClass: "text-gray-500", icon: ImageIcon, title: "1x Feed Post", desc: "High-aesthetic staged photo or carousel on your feed with brand tags.", getPrice: (r) => r.post, sub: "Recommended single rate" },
+  { tag: "Top Demand", tagClass: "text-purple-600", icon: Video, title: "1x Instagram Reel", desc: "Vertical 30-60s UGC video with hook, demo, and brand call-to-action.", getPrice: (r) => r.reel, sub: "Recommended single rate" },
+  { tag: "Story Frames", tagClass: "text-gray-500", icon: Clock, title: "2x Story Frames", desc: "Casual stories with swipe-up sticker and direct tag for conversions.", getPrice: (r) => r.story, sub: "Recommended 2 frames" },
+  { tag: "Package Deal", tagClass: "text-pink-600", icon: Layers, title: "3x Reels Bundle", desc: "Campaign bundle with cohesive narrative across 3 vertical video assets.", getPrice: (r) => r.bundleReels3, sub: "Bundle package" },
+];
 
 export default function InsiderRateCalculator() {
   const navigate = useNavigate();
@@ -33,20 +25,14 @@ export default function InsiderRateCalculator() {
   const [feedback, setFeedback] = useState({ type: "", message: "" });
   const [lastRefreshed, setLastRefreshed] = useState(null);
 
-  const authHeader = () => ({
-    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-  });
-
   const fetchData = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (!localStorage.getItem("token")) {
       navigate("/login");
       return;
     }
-
     try {
       setError("");
-      const res = await axios.get(`${API_URL}/influencer/insider-rate`, authHeader());
+      const res = await api.get("/influencer/insider-rate");
       setData(res.data);
       setLastRefreshed(new Date());
     } catch (err) {
@@ -65,19 +51,13 @@ export default function InsiderRateCalculator() {
     setRefreshing(true);
     setFeedback({ type: "", message: "" });
     try {
-      const res = await axios.post(`${API_URL}/influencer/refresh-instagram-stats`, {}, authHeader());
+      const res = await api.post("/influencer/refresh-instagram-stats");
       setData(res.data);
       setLastRefreshed(new Date());
-      setFeedback({
-        type: "success",
-        message: "Live Instagram metrics and market rate benchmark successfully updated!",
-      });
+      setFeedback({ type: "success", message: "Live Instagram metrics and market rate benchmark successfully updated!" });
       setTimeout(() => setFeedback({ type: "", message: "" }), 5000);
     } catch (err) {
-      setFeedback({
-        type: "error",
-        message: err.response?.data?.message || "Failed to refresh live Instagram stats.",
-      });
+      setFeedback({ type: "error", message: err.response?.data?.message || "Failed to refresh live Instagram stats." });
       setTimeout(() => setFeedback({ type: "", message: "" }), 5000);
     } finally {
       setRefreshing(false);
@@ -88,93 +68,36 @@ export default function InsiderRateCalculator() {
     if (!data?.recommendedRates) return;
     setApplying(true);
     try {
-      const recommended = data.recommendedRates;
+      const { reel, post, story, bundleReels3 } = data.recommendedRates;
       const updatedPackages = [
-        {
-          id: "pkg-reel",
-          title: "1x Instagram Reel",
-          contentType: "Reel",
-          count: 1,
-          duration: 30,
-          durationUnit: "Seconds",
-          price: recommended.reel,
-          description: "High-hook vertical UGC reel tailored for brand engagement and organic reach.",
-        },
-        {
-          id: "pkg-post",
-          title: "1x Feed Post / Carousel",
-          contentType: "Post",
-          count: 1,
-          duration: 3,
-          durationUnit: "Photos",
-          price: recommended.post,
-          description: "High-aesthetic staging and carousel product visuals for your feed.",
-        },
-        {
-          id: "pkg-story",
-          title: "2x Instagram Story Frames",
-          contentType: "Story",
-          count: 2,
-          duration: 30,
-          durationUnit: "Seconds",
-          price: recommended.story,
-          description: "2x authentic casual story frames with swipe-up link sticker and brand tag.",
-        },
-        {
-          id: "pkg-bundle",
-          title: "3x Reels Campaign Bundle",
-          contentType: "Reel",
-          count: 3,
-          duration: 30,
-          durationUnit: "Seconds",
-          price: recommended.bundleReels3,
-          description: "Multi-deliverable content bundle with cohesive hooks across 3 reels.",
-        },
+        { id: "pkg-reel", title: "1x Instagram Reel", contentType: "Reel", count: 1, duration: 30, durationUnit: "Seconds", price: reel, description: "High-hook vertical UGC reel tailored for brand engagement and organic reach." },
+        { id: "pkg-post", title: "1x Feed Post / Carousel", contentType: "Post", count: 1, duration: 3, durationUnit: "Photos", price: post, description: "High-aesthetic staging and carousel product visuals for your feed." },
+        { id: "pkg-story", title: "2x Instagram Story Frames", contentType: "Story", count: 2, duration: 30, durationUnit: "Seconds", price: story, description: "2x authentic casual story frames with swipe-up link sticker and brand tag." },
+        { id: "pkg-bundle", title: "3x Reels Campaign Bundle", contentType: "Reel", count: 3, duration: 30, durationUnit: "Seconds", price: bundleReels3, description: "Multi-deliverable content bundle with cohesive hooks across 3 reels." },
       ];
 
-      await axios.put(
-        `${API_URL}/influencer/profile`,
-        { packages: updatedPackages },
-        authHeader()
-      );
+      await api.put("/influencer/profile", { packages: updatedPackages });
+      await api.post("/influencer/rate-cards", { packages: updatedPackages, rates: { reel, post, story } });
 
-      await axios.post(
-        `${API_URL}/influencer/rate-cards`,
-        {
-          packages: updatedPackages,
-          rates: {
-            reel: recommended.reel,
-            post: recommended.post,
-            story: recommended.story,
-          },
-        },
-        authHeader()
-      );
-
-      setFeedback({
-        type: "success",
-        message: "Market benchmark rates applied to your public profile packages successfully!",
-      });
+      setFeedback({ type: "success", message: "Market benchmark rates applied to your public profile packages successfully!" });
       setTimeout(() => setFeedback({ type: "", message: "" }), 5000);
     } catch (err) {
       console.error(err);
-      setFeedback({
-        type: "error",
-        message: err.response?.data?.message || "Failed to apply packages.",
-      });
+      setFeedback({ type: "error", message: err.response?.data?.message || "Failed to apply packages." });
     } finally {
       setApplying(false);
     }
   };
 
-  const rates = data?.recommendedRates || {
-    post: 100,
-    reel: 200,
-    story: 100,
-    bundleReels3: 500,
-  };
-
+  const rates = data?.recommendedRates || { post: 100, reel: 200, story: 100, bundleReels3: 500 };
   const cleanHandle = (data?.handle || "creator").replace(/^@+/, "").trim();
+
+  const profileStats = [
+    { label: "Followers", value: data?.followers > 0 ? Number(data.followers).toLocaleString("en-IN") : "0" },
+    { label: "Creator Tier", value: data?.tier || "Nano Creator" },
+    { label: "Category", value: data?.categories?.[0] || "General UGC" },
+    { label: "Track Record Bonus", value: Math.round(((data?.multiplier || 1) - 1) * 100) > 0 ? `+${Math.round((data.multiplier - 1) * 100)}%` : "Baseline (1.0x)", valueClass: "text-emerald-700" },
+  ];
 
   return (
     <InfluencerDashboardLayout>
@@ -182,9 +105,7 @@ export default function InsiderRateCalculator() {
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-gray-200">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-              Market Rate Benchmark
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Market Rate Benchmark</h1>
             <p className="text-xs text-gray-500 mt-1">
               Live commercial pricing benchmark computed directly from your connected Instagram metrics, category demand, and deal track record.
             </p>
@@ -215,27 +136,14 @@ export default function InsiderRateCalculator() {
 
         {/* Feedback Alert */}
         {feedback.message && (
-          <div
-            className={`p-4 rounded-2xl border text-xs font-semibold flex items-center justify-between gap-3 shadow-xs ${
-              feedback.type === "success"
-                ? "bg-emerald-50 border-emerald-200 text-emerald-900"
-                : "bg-red-50 border-red-200 text-red-900"
-            }`}
-          >
+          <div className={`p-4 rounded-2xl border text-xs font-semibold flex items-center justify-between gap-3 shadow-xs ${
+            feedback.type === "success" ? "bg-emerald-50 border-emerald-200 text-emerald-900" : "bg-red-50 border-red-200 text-red-900"
+          }`}>
             <div className="flex items-center gap-2">
-              {feedback.type === "success" ? (
-                <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
-              ) : (
-                <Info size={16} className="text-red-600 shrink-0" />
-              )}
+              {feedback.type === "success" ? <CheckCircle2 size={16} className="text-emerald-600 shrink-0" /> : <Info size={16} className="text-red-600 shrink-0" />}
               <span>{feedback.message}</span>
             </div>
-            <button
-              onClick={() => setFeedback({ type: "", message: "" })}
-              className="text-gray-400 hover:text-gray-600 text-xs cursor-pointer"
-            >
-              ✕
-            </button>
+            <button onClick={() => setFeedback({ type: "", message: "" })} className="text-gray-400 hover:text-gray-600 text-xs cursor-pointer">✕</button>
           </div>
         )}
 
@@ -258,9 +166,7 @@ export default function InsiderRateCalculator() {
                   <Avatar name={cleanHandle} size={48} />
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="font-bold text-base text-gray-900">
-                        @{cleanHandle}
-                      </h2>
+                      <h2 className="font-bold text-base text-gray-900">@{cleanHandle}</h2>
                       <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                         <CheckCircle2 size={11} />
                         Connected Profile
@@ -272,168 +178,59 @@ export default function InsiderRateCalculator() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <a
-                    href={`https://instagram.com/${cleanHandle}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition"
-                  >
-                    <span>View on Instagram</span>
-                    <ExternalLink size={12} />
-                  </a>
-                </div>
+                <a
+                  href={`https://instagram.com/${cleanHandle}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition"
+                >
+                  <span>View on Instagram</span>
+                  <ExternalLink size={12} />
+                </a>
               </div>
 
               {/* 4 Stat Tiles */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-4 border-t border-gray-100">
-                <div className="p-3.5 rounded-xl bg-gray-50/70 border border-gray-200/80">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                    Followers
-                  </p>
-                  <p className="text-lg font-extrabold text-gray-900 mt-0.5">
-                    {data.followers > 0 ? Number(data.followers).toLocaleString("en-IN") : "0"}
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-gray-50/70 border border-gray-200/80">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                    Creator Tier
-                  </p>
-                  <p className="text-lg font-extrabold text-gray-900 mt-0.5">
-                    {data.tier || "Nano Creator"}
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-gray-50/70 border border-gray-200/80">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                    Category
-                  </p>
-                  <p className="text-lg font-extrabold text-gray-900 truncate mt-0.5">
-                    {data.categories?.[0] || "General UGC"}
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-gray-50/70 border border-gray-200/80">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                    Track Record Bonus
-                  </p>
-                  <p className="text-lg font-extrabold text-emerald-700 mt-0.5">
-                    {Math.round((data.multiplier - 1) * 100) > 0
-                      ? `+${Math.round((data.multiplier - 1) * 100)}%`
-                      : "Baseline (1.0x)"}
-                  </p>
-                </div>
+                {profileStats.map(({ label, value, valueClass = "text-gray-900" }, i) => (
+                  <div key={i} className="p-3.5 rounded-xl bg-gray-50/70 border border-gray-200/80">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">{label}</p>
+                    <p className={`text-lg font-extrabold truncate mt-0.5 ${valueClass}`}>{value}</p>
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* Recommended Deliverables Section */}
             <div className="space-y-4">
               <div>
-                <h2 className="text-base font-bold text-gray-900 tracking-tight">
-                  Recommended Market Deliverables
-                </h2>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  Suggested baseline pricing for single and bundled commercial deliverables.
-                </p>
+                <h2 className="text-base font-bold text-gray-900 tracking-tight">Recommended Market Deliverables</h2>
+                <p className="text-xs text-gray-500 mt-0.5">Suggested baseline pricing for single and bundled commercial deliverables.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* 1. Feed Post */}
-                <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-zinc-300 transition">
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                        Feed Post
-                      </span>
-                      <ImageIcon size={14} className="text-gray-400" />
+                {DELIVERABLE_CONFIGS.map(({ tag, tagClass, icon: Icon, title, desc, getPrice, sub }, i) => (
+                  <div key={i} className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-zinc-300 transition">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider ${tagClass}`}>{tag}</span>
+                        <Icon size={14} className={tagClass.includes("purple") || tagClass.includes("pink") ? tagClass : "text-gray-400"} />
+                      </div>
+                      <h3 className="font-bold text-sm text-gray-900 mt-1">{title}</h3>
+                      <p className="text-xs text-gray-500 mt-1">{desc}</p>
                     </div>
-                    <h3 className="font-bold text-sm text-gray-900 mt-1">1x Feed Post</h3>
-                    <p className="text-xs text-gray-500 mt-1">
-                      High-aesthetic staged photo or carousel on your feed with brand tags.
-                    </p>
-                  </div>
 
-                  <div className="pt-3 border-t border-gray-100">
-                    <p className="text-2xl font-extrabold text-gray-900 tracking-tight">
-                      ₹{rates.post.toLocaleString("en-IN")}
-                    </p>
-                    <p className="text-[11px] text-gray-400 mt-0.5">Recommended single rate</p>
-                  </div>
-                </div>
-
-                {/* 2. Instagram Reel */}
-                <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-zinc-300 transition">
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-purple-600">
-                        Top Demand
-                      </span>
-                      <Video size={14} className="text-purple-600" />
+                    <div className="pt-3 border-t border-gray-100">
+                      <p className="text-2xl font-extrabold text-gray-900 tracking-tight">
+                        ₹{getPrice(rates).toLocaleString("en-IN")}
+                      </p>
+                      <p className="text-[11px] text-gray-400 mt-0.5">{sub}</p>
                     </div>
-                    <h3 className="font-bold text-sm text-gray-900 mt-1">1x Instagram Reel</h3>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Vertical 30-60s UGC video with hook, demo, and brand call-to-action.
-                    </p>
                   </div>
-
-                  <div className="pt-3 border-t border-gray-100">
-                    <p className="text-2xl font-extrabold text-gray-900 tracking-tight">
-                      ₹{rates.reel.toLocaleString("en-IN")}
-                    </p>
-                    <p className="text-[11px] text-gray-400 mt-0.5">Recommended single rate</p>
-                  </div>
-                </div>
-
-                {/* 3. Story */}
-                <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-zinc-300 transition">
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                        Story Frames
-                      </span>
-                      <Clock size={14} className="text-gray-400" />
-                    </div>
-                    <h3 className="font-bold text-sm text-gray-900 mt-1">2x Story Frames</h3>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Casual stories with swipe-up sticker and direct tag for conversions.
-                    </p>
-                  </div>
-
-                  <div className="pt-3 border-t border-gray-100">
-                    <p className="text-2xl font-extrabold text-gray-900 tracking-tight">
-                      ₹{rates.story.toLocaleString("en-IN")}
-                    </p>
-                    <p className="text-[11px] text-gray-400 mt-0.5">Recommended 2 frames</p>
-                  </div>
-                </div>
-
-                {/* 4. Bundle */}
-                <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:border-zinc-300 transition">
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-pink-600">
-                        Package Deal
-                      </span>
-                      <Layers size={14} className="text-pink-600" />
-                    </div>
-                    <h3 className="font-bold text-sm text-gray-900 mt-1">3x Reels Bundle</h3>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Campaign bundle with cohesive narrative across 3 vertical video assets.
-                    </p>
-                  </div>
-
-                  <div className="pt-3 border-t border-gray-100">
-                    <p className="text-2xl font-extrabold text-gray-900 tracking-tight">
-                      ₹{rates.bundleReels3.toLocaleString("en-IN")}
-                    </p>
-                    <p className="text-[11px] text-gray-400 mt-0.5">Bundle package</p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
-            {/* Methodology & Calculation Transparency Card */}
+            {/* Transparency Card */}
             <div className="bg-gray-50/80 border border-gray-200 rounded-2xl p-5 shadow-xs text-xs space-y-2">
               <div className="flex items-center gap-2 font-bold text-gray-900">
                 <ShieldCheck size={16} className="text-gray-700" />
