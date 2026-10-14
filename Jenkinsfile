@@ -1,10 +1,5 @@
 pipeline {
   agent any
-  tools {
-    // Configure this exact name under Manage Jenkins > Tools > NodeJS installations.
-    // Use a Node.js 20.x installation so npm is added to PATH for Windows agents.
-    nodejs 'NodeJS 20'
-  }
   environment {
     JENKINS_NODE_COOKIE = 'dontKillMe'
   }
