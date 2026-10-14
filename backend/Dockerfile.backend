@@ -1,0 +1,23 @@
+# Use lightweight Node 20 runtime
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy dependency manifests and install packages
+COPY backend/package*.json ./
+RUN npm install --production
+
+# Copy backend source code
+COPY backend/ ./
+
+# Expose port 5000
+EXPOSE 5000
+
+# Environment defaults for container network
+ENV PORT=5000
+ENV NODE_ENV=production
+ENV MONGO_URI=mongodb://mongodb:27017/influenza
+ENV JWT_SECRET=devops_super_secret_jwt_key_2026
+
+# Start server
+CMD ["node", "server.js"]
