@@ -480,7 +480,3 @@ Contributions are welcome! Please follow these steps:
 5. Open a Pull Request against `main`.
 
 ---
-
-## 📄 License
-
-This project was created as an academic Final Year Project. Add a `LICENSE` file (for example MIT or Apache-2.0) to the repository and update this section to match.
